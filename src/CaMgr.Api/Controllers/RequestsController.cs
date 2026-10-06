@@ -16,10 +16,14 @@ public sealed class RequestsController(
     CaAdminService admin,
     CaRequestService submitter,
     SelfServiceCertService selfService,
+    ApprovalService approvals,
     AuditService audit) : Controller
 {
     private string Ip => HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
     private string User_ => User.Identity?.Name ?? "";
+    private bool IsOperator =>
+        Enum.TryParse<AppRole>(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value, out var role)
+        && role >= AppRole.Operator;
 
     /// <summary>Pending/failed/denied queue.</summary>
     [HttpGet("queue")]
@@ -82,13 +86,20 @@ public sealed class RequestsController(
     [RequireRole(AppRole.Operator)]
     public async Task<IActionResult> Resubmit(int requestId) => await Issue(requestId);
 
-    /// <summary>Submit a new CSR.</summary>
+    /// <summary>Submit a new CSR. Viewer submissions go to the approval queue.</summary>
     [HttpPost("submit")]
-    [RequireRole(AppRole.Operator)]
     public async Task<IActionResult> Submit([FromBody] SubmitCsrRequest req)
     {
         if (string.IsNullOrWhiteSpace(req.Csr) || req.Csr.Trim().Length < 32)
             return BadRequest(new { error = "CSR 内容无效" });
+        if (!IsOperator)
+        {
+            var approvalId = await approvals.CreateCsrAsync(User_, req.Template ?? "", req.Csr);
+            approvals.NotifySubmission(User_, "csr", "(from CSR)", req.Template ?? "");
+            await audit.LogAsync("approval_submit", "approval", approvalId.ToString(),
+                $"type=csr template={req.Template}", User_, Ip);
+            return Ok(new { pendingApproval = true, approvalId, message = "已提交，等待审批" });
+        }
         try
         {
             var result = await submitter.SubmitAsync(req.Csr, req.Template, req.Attributes);
@@ -119,13 +130,21 @@ public sealed class RequestsController(
         }
     }
 
-    /// <summary>Self-service: server generates key pair + multi-SAN CSR, submits, and returns a PFX on immediate issuance.</summary>
+    /// <summary>Self-service. Viewer submissions are escrowed (key encrypted with the user's PFX password) and queued for approval.</summary>
     [HttpPost("self-service")]
-    [RequireRole(AppRole.Operator)]
     public async Task<IActionResult> SelfService([FromBody] SelfServiceRequest req)
     {
-        var (vRes, vErr) = selfService.Validate(req);
+        var isViewer = !IsOperator;
+        var (vRes, vErr) = selfService.Validate(req, requirePfxPassword: isViewer);
         if (vErr.Length > 0) return BadRequest(new { error = vErr });
+        if (isViewer)
+        {
+            var approvalId = await approvals.CreateSelfServiceAsync(User_, req);
+            approvals.NotifySubmission(User_, "self", req.CommonName, req.Template);
+            await audit.LogAsync("approval_submit", "approval", approvalId.ToString(),
+                $"type=self cn={req.CommonName} san={string.Join(",", req.San ?? [])} key={req.KeyAlgorithm} template={req.Template}", User_, Ip);
+            return Ok(new { pendingApproval = true, approvalId, message = "已提交，等待审批" });
+        }
         try
         {
             var result = await selfService.GenerateAndSubmitAsync(req);

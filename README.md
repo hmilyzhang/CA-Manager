@@ -12,12 +12,13 @@ Move the entire day-to-day operation of Windows AD CS (Active Directory Certific
 | Certificates | Search (status / keyword / serial / date / template filters), detail (SAN / EKU / keys / fingerprints / chain), CER & PEM download, CSV export, **revocation** (7 reasons + effective date + serial-number confirmation), **unrevoke** (certificateHold) |
 | Expiring | 30/60/90-day thresholds, CA certificate expiry alert |
 | Requests | Pending / denied / failed queues, **issue / deny / resubmit** |
+| Approvals | Viewer submissions queue for operator/admin approval before hitting the CA; self-service keys escrowed encrypted, one-time PFX download |
 | New Request | Two modes: **self-service** (server generates the key pair; multi-value SAN with mixed DNS + IP; download a ready PFX on issuance) and **paste CSR** (PEM/Base64, private key stays on your machine) |
 | PGP Keys | OpenPGP key pairs for file encryption (RSA / ECC, GnuPG-compatible; private key returned once, never stored server-side) |
 | Templates | Templates enabled on the CA (with AD details), admins can enable/disable templates |
 | CA & CRL | CA properties / cert chain / CDP / AIA, CRL period view & change, **manual CRL / Delta publish**, CRL download & content parsing |
 | Notifications | SMTP mail (intranet anonymous / STARTTLS / SSL): daily digest (expiring certs, CA cert, CRL status, pending backlog) + per-requester notices |
-| Users | Local accounts + AD domain accounts (LDAP), three-tier RBAC (Admin / Operator / Viewer) |
+| Users | Local accounts + AD domain accounts (LDAP), three-tier RBAC (Admin / Operator / Viewer+request) |
 | Audit Log | Every sensitive operation (logins, revocations, issuance, config changes, PGP generation…), query & CSV export |
 
 ## Architecture

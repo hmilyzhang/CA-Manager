@@ -98,7 +98,7 @@ public sealed class LdapAuthService(
 
     private async Task<AppRole?> MapRoleAsync(List<string> groups)
     {
-        var adminGroup = await settings.GetAsync("ldap.adminGroup", "Domain Admins");
+        var adminGroup = await settings.GetAsync("ldap.adminGroup", "");   // no implicit Domain Admins mapping (PAM-managed)
         var opGroup = await settings.GetAsync("ldap.operatorGroup", "");
         foreach (var g in groups)
         {

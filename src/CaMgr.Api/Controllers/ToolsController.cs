@@ -15,7 +15,6 @@ public sealed class ToolsController(PgpService pgp, AuditService audit) : Contro
 
     /// <summary>Generates an OpenPGP key pair for file encryption. Keys are returned once, never stored.</summary>
     [HttpPost("pgp/generate")]
-    [RequireRole(AppRole.Operator)]
     public async Task<IActionResult> GeneratePgp([FromBody] PgpKeyRequest req)
     {
         var (vRes, vErr) = pgp.Validate(req);

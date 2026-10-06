@@ -29,6 +29,7 @@ builder.Services.AddSingleton<LdapAuthService>();
 builder.Services.AddSingleton<MailService>();
 builder.Services.AddSingleton<NotifyService>();
 builder.Services.AddSingleton<SelfServiceCertService>();
+builder.Services.AddSingleton<ApprovalService>();
 builder.Services.AddSingleton<PgpService>();
 builder.Services.AddHostedService<NotifyBackgroundService>();
 
@@ -69,6 +70,28 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+    // schema patch for existing databases (EnsureCreated does not alter existing tables)
+    db.Database.ExecuteSqlRaw("""
+        CREATE TABLE IF NOT EXISTS "ApprovalRequests" (
+            "Id" INTEGER NOT NULL CONSTRAINT "pk_ApprovalRequests" PRIMARY KEY AUTOINCREMENT,
+            "Username" TEXT NOT NULL,
+            "Type" TEXT NOT NULL,
+            "Template" TEXT NOT NULL,
+            "CommonName" TEXT NOT NULL,
+            "SanCsv" TEXT NOT NULL,
+            "KeyAlgorithm" TEXT NOT NULL,
+            "CsrBase64" TEXT NOT NULL,
+            "KeyBlob" BLOB NULL,
+            "Status" TEXT NOT NULL,
+            "RequestId" INTEGER NULL,
+            "Disposition" INTEGER NULL,
+            "Comment" TEXT NOT NULL DEFAULT '',
+            "DecidedBy" TEXT NOT NULL DEFAULT '',
+            "DecidedAt" TEXT NULL,
+            "CreatedAt" TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS "IX_ApprovalRequests_Status" ON "ApprovalRequests" ("Status");
+        """);
     var auth = scope.ServiceProvider.GetRequiredService<AuthService>();
     await auth.SeedAdminAsync();
 }

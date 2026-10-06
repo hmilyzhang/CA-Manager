@@ -6,13 +6,22 @@
 
 | Role | Can do |
 |------|--------|
-| Viewer | Search / download certificates and CRLs, view the dashboard |
-| Operator | + issue / deny / resubmit requests, submit CSRs, revoke / unrevoke, publish CRLs |
-| Administrator | + change CRL periods, enable/disable templates, manage users, view the audit log |
+| Viewer | Search / download certificates and CRLs, view the dashboard, **submit certificate requests (approval required)**, **generate PGP key pairs** |
+| Operator | + issue / deny / resubmit requests, submit CSRs (immediate), revoke / unrevoke, publish CRLs, **approve/reject viewer requests** |
+| Administrator | + change CRL periods, enable/disable templates, manage users, view the audit log, notification & LDAP settings |
 
 Account sources: local accounts (managed here) and AD domain accounts (LDAP bind verification).
-Domain role mapping: matched against `memberOf` at login (setting `ldap.adminGroup`, default `Domain Admins`; optional `ldap.operatorGroup`; unmapped domain users get Viewer by default — set `ldap.allowUnmapped=false` to reject them instead).
+Domain role mapping: matched against `memberOf` at login via the `ldap.adminGroup` / `ldap.operatorGroup` settings (both **empty by default** — designed for PAM-managed environments where Domain Admin passwords are not known; unmapped domain users get Viewer with request rights). Recommended: create dedicated groups, e.g. `CA-Manager-Admins` and `CA-Manager-Operators`, and set them in `ldap.adminGroup` / `ldap.operatorGroup`. The local `admin` account stays as the emergency fallback.
 Configure via Admin → Users page / the settings API (`/api/settings`).
+
+## Approval Workflow (viewer submissions)
+
+Certificate requests submitted by Viewers (both paste-CSR and self-service generation) do **not** go to the CA directly:
+
+1. The request lands in the **Approvals** queue (`/approvals`). Self-service private keys are escrowed **encrypted with the submitter's own PFX password** (AES-256-GCM) — the server never holds the plaintext.
+2. An Operator/Administrator approves (the request is then submitted to the CA) or rejects (escrowed key material is wiped).
+3. Once issued, the submitter downloads a **PFX one time** using the password chosen at submission; the escrowed key is wiped immediately after.
+4. Every step (submission / approval / rejection / download) is audited, and approvers receive an optional SMTP notification.
 
 ## Web ↔ certutil Equivalents
 

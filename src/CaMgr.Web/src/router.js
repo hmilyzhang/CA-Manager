@@ -14,6 +14,7 @@ const routes = [
       { path: 'certificates/:id', component: () => import('./views/CertificateDetail.vue') },
       { path: 'expiring', component: () => import('./views/Expiring.vue') },
       { path: 'requests', component: () => import('./views/Requests.vue') },
+      { path: 'approvals', component: () => import('./views/Approvals.vue') },
       { path: 'new-request', component: () => import('./views/NewRequest.vue') },
       { path: 'templates', component: () => import('./views/Templates.vue') },
       { path: 'ca', component: () => import('./views/CaSettings.vue') },

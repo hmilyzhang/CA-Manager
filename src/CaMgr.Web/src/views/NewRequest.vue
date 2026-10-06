@@ -37,7 +37,18 @@
                     <el-option v-for="tpl in templates" :key="tpl.name" :label="`${tpl.name}${tpl.displayName ? ' — ' + tpl.displayName : ''}`" :value="tpl.name" />
                   </el-select>
                 </el-form-item>
-                <el-form-item>
+                <template v-if="isViewer">
+                  <el-form-item :label="$t('newReq.pfxPwd')">
+                    <el-input v-model="form.pfxPassword" type="password" show-password style="width: 320px" :placeholder="$t('login.pwdLen')" />
+                  </el-form-item>
+                  <el-form-item :label="$t('newReq.pfxPwd2')">
+                    <el-input v-model="form.pfxPassword2" type="password" show-password style="width: 320px" />
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button type="primary" :loading="submitting" @click="submitSelf">{{ $t('newReq.submitForApproval') }}</el-button>
+                  </el-form-item>
+                </template>
+                <el-form-item v-else>
                   <el-button type="primary" :loading="submitting" @click="submitSelf">{{ $t('newReq.genAndIssue') }}</el-button>
                 </el-form-item>
               </el-form>
@@ -73,7 +84,11 @@
               <div v-if="selfResult.requestId" style="color:#606266;margin-bottom:6px">
                 {{ $t('newReq.reqId') }}：<b>{{ selfResult.requestId }}</b>
               </div>
-              <template v-if="selfResult.disposition === 3">
+              <template v-if="selfResult.pendingApproval">
+                <div style="color:#606266">{{ $t('newReq.approvalMsg') }}</div>
+                <el-button @click="$router.push('/approvals')">{{ $t('nav.approvals') }}</el-button>
+              </template>
+              <template v-else-if="selfResult.disposition === 3">
                 <div style="margin: 8px 0; padding: 10px; background:#f0f9eb; border-radius: 6px">
                   <div style="font-weight:600; margin-bottom: 4px">{{ $t('newReq.pfxPwd') }}</div>
                   <div class="mono" style="font-size: 16px; letter-spacing: 1px">{{ selfResult.pfxPassword }}</div>
@@ -126,6 +141,7 @@ import { computed, onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { api } from '../api.js'
+import { store, roleAtLeast } from '../store.js'
 
 const { t } = useI18n()
 const templates = ref([])
@@ -133,7 +149,8 @@ const mode = ref('self')
 const submitting = ref(false)
 
 // self-service form
-const form = ref({ cn: '', san: [], keyAlgorithm: 'RSA2048', template: '' })
+const isViewer = computed(() => !roleAtLeast(store.user?.role, 'Operator'))
+const form = ref({ cn: '', san: [], keyAlgorithm: 'RSA2048', template: '', pfxPassword: '', pfxPassword2: '' })
 const sanInput = ref('')
 const selfResult = ref(null)
 
@@ -161,6 +178,10 @@ const pasteIcon = computed(() => {
 async function submitSelf() {
   if (!form.value.cn.trim()) return ElMessage.warning(t('newReq.needCn'))
   if (!form.value.template) return ElMessage.warning(t('newReq.needTemplate'))
+  if (isViewer.value) {
+    if (!form.value.pfxPassword || form.value.pfxPassword.length < 8) return ElMessage.warning(t('login.pwdLen'))
+    if (form.value.pfxPassword !== form.value.pfxPassword2) return ElMessage.warning(t('login.pwdMismatch'))
+  }
   submitting.value = true
   selfResult.value = null
   try {
@@ -169,6 +190,7 @@ async function submitSelf() {
       san: form.value.san,
       keyAlgorithm: form.value.keyAlgorithm,
       template: form.value.template,
+      pfxPassword: isViewer.value ? form.value.pfxPassword : null,
     })
   } catch (e) {
     ElMessage.error(e.message)

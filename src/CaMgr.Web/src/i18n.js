@@ -4,7 +4,7 @@ export const messages = {
   zh: {
     nav: {
       dashboard: '仪表盘', certificates: '证书管理', expiring: '到期提醒', requests: '请求处理',
-      newRequest: '提交申请', pgp: 'PGP 密钥', templates: '证书模板', ca: 'CA 与 CRL', notify: '通知设置', users: '用户管理', audit: '审计日志',
+      newRequest: '提交申请', approvals: '证书审批', pgp: 'PGP 密钥', templates: '证书模板', ca: 'CA 与 CRL', notify: '通知设置', users: '用户管理', audit: '审计日志',
     },
     common: {
       search: '查询', export: '导出 CSV', detail: '详情', download: '下载', back: '返回',
@@ -34,7 +34,7 @@ export const messages = {
       login: '登录', login_failed: '登录失败', logout: '登出', password_change: '修改密码',
       revoke: '吊销', unrevoke: '取消吊销', issue: '颁发', deny: '拒绝', resubmit: '重新提交',
       submit_request: '提交申请', publish_crl: '发布CRL', ca_config_change: '修改配置',
-      template_change: '模板变更', notify_send: '邮件通知', notify_test: '测试邮件', pgp_generate: '生成PGP密钥', user_create: '创建用户', user_update: '更新用户', user_delete: '删除用户',
+      template_change: '模板变更', notify_send: '邮件通知', notify_test: '测试邮件', pgp_generate: '生成PGP密钥', approval_submit: '提交审批', approval_approve: '审批通过', approval_reject: '审批拒绝', approval_pfx: '下载PFX', user_create: '创建用户', user_update: '更新用户', user_delete: '删除用户',
     },
     login: {
       title: 'CA-Manager 证书服务管理', subtitle: 'Active Directory 证书服务 · Web 管理控制台',
@@ -102,7 +102,8 @@ export const messages = {
       sanEmpty: '未添加 SAN（仅 CN 一项）',
       keyAlg: '密钥算法', genAndIssue: '生成并申请',
       needCn: '请填写通用名称 (CN)',
-      pfxPwd: 'PFX 密码', pwdOnce: '密码仅显示这一次，请立即保存',
+      pfxPwd: 'PFX 密码', pfxPwd2: '确认密码', pwdOnce: '密码仅显示这一次，请立即保存',
+      submitForApproval: '提交审批', approvalMsg: '申请已提交，等待操作员/管理员审批。可在“证书审批”页查看进度，批准并颁发后凭申请时设置的密码下载 PFX。',
       dlPfx: '下载 PFX (.pfx 含私钥)', dlCsr: '下载 CSR', dlKey: '下载私钥',
       pendingHint: '请求未立即颁发。请先下载并妥善保管私钥与 CSR，待审批颁发后可自行合成。',
       selfTitle: '自助生成：', selfDesc: '系统代为生成密钥对（含多域名/IP 的 SAN），颁发后直接下载 PFX，可部署到 Web 服务器 / 负载均衡。',
@@ -138,6 +139,17 @@ export const messages = {
     audit: {
       title: '审计日志', actionType: '操作类型', userContains: '用户名包含', start: '开始', end: '结束',
     },
+    approvals: {
+      title: '证书审批', hint: '普通用户提交的证书申请需经操作员/管理员批准后才提交到 CA。自助生成的私钥以申请人设置的 PFX 密码加密暂存，下载一次后即销毁。',
+      decidedBy: '审批人', approve: '批准', reject: '拒绝',
+      approveConfirm: '批准申请 #{id}（{cn}）并向 CA 提交？',
+      rejectPrompt: '拒绝申请 #{id}（可填写理由）：',
+      approvedOk: '已批准并提交 CA', rejectedOk: '已拒绝',
+      downloadPfx: '下载 PFX', pfxTitle: '下载 PFX（一次性）',
+      pfxOnce: '私钥以您申请时设置的密码加密。下载后服务器立即销毁暂存私钥，请妥善保管 PFX 文件。',
+      pfxPwdPh: '申请时设置的 PFX 密码', pfxDownloaded: 'PFX 已下载，暂存私钥已销毁',
+      st_pending: '待审批', st_approved: '已批准', st_rejected: '已拒绝',
+    },
     pgp: {
       title: 'PGP 密钥生成', hint: '生成用于文件加密的 OpenPGP 密钥对（GnuPG 兼容）。私钥仅在本次响应中返回，服务器不留存任何密钥材料，仅记录审计日志。',
       form: '生成参数', algo: '算法', algoEcc: 'ECC（Ed25519 + X25519，推荐）',
@@ -166,7 +178,7 @@ export const messages = {
   en: {
     nav: {
       dashboard: 'Dashboard', certificates: 'Certificates', expiring: 'Expiring', requests: 'Requests',
-      newRequest: 'New Request', pgp: 'PGP Keys', templates: 'Templates', ca: 'CA & CRL', notify: 'Notifications', users: 'Users', audit: 'Audit Log',
+      newRequest: 'New Request', approvals: 'Approvals', pgp: 'PGP Keys', templates: 'Templates', ca: 'CA & CRL', notify: 'Notifications', users: 'Users', audit: 'Audit Log',
     },
     common: {
       search: 'Search', export: 'Export CSV', detail: 'Detail', download: 'Download', back: 'Back',
@@ -196,7 +208,7 @@ export const messages = {
       login: 'Login', login_failed: 'Login failed', logout: 'Logout', password_change: 'Password change',
       revoke: 'Revoke', unrevoke: 'Unrevoke', issue: 'Issue', deny: 'Deny', resubmit: 'Resubmit',
       submit_request: 'Submit request', publish_crl: 'Publish CRL', ca_config_change: 'Config change',
-      template_change: 'Template change', notify_send: 'Mail notification', notify_test: 'Test mail', pgp_generate: 'PGP key generated', user_create: 'User created', user_update: 'User updated', user_delete: 'User deleted',
+      template_change: 'Template change', notify_send: 'Mail notification', notify_test: 'Test mail', pgp_generate: 'PGP key generated', approval_submit: 'Approval submitted', approval_approve: 'Approved', approval_reject: 'Rejected', approval_pfx: 'PFX downloaded', user_create: 'User created', user_update: 'User updated', user_delete: 'User deleted',
     },
     login: {
       title: 'CA-Manager Certificate Management', subtitle: 'Active Directory Certificate Services · Web Console',
@@ -264,7 +276,8 @@ export const messages = {
       sanEmpty: 'No SAN entries (CN only)',
       keyAlg: 'Key algorithm', genAndIssue: 'Generate & submit',
       needCn: 'Enter the common name (CN)',
-      pfxPwd: 'PFX password', pwdOnce: 'Shown only once — save it now',
+      pfxPwd: 'PFX password', pfxPwd2: 'Confirm', pwdOnce: 'Shown only once — save it now',
+      submitForApproval: 'Submit for approval', approvalMsg: 'Submitted — waiting for operator/admin approval. Track it on the Approvals page; after approval and issuance, download the PFX with the password you set.',
       dlPfx: 'Download PFX (.pfx with private key)', dlCsr: 'Download CSR', dlKey: 'Download private key',
       pendingHint: 'Not issued immediately. Download and keep the private key and CSR safe; combine them after approval.',
       selfTitle: 'Self-service:', selfDesc: 'The system generates the key pair (with multi-domain/IP SAN); download a ready PFX for web servers / load balancers.',
@@ -299,6 +312,17 @@ export const messages = {
     },
     audit: {
       title: 'Audit Log', actionType: 'Action', userContains: 'Username contains', start: 'From', end: 'To',
+    },
+    approvals: {
+      title: 'Certificate Approvals', hint: 'Certificate requests from regular users require operator/admin approval before submission to the CA. Self-service private keys are escrowed encrypted with the submitter\'s PFX password and wiped after one download.',
+      decidedBy: 'Decided By', approve: 'Approve', reject: 'Reject',
+      approveConfirm: 'Approve request #{id} ({cn}) and submit to the CA?',
+      rejectPrompt: 'Reject request #{id} (reason optional):',
+      approvedOk: 'Approved and submitted to the CA', rejectedOk: 'Rejected',
+      downloadPfx: 'Download PFX', pfxTitle: 'Download PFX (one time)',
+      pfxOnce: 'The private key is encrypted with the password chosen at submission. The escrowed key is wiped immediately after this download.',
+      pfxPwdPh: 'PFX password chosen at submission', pfxDownloaded: 'PFX downloaded; escrowed key wiped',
+      st_pending: 'Pending', st_approved: 'Approved', st_rejected: 'Rejected',
     },
     pgp: {
       title: 'PGP Key Generation', hint: 'Generate OpenPGP key pairs for file encryption (GnuPG-compatible). Private keys are returned once and never stored; only an audit record is kept.',
