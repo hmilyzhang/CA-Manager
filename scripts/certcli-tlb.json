@@ -1,0 +1,4787 @@
+name: CERTCLILib
+docString: CertCli 1.0 Type Library
+helpContext: 0
+attributes:
+  guid: 372fce32-4324-11d0-8810-00a0c903b83c
+  lcid: 0
+  sysKind: SYS_WIN64
+  libFlags: LIBFLAG_FHASDISKIMAGE
+  majorVerNum: 1
+  minorVerNum: 0
+file: C:\Windows\System32\certcli.dll
+types:
+- name: CCertGetConfig
+  docString: CertGetConfig Class
+  helpContext: 0
+  attributes:
+    guid: c6cc49b0-ce17-11d0-8833-00a0c903b83c
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_COCLASS
+    typeFlags: TYPEFLAG_FCANCREATE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 0
+    numberOfFunctions: 0
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - implementationFlags: IMPLTYPEFLAG_FDEFAULT
+    name: ICertGetConfig
+    isImported: False
+- name: ICertGetConfig
+  docString: ICertGetConfig Interface
+  helpContext: 0
+  attributes:
+    guid: c7ea09c0-ce17-11d0-8833-00a0c903b83c
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_DISPATCH
+    typeFlags: TYPEFLAG_FDUAL, TYPEFLAG_FDISPATCHABLE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 56
+    numberOfFunctions: 8
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - name: IDispatch
+    isImported: True
+    importedReferenceType:
+      typeGuid: 00020400-0000-0000-c000-000000000046
+      typeLibGuid: 00020400-0000-0000-c000-000000000046
+      typeLibName: stdole
+  functions:
+  - name: QueryInterface
+    memberId: 1610612736
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 2
+    vTableOffset: 0
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: ppvObj
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: AddRef
+    memberId: 1610612737
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 8
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: Release
+    memberId: 1610612738
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 16
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetTypeInfoCount
+    memberId: 1610678272
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 1
+    vTableOffset: 24
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: pctinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetTypeInfo
+    memberId: 1610678273
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 3
+    vTableOffset: 32
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: itinfo
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pptinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetIDsOfNames
+    memberId: 1610678274
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 5
+    vTableOffset: 40
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgszNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_I1
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: cNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgdispid
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Invoke
+    memberId: 1610678275
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 8
+    vTableOffset: 48
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: dispidMember
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: wFlags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI2
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pdispparams
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: DISPPARAMS
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pvarResult
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: pexcepinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: EXCEPINFO
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: puArgErr
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetConfig
+    memberId: 1610743808
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 56
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+- name: CCertConfig
+  docString: CertConfig Class
+  helpContext: 0
+  attributes:
+    guid: 372fce38-4324-11d0-8810-00a0c903b83c
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_COCLASS
+    typeFlags: TYPEFLAG_FCANCREATE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 0
+    numberOfFunctions: 0
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - implementationFlags: IMPLTYPEFLAG_FDEFAULT
+    name: ICertConfig2
+    isImported: False
+- name: ICertConfig2
+  docString: ICertConfig2 Interface
+  helpContext: 0
+  attributes:
+    guid: 7a18edde-7e78-4163-8ded-78e2c9cee924
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_DISPATCH
+    typeFlags: TYPEFLAG_FDUAL, TYPEFLAG_FDISPATCHABLE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 56
+    numberOfFunctions: 12
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - name: IDispatch
+    isImported: True
+    importedReferenceType:
+      typeGuid: 00020400-0000-0000-c000-000000000046
+      typeLibGuid: 00020400-0000-0000-c000-000000000046
+      typeLibName: stdole
+  functions:
+  - name: QueryInterface
+    memberId: 1610612736
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 2
+    vTableOffset: 0
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: ppvObj
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: AddRef
+    memberId: 1610612737
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 8
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: Release
+    memberId: 1610612738
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 16
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetTypeInfoCount
+    memberId: 1610678272
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 1
+    vTableOffset: 24
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: pctinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetTypeInfo
+    memberId: 1610678273
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 3
+    vTableOffset: 32
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: itinfo
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pptinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetIDsOfNames
+    memberId: 1610678274
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 5
+    vTableOffset: 40
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgszNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_I1
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: cNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgdispid
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Invoke
+    memberId: 1610678275
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 8
+    vTableOffset: 48
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: dispidMember
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: wFlags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI2
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pdispparams
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: DISPPARAMS
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pvarResult
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: pexcepinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: EXCEPINFO
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: puArgErr
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Reset
+    memberId: 1610743808
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 56
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Index
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: Next
+    memberId: 1610743809
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 64
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetField
+    memberId: 1610743810
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 72
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strFieldName
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetConfig
+    memberId: 1610743811
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 80
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: SetSharedFolder
+    memberId: 1610809344
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 88
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strSharedFolder
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+- name: ICertConfig
+  docString: ICertConfig Interface
+  helpContext: 0
+  attributes:
+    guid: 372fce34-4324-11d0-8810-00a0c903b83c
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_DISPATCH
+    typeFlags: TYPEFLAG_FDUAL, TYPEFLAG_FDISPATCHABLE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 56
+    numberOfFunctions: 11
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - name: IDispatch
+    isImported: True
+    importedReferenceType:
+      typeGuid: 00020400-0000-0000-c000-000000000046
+      typeLibGuid: 00020400-0000-0000-c000-000000000046
+      typeLibName: stdole
+  functions:
+  - name: QueryInterface
+    memberId: 1610612736
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 2
+    vTableOffset: 0
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: ppvObj
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: AddRef
+    memberId: 1610612737
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 8
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: Release
+    memberId: 1610612738
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 16
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetTypeInfoCount
+    memberId: 1610678272
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 1
+    vTableOffset: 24
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: pctinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetTypeInfo
+    memberId: 1610678273
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 3
+    vTableOffset: 32
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: itinfo
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pptinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetIDsOfNames
+    memberId: 1610678274
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 5
+    vTableOffset: 40
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgszNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_I1
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: cNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgdispid
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Invoke
+    memberId: 1610678275
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 8
+    vTableOffset: 48
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: dispidMember
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: wFlags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI2
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pdispparams
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: DISPPARAMS
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pvarResult
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: pexcepinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: EXCEPINFO
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: puArgErr
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Reset
+    memberId: 1610743808
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 56
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Index
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: Next
+    memberId: 1610743809
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 64
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetField
+    memberId: 1610743810
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 72
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strFieldName
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetConfig
+    memberId: 1610743811
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 80
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+- name: CCertRequest
+  docString: CertRequest Class
+  helpContext: 0
+  attributes:
+    guid: 98aff3f0-5524-11d0-8812-00a0c903b83c
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_COCLASS
+    typeFlags: TYPEFLAG_FCANCREATE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 0
+    numberOfFunctions: 0
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - implementationFlags: IMPLTYPEFLAG_FDEFAULT
+    name: ICertRequest3
+    isImported: False
+- name: ICertRequest3
+  docString: ICertRequest3 Interface
+  helpContext: 0
+  attributes:
+    guid: afc8f92b-33a2-4861-bf36-2933b7cd67b3
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_DISPATCH
+    typeFlags: TYPEFLAG_FDUAL, TYPEFLAG_FDISPATCHABLE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 56
+    numberOfFunctions: 24
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - name: IDispatch
+    isImported: True
+    importedReferenceType:
+      typeGuid: 00020400-0000-0000-c000-000000000046
+      typeLibGuid: 00020400-0000-0000-c000-000000000046
+      typeLibName: stdole
+  functions:
+  - name: QueryInterface
+    memberId: 1610612736
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 2
+    vTableOffset: 0
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: ppvObj
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: AddRef
+    memberId: 1610612737
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 8
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: Release
+    memberId: 1610612738
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 16
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetTypeInfoCount
+    memberId: 1610678272
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 1
+    vTableOffset: 24
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: pctinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetTypeInfo
+    memberId: 1610678273
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 3
+    vTableOffset: 32
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: itinfo
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pptinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetIDsOfNames
+    memberId: 1610678274
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 5
+    vTableOffset: 40
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgszNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_I1
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: cNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgdispid
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Invoke
+    memberId: 1610678275
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 8
+    vTableOffset: 48
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: dispidMember
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: wFlags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI2
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pdispparams
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: DISPPARAMS
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pvarResult
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: pexcepinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: EXCEPINFO
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: puArgErr
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Submit
+    memberId: 1610743808
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 4
+    vTableOffset: 56
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strRequest
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strAttributes
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: RetrievePending
+    memberId: 1610743809
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 64
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: RequestId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetLastStatus
+    memberId: 1610743810
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 72
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetRequestId
+    memberId: 1610743811
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 80
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetDispositionMessage
+    memberId: 1610743812
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 88
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetCACertificate
+    memberId: 1610743813
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 3
+    vTableOffset: 96
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: fExchangeCertificate
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCertificate
+    memberId: 1610743814
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 104
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetIssuedCertificate
+    memberId: 1610809344
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 3
+    vTableOffset: 112
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: RequestId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strSerialNumber
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetErrorMessageText
+    memberId: 1610809345
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 120
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: hrMessage
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCAProperty
+    memberId: 1610809346
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 5
+    vTableOffset: 128
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropIndex
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropType
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCAPropertyFlags
+    memberId: 1610809347
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 136
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCAPropertyDisplayName
+    memberId: 1610809348
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 144
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetFullResponseProperty
+    memberId: 1610809349
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 4
+    vTableOffset: 152
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: PropId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropIndex
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropType
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: SetCredential
+    memberId: 1610874880
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 4
+    vTableOffset: 160
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: hWnd
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: AuthType
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_USERDEFINED
+        refType:
+          name: X509EnrollmentAuthFlags
+          isImported: False
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strCredential
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strPassword
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetRequestIdString
+    memberId: 1610874881
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 168
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetIssuedCertificate2
+    memberId: 1610874882
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 3
+    vTableOffset: 176
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strRequestId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strSerialNumber
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetRefreshPolicy
+    memberId: 1610874883
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 184
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BOOL
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+- name: ICertRequest2
+  docString: ICertRequest2 Interface
+  helpContext: 0
+  attributes:
+    guid: a4772988-4a85-4fa9-824e-b5cf5c16405a
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_DISPATCH
+    typeFlags: TYPEFLAG_FDUAL, TYPEFLAG_FDISPATCHABLE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 56
+    numberOfFunctions: 20
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - name: IDispatch
+    isImported: True
+    importedReferenceType:
+      typeGuid: 00020400-0000-0000-c000-000000000046
+      typeLibGuid: 00020400-0000-0000-c000-000000000046
+      typeLibName: stdole
+  functions:
+  - name: QueryInterface
+    memberId: 1610612736
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 2
+    vTableOffset: 0
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: ppvObj
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: AddRef
+    memberId: 1610612737
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 8
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: Release
+    memberId: 1610612738
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 16
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetTypeInfoCount
+    memberId: 1610678272
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 1
+    vTableOffset: 24
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: pctinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetTypeInfo
+    memberId: 1610678273
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 3
+    vTableOffset: 32
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: itinfo
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pptinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetIDsOfNames
+    memberId: 1610678274
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 5
+    vTableOffset: 40
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgszNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_I1
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: cNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgdispid
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Invoke
+    memberId: 1610678275
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 8
+    vTableOffset: 48
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: dispidMember
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: wFlags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI2
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pdispparams
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: DISPPARAMS
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pvarResult
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: pexcepinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: EXCEPINFO
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: puArgErr
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Submit
+    memberId: 1610743808
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 4
+    vTableOffset: 56
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strRequest
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strAttributes
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: RetrievePending
+    memberId: 1610743809
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 64
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: RequestId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetLastStatus
+    memberId: 1610743810
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 72
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetRequestId
+    memberId: 1610743811
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 80
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetDispositionMessage
+    memberId: 1610743812
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 88
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetCACertificate
+    memberId: 1610743813
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 3
+    vTableOffset: 96
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: fExchangeCertificate
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCertificate
+    memberId: 1610743814
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 104
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetIssuedCertificate
+    memberId: 1610809344
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 3
+    vTableOffset: 112
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: RequestId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strSerialNumber
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetErrorMessageText
+    memberId: 1610809345
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 120
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: hrMessage
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCAProperty
+    memberId: 1610809346
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 5
+    vTableOffset: 128
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropIndex
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropType
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCAPropertyFlags
+    memberId: 1610809347
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 136
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCAPropertyDisplayName
+    memberId: 1610809348
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 144
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetFullResponseProperty
+    memberId: 1610809349
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 4
+    vTableOffset: 152
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: PropId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropIndex
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropType
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+- name: ICertRequest
+  docString: ICertRequest Interface
+  helpContext: 0
+  attributes:
+    guid: 014e4840-5523-11d0-8812-00a0c903b83c
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_DISPATCH
+    typeFlags: TYPEFLAG_FDUAL, TYPEFLAG_FDISPATCHABLE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 56
+    numberOfFunctions: 14
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - name: IDispatch
+    isImported: True
+    importedReferenceType:
+      typeGuid: 00020400-0000-0000-c000-000000000046
+      typeLibGuid: 00020400-0000-0000-c000-000000000046
+      typeLibName: stdole
+  functions:
+  - name: QueryInterface
+    memberId: 1610612736
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 2
+    vTableOffset: 0
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: ppvObj
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: AddRef
+    memberId: 1610612737
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 8
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: Release
+    memberId: 1610612738
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 16
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetTypeInfoCount
+    memberId: 1610678272
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 1
+    vTableOffset: 24
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: pctinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetTypeInfo
+    memberId: 1610678273
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 3
+    vTableOffset: 32
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: itinfo
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pptinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetIDsOfNames
+    memberId: 1610678274
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 5
+    vTableOffset: 40
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgszNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_I1
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: cNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgdispid
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Invoke
+    memberId: 1610678275
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 8
+    vTableOffset: 48
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: dispidMember
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: wFlags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI2
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pdispparams
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: DISPPARAMS
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pvarResult
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: pexcepinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: EXCEPINFO
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: puArgErr
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Submit
+    memberId: 1610743808
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 4
+    vTableOffset: 56
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strRequest
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strAttributes
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: RetrievePending
+    memberId: 1610743809
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 64
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: RequestId
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetLastStatus
+    memberId: 1610743810
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 72
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetRequestId
+    memberId: 1610743811
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 80
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetDispositionMessage
+    memberId: 1610743812
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 88
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetCACertificate
+    memberId: 1610743813
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 3
+    vTableOffset: 96
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: fExchangeCertificate
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: strConfig
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCertificate
+    memberId: 1610743814
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 104
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+- name: X509EnrollmentAuthFlags
+  helpContext: 0
+  attributes:
+    guid: 00000000-0000-0000-0000-000000000000
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_ENUM
+    typeFlags: 0
+    alignment: 4
+    size: 4
+    sizeInstance: 0
+    virtualMemoryTableSize: 0
+    numberOfFunctions: 0
+    numberOfImplementedInterfaces: 0
+    numberOfVariablesAndDatafields: 5
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  variableDescription:
+  - name: X509AuthNone
+    type: VT_INT
+    value:
+      type: VT_INT
+    docString: 
+  - name: X509AuthAnonymous
+    type: VT_INT
+    value:
+      type: VT_INT
+    docString: 
+  - name: X509AuthKerberos
+    type: VT_INT
+    value:
+      type: VT_INT
+    docString: 
+  - name: X509AuthUsername
+    type: VT_INT
+    value:
+      type: VT_INT
+    docString: 
+  - name: X509AuthCertificate
+    type: VT_INT
+    value:
+      type: VT_INT
+    docString: 
+- name: CCertServerPolicy
+  docString: CertServerPolicy Class
+  helpContext: 0
+  attributes:
+    guid: aa000926-ffbe-11cf-8800-00a0c903b83c
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_COCLASS
+    typeFlags: TYPEFLAG_FCANCREATE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 0
+    numberOfFunctions: 0
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - implementationFlags: IMPLTYPEFLAG_FDEFAULT
+    name: ICertServerPolicy
+    isImported: False
+- name: ICertServerPolicy
+  docString: ICertServerPolicy Interface
+  helpContext: 0
+  attributes:
+    guid: aa000922-ffbe-11cf-8800-00a0c903b83c
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_DISPATCH
+    typeFlags: TYPEFLAG_FDUAL, TYPEFLAG_FDISPATCHABLE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 56
+    numberOfFunctions: 21
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - name: IDispatch
+    isImported: True
+    importedReferenceType:
+      typeGuid: 00020400-0000-0000-c000-000000000046
+      typeLibGuid: 00020400-0000-0000-c000-000000000046
+      typeLibName: stdole
+  functions:
+  - name: QueryInterface
+    memberId: 1610612736
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 2
+    vTableOffset: 0
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: ppvObj
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: AddRef
+    memberId: 1610612737
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 8
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: Release
+    memberId: 1610612738
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 16
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetTypeInfoCount
+    memberId: 1610678272
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 1
+    vTableOffset: 24
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: pctinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetTypeInfo
+    memberId: 1610678273
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 3
+    vTableOffset: 32
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: itinfo
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pptinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetIDsOfNames
+    memberId: 1610678274
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 5
+    vTableOffset: 40
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgszNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_I1
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: cNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgdispid
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Invoke
+    memberId: 1610678275
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 8
+    vTableOffset: 48
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: dispidMember
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: wFlags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI2
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pdispparams
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: DISPPARAMS
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pvarResult
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: pexcepinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: EXCEPINFO
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: puArgErr
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: SetContext
+    memberId: 1610743808
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 56
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Context
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetRequestProperty
+    memberId: 1610743809
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 64
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strPropertyName
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropertyType
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetRequestAttribute
+    memberId: 1610743810
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 72
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strAttributeName
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCertificateProperty
+    memberId: 1610743811
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 80
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strPropertyName
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropertyType
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: SetCertificateProperty
+    memberId: 1610743812
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 3
+    vTableOffset: 88
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strPropertyName
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropertyType
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pvarPropertyValue
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCertificateExtension
+    memberId: 1610743813
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 96
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strExtensionName
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: Type
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCertificateExtensionFlags
+    memberId: 1610743814
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 104
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: SetCertificateExtension
+    memberId: 1610743815
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 4
+    vTableOffset: 112
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strExtensionName
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: Type
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: ExtFlags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pvarValue
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: EnumerateExtensionsSetup
+    memberId: 1610743816
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 120
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: EnumerateExtensions
+    memberId: 1610743817
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 128
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: EnumerateExtensionsClose
+    memberId: 1610743818
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 136
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: EnumerateAttributesSetup
+    memberId: 1610743819
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 144
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: EnumerateAttributes
+    memberId: 1610743820
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 152
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: EnumerateAttributesClose
+    memberId: 1610743821
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 160
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+- name: CCertServerExit
+  docString: CertServerExit Class
+  helpContext: 0
+  attributes:
+    guid: 4c4a5e40-732c-11d0-8816-00a0c903b83c
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_COCLASS
+    typeFlags: TYPEFLAG_FCANCREATE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 0
+    numberOfFunctions: 0
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - implementationFlags: IMPLTYPEFLAG_FDEFAULT
+    name: ICertServerExit
+    isImported: False
+- name: ICertServerExit
+  docString: ICertServerExit Interface
+  helpContext: 0
+  attributes:
+    guid: 4ba9eb90-732c-11d0-8816-00a0c903b83c
+    idlFlag: IDLFLAG_NONE
+    kind: TKIND_DISPATCH
+    typeFlags: TYPEFLAG_FDUAL, TYPEFLAG_FDISPATCHABLE
+    alignment: 8
+    size: 8
+    sizeInstance: 0
+    virtualMemoryTableSize: 56
+    numberOfFunctions: 19
+    numberOfImplementedInterfaces: 1
+    numberOfVariablesAndDatafields: 0
+    lcid: 0
+    constructorId: -1
+    destructorId: -1
+    majorVersionNumber: 0
+    minorVersionNumber: 0
+  implementedInterfaces:
+  - name: IDispatch
+    isImported: True
+    importedReferenceType:
+      typeGuid: 00020400-0000-0000-c000-000000000046
+      typeLibGuid: 00020400-0000-0000-c000-000000000046
+      typeLibName: stdole
+  functions:
+  - name: QueryInterface
+    memberId: 1610612736
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 2
+    vTableOffset: 0
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: ppvObj
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: AddRef
+    memberId: 1610612737
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 8
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: Release
+    memberId: 1610612738
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 0
+    vTableOffset: 16
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: GetTypeInfoCount
+    memberId: 1610678272
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 1
+    vTableOffset: 24
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: pctinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetTypeInfo
+    memberId: 1610678273
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 3
+    vTableOffset: 32
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: itinfo
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pptinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: GetIDsOfNames
+    memberId: 1610678274
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 5
+    vTableOffset: 40
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgszNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_PTR -> VT_I1
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: cNames
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: rgdispid
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: Invoke
+    memberId: 1610678275
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 1
+    numberOfParameters: 8
+    vTableOffset: 48
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: dispidMember
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: riid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: GUID
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: lcid
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: wFlags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_UI2
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pdispparams
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: DISPPARAMS
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: pvarResult
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: pexcepinfo
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_USERDEFINED
+        refType:
+          name: EXCEPINFO
+          isImported: True
+          importedReferenceType:
+            typeGuid: 00000000-0000-0000-0000-000000000000
+            typeLibGuid: 00000000-0000-0000-0000-000000000000
+            typeLibName: stdole
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+    - name: puArgErr
+      idlFlags: IDLFLAG_FOUT
+      parameterFlags: PARAMFLAG_FOUT
+      typeDescription:
+        type: VT_PTR -> VT_UINT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FOUT
+  - name: SetContext
+    memberId: 1610743808
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 56
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Context
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetRequestProperty
+    memberId: 1610743809
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 64
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strPropertyName
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropertyType
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetRequestAttribute
+    memberId: 1610743810
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 72
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strAttributeName
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCertificateProperty
+    memberId: 1610743811
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 80
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strPropertyName
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: PropertyType
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCertificateExtension
+    memberId: 1610743812
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 2
+    vTableOffset: 88
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VARIANT
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: strExtensionName
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+    - name: Type
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: GetCertificateExtensionFlags
+    memberId: 1610743813
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 96
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: EnumerateExtensionsSetup
+    memberId: 1610743814
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 104
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: EnumerateExtensions
+    memberId: 1610743815
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 112
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: EnumerateExtensionsClose
+    memberId: 1610743816
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 120
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: EnumerateAttributesSetup
+    memberId: 1610743817
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 1
+    vTableOffset: 128
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+    parameters:
+    - name: Flags
+      idlFlags: IDLFLAG_FIN
+      parameterFlags: PARAMFLAG_FIN
+      typeDescription:
+        type: VT_I4
+      parameterDescription:
+        parameterFlags: PARAMFLAG_FIN
+  - name: EnumerateAttributes
+    memberId: 1610743818
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 136
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_BSTR
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE
+  - name: EnumerateAttributesClose
+    memberId: 1610743819
+    docString: 
+    callConv: CC_STDCALL
+    kind: FUNC_DISPATCH
+    invokeKind: INVOKE_FUNC
+    functionFlags: 0
+    numberOfParameters: 0
+    vTableOffset: 144
+    returnType:
+      name: rhs
+      idlFlags: IDLFLAG_NONE
+      parameterFlags: PARAMFLAG_NONE
+      typeDescription:
+        type: VT_VOID
+      parameterDescription:
+        parameterFlags: PARAMFLAG_NONE

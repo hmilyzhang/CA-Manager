@@ -1,0 +1,50 @@
+# build artifacts
+bin/
+obj/
+node_modules/
+dist/
+
+# .NET local SDK (installed by scripts on dev machines)
+.dotnet/
+
+# publish output (built via scripts/publish.ps1)
+publish/
+
+# frontend build output (generated: npm run build in src/CaMgr.Web)
+src/CaMgr.Api/wwwroot/
+
+# runtime data & secrets
+**/data/
+initial-admin-password.txt
+appsettings.Production.json
+
+# local test artifacts
+scripts/testdata/
+scripts/*.log
+
+# tool probes
+scripts/ViewProbe/
+scripts/dump-dispositions.py
+scripts/diag.py
+scripts/patch*.py
+scripts/rename*.py
+scripts/default-en*.py
+scripts/set-display-name.ps1
+scripts/migrate-service-name.ps1
+scripts/probe*.ps1
+scripts/make-test-rows.ps1
+scripts/test-system-resubmit.ps1
+scripts/smtp-sink.py
+
+# misc
+*.user
+.vs/
+.vscode/
+*.log
+
+# archives & keys
+*.zip
+.ssh/
+*.pfx
+*.pem
+.zcode/

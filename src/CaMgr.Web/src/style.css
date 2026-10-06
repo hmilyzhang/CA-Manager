@@ -1,0 +1,22 @@
+html, body, #app { height: 100%; margin: 0; }
+body {
+  font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+  background: #f5f7fa;
+  -webkit-font-smoothing: antialiased;
+}
+.mono { font-family: Consolas, "Courier New", monospace; }
+.page {
+  padding: 16px 20px;
+}
+.page-title {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 2px 0 14px;
+  color: #303133;
+}
+.stat-card { border-radius: 10px; }
+.stat-card .num { font-size: 28px; font-weight: 700; }
+.el-card { border-radius: 10px; }
+.clickable { cursor: pointer; }
+.filter-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; align-items: center; }
+.danger-zone { border: 1px solid #fde2e2; }

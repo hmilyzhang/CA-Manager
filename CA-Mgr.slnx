@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CaMgr.Api/CaMgr.Api.csproj" />
+    <Project Path="src/CaMgr.Tests/CaMgr.Tests.csproj" />
+  </Folder>
+</Solution>
