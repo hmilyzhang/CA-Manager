@@ -23,7 +23,10 @@ public sealed class RequestsController(
     private string User_ => User.Identity?.Name ?? "";
     private bool IsOperator =>
         Enum.TryParse<AppRole>(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value, out var role)
-        && role >= AppRole.Operator;
+        && role is AppRole.Operator or AppRole.Admin;
+    private bool IsAuditor =>
+        Enum.TryParse<AppRole>(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value, out var role2)
+        && role2 == AppRole.Auditor;
 
     /// <summary>Pending/failed/denied queue (global view: operator/auditor/admin).</summary>
     [HttpGet("queue")]
@@ -91,10 +94,14 @@ public sealed class RequestsController(
     [HttpPost("submit")]
     public async Task<IActionResult> Submit([FromBody] SubmitCsrRequest req)
     {
+        if (IsAuditor) return new JsonResult(new { error = "权限不足" }) { StatusCode = 403 };
         if (string.IsNullOrWhiteSpace(req.Csr) || req.Csr.Trim().Length < 32)
             return BadRequest(new { error = "CSR 内容无效" });
         if (!IsOperator)
         {
+            var rStr = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            if (Enum.TryParse<AppRole>(rStr, out var rr) && rr == AppRole.Auditor)
+                return new JsonResult(new { error = "权限不足" }) { StatusCode = 403 };
             var approvalId = await approvals.CreateCsrAsync(User_, req.Template ?? "", req.Csr);
             approvals.NotifySubmission(User_, "csr", "(from CSR)", req.Template ?? "");
             await audit.LogAsync("approval_submit", "approval", approvalId.ToString(),
@@ -135,6 +142,7 @@ public sealed class RequestsController(
     [HttpPost("self-service")]
     public async Task<IActionResult> SelfService([FromBody] SelfServiceRequest req)
     {
+        if (IsAuditor) return new JsonResult(new { error = "权限不足" }) { StatusCode = 403 };
         var isViewer = !IsOperator;
         var (vRes, vErr) = selfService.Validate(req, requirePfxPassword: isViewer);
         if (vErr.Length > 0) return BadRequest(new { error = vErr });

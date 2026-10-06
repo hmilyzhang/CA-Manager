@@ -18,9 +18,11 @@ public sealed class ApprovalsController(
     private string Ip => HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
     private string User_ => User.Identity?.Name ?? "";
     private bool IsOperator =>
-        Enum.TryParse<AppRole>(User.FindFirst(ClaimTypes.Role)?.Value, out var role) && role >= AppRole.Operator;
+        Enum.TryParse<AppRole>(User.FindFirst(ClaimTypes.Role)?.Value, out var role)
+        && role is AppRole.Operator or AppRole.Admin;
     private bool CanSeeAll =>
-        Enum.TryParse<AppRole>(User.FindFirst(ClaimTypes.Role)?.Value, out var role) && role >= AppRole.Operator;
+        Enum.TryParse<AppRole>(User.FindFirst(ClaimTypes.Role)?.Value, out var role)
+        && role is AppRole.Operator or AppRole.Admin or AppRole.Auditor;
 
     /// <summary>List approval requests. Operators/admins see all; viewers see their own.</summary>
     [HttpGet]
@@ -86,6 +88,23 @@ public sealed class ApprovalsController(
         catch (Exception ex)
         {
             await audit.LogAsync("approval_pfx", "approval", id.ToString(), ex.Message, User_, Ip, success: false);
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>One-time download of an approved PGP key pair (escrowed private key wiped after).</summary>
+    [HttpPost("{id:int}/pgp")]
+    public async Task<IActionResult> DownloadPgp(int id)
+    {
+        try
+        {
+            var (pub, priv, fileNameBase) = await approvals.DownloadPgpAsync(id, User_, IsOperator);
+            await audit.LogAsync("approval_pgp", "approval", id.ToString(), $"file={fileNameBase}", User_, Ip);
+            return Ok(new { publicKeyAsc = pub, privateKeyAsc = priv, fileNameBase });
+        }
+        catch (Exception ex)
+        {
+            await audit.LogAsync("approval_pgp", "approval", id.ToString(), ex.Message, User_, Ip, success: false);
             return BadRequest(new { error = ex.Message });
         }
     }

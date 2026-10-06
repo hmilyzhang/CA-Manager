@@ -33,6 +33,7 @@ public sealed record ApprovalDto
 public sealed class ApprovalService(
     IDbContextFactory<AppDbContext> dbf,
     SelfServiceCertService selfService,
+    PgpService pgp,
     CaRequestService submitter,
     CaDbService db,
     MailService mail,
@@ -90,6 +91,30 @@ public sealed class ApprovalService(
         return [.. ids];
     }
 
+    /// <summary>PGP key request from a viewer: the key pair is generated immediately and the
+    /// passphrase-protected secret key ring is escrowed until approval (one-time download).</summary>
+    public async Task<(int id, string keyId)> CreatePgpAsync(string username, PgpKeyRequest req)
+    {
+        var result = pgp.Generate(req);
+        await using var db = dbf.CreateDbContext();
+        var entry = new ApprovalRequestEntity
+        {
+            Username = username,
+            Type = "pgp",
+            Template = "",
+            CommonName = result.UserId,
+            KeyAlgorithm = result.Algorithm,
+            CsrBase64 = result.PublicKeyAsc,                                        // public key (safe to keep)
+            KeyBlob = System.Text.Encoding.UTF8.GetBytes(result.PrivateKeyAsc),     // secret ring, passphrase-protected by PGP itself
+            Status = "pending",
+            Comment = $"keyId={result.KeyId} fp={result.Fingerprint}",
+            CreatedAt = DateTime.UtcNow,
+        };
+        db.ApprovalRequests.Add(entry);
+        await db.SaveChangesAsync();
+        return (entry.Id, result.KeyId);
+    }
+
     public async Task<List<ApprovalDto>> ListAsync(string? status, string caller, bool canSeeAll)
     {
         await using var db = dbf.CreateDbContext();
@@ -115,7 +140,8 @@ public sealed class ApprovalService(
             DecidedBy = a.DecidedBy,
             DecidedAt = a.DecidedAt,
             CreatedAt = a.CreatedAt,
-            Downloadable = a.Status == "approved" && a.Type == "self" && a.RequestId != null && a.KeyBlob != null,
+            Downloadable = a.Status == "approved" && a.KeyBlob != null &&
+                           (a.Type == "self" ? a.RequestId != null : a.Type == "pgp"),
             Own = a.Username == caller,
         }).ToList();
     }
@@ -128,6 +154,16 @@ public sealed class ApprovalService(
             ?? throw new InvalidOperationException("审批记录不存在");
         if (row.Status != "pending")
             throw new InvalidOperationException("该申请已被处理");
+
+        if (row.Type == "pgp")
+        {
+            // nothing to submit to the CA - the escrowed key just becomes downloadable
+            row.Status = "approved";
+            row.DecidedBy = decidedBy;
+            row.DecidedAt = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+            return (0, 0);
+        }
 
         var sanAttribute = row.Type == "self"
             ? SelfServiceCertService.BuildSanAttribute(row.CommonName, row.SanCsv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
@@ -187,6 +223,28 @@ public sealed class ApprovalService(
         row.KeyBlob = null; // one-time download
         await ctx.SaveChangesAsync();
         return (pfx, $"{row.CommonName}.pfx");
+    }
+
+    /// <summary>One-time download of the approved PGP key pair; wipes the escrowed private key.</summary>
+    public async Task<(string publicKeyAsc, string privateKeyAsc, string fileNameBase)> DownloadPgpAsync(int id, string caller, bool isOperator)
+    {
+        await using var ctx = dbf.CreateDbContext();
+        var row = await ctx.ApprovalRequests.FirstOrDefaultAsync(a => a.Id == id)
+            ?? throw new InvalidOperationException("审批记录不存在");
+        if (!isOperator && row.Username != caller)
+            throw new InvalidOperationException("只能下载本人申请的密钥");
+        if (row.Status != "approved" || row.Type != "pgp")
+            throw new InvalidOperationException("该申请尚未批准");
+        if (row.KeyBlob is null)
+            throw new InvalidOperationException("私钥已提取或不存在（只能下载一次）");
+
+        var privateKeyAsc = System.Text.Encoding.UTF8.GetString(row.KeyBlob);
+        var publicKeyAsc = row.CsrBase64;
+        row.KeyBlob = null; // one-time download
+        await ctx.SaveChangesAsync();
+        var safeName = row.CommonName.Replace(" ", "-");
+        foreach (var c in new[] { "<", ">", "@", "\"", "'" }) safeName = safeName.Replace(c, "-");
+        return (publicKeyAsc, privateKeyAsc, safeName);
     }
 
     /// <summary>Fire-and-forget approval-request mail to the fixed recipients (best effort).</summary>

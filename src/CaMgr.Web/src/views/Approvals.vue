@@ -40,8 +40,10 @@
             <el-button size="small" type="success" plain @click="approve(row)">{{ $t('approvals.approve') }}</el-button>
             <el-button size="small" type="danger" plain @click="reject(row)">{{ $t('approvals.reject') }}</el-button>
           </template>
-          <el-button v-if="row.downloadable && (row.own || canDecide)" size="small" type="primary" plain
+          <el-button v-if="row.downloadable && row.type === 'self' && (row.own || canDecide)" size="small" type="primary" plain
             @click="openPfx(row)">{{ $t('approvals.downloadPfx') }}</el-button>
+          <el-button v-if="row.downloadable && row.type === 'pgp' && (row.own || canDecide)" size="small" type="primary" plain
+            @click="downloadPgp(row)">{{ $t('approvals.downloadPgp') }}</el-button>
           <el-button v-if="row.requestId" size="small" @click="$router.push('/certificates/' + row.requestId)">
             {{ $t('common.detail') }}
           </el-button>
@@ -119,6 +121,27 @@ async function reject(row) {
     ElMessage.success(t('approvals.rejectedOk'))
     reload()
   } catch (e) { if (e !== 'cancel') ElMessage.error(e.message) }
+}
+
+async function downloadPgp(row) {
+  try {
+    await ElMessageBox.confirm(t('approvals.pgpOnce'), t('approvals.downloadPgp'), { type: 'warning' })
+  } catch { return }
+  try {
+    const r = await api.post(`/api/approvals/${row.id}/pgp`)
+    dlText(r.privateKeyAsc, `${r.fileNameBase}-priv.asc`)
+    dlText(r.publicKeyAsc, `${r.fileNameBase}-pub.asc`)
+    ElMessage.success(t('approvals.pgpDownloaded'))
+    reload()
+  } catch (e) { ElMessage.error(e.message) }
+}
+
+function dlText(text, filename) {
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob([text], { type: 'application/pgp-keys' }))
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(a.href)
 }
 
 function openPfx(row) {

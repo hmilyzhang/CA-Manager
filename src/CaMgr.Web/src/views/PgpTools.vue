@@ -35,13 +35,26 @@
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" :loading="generating" @click="generate">{{ $t('pgp.generate') }}</el-button>
+              <el-button type="primary" :loading="generating" @click="generate">
+                {{ isViewer ? $t('pgp.submitForApproval') : $t('pgp.generate') }}
+              </el-button>
             </el-form-item>
           </el-form>
         </el-card>
       </el-col>
 
       <el-col :span="12">
+        <el-card v-if="pending" shadow="never">
+          <template #header>{{ $t('pgp.result') }}</template>
+          <el-result icon="warning" :title="$t('pgp.approvalMsg')">
+            <template #extra>
+              <div style="color:#606266;margin-bottom:6px">{{ $t('newReq.reqId') }}：<b>{{ pending.approvalId }}</b></div>
+              <div style="color:#606266">Key ID: <b class="mono">{{ pending.keyId }}</b></div>
+              <el-button @click="$router.push('/approvals')">{{ $t('nav.approvals') }}</el-button>
+            </template>
+          </el-result>
+        </el-card>
+
         <el-card v-if="result" shadow="never">
           <template #header>{{ $t('pgp.result') }}</template>
           <el-descriptions :column="1" border size="small" style="margin-bottom: 12px">
@@ -82,12 +95,15 @@ import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { api } from '../api.js'
+import { store, roleAtLeast } from '../store.js'
 import { fmtDate } from '../i18n.js'
 
 const { t } = useI18n()
 const form = ref({ name: '', email: '', algorithm: 'RSA3072', password: '', password2: '', validityYears: 2 })
 const generating = ref(false)
 const result = ref(null)
+const pending = ref(null)
+const isViewer = computed(() => store.user?.role === 'Viewer')
 
 const fmt = (d) => fmtDate(d)
 
@@ -97,14 +113,21 @@ async function generate() {
   if (form.value.password !== form.value.password2) return ElMessage.warning(t('pgp.pwdMismatch'))
   generating.value = true
   result.value = null
+  pending.value = null
   try {
-    result.value = await api.post('/api/tools/pgp/generate', {
+    const resp = await api.post('/api/tools/pgp/generate', {
       name: form.value.name.trim(),
       email: form.value.email.trim(),
       algorithm: form.value.algorithm,
       password: form.value.password,
       validityYears: form.value.validityYears,
     })
+    if (resp.pendingApproval) {
+      pending.value = resp
+      ElMessage.success(t('pgp.approvalMsg'))
+      return
+    }
+    result.value = resp
     ElMessage.success(t('pgp.done'))
   } catch (e) {
     ElMessage.error(e.message)
