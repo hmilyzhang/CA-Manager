@@ -1,51 +1,70 @@
-﻿# CA-Manager release script: commit -> tag -> push -> GitLab release (+ GitHub tag)
+﻿# CA-Manager release script: build deploy zip -> commit -> tag -> push -> attach package to GitLab release
 # Usage:
 #   powershell -File scripts\release.ps1 -Version v1.5.0 -Notes "what changed"
-#   (run from repo root or scripts folder; requires git and the gitlab token)
 param(
     [Parameter(Mandatory = $true)][string]$Version,   # e.g. v1.5.0
     [string]$Notes = ''
 )
 $ErrorActionPreference = 'Stop'
-
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 
-# gitlab token: env GITLAB_TOKEN, or read from git remote url
+# gitlab token: env GITLAB_TOKEN, or from the gitlab remote url
 $remote = git remote get-url gitlab
 $token = $env:GITLAB_TOKEN
 if (-not $token -and $remote -match 'oauth2:([^@]+)@') { $token = $Matches[1] }
 if (-not $token) { throw "GitLab token not found (set GITLAB_TOKEN or keep it in the gitlab remote url)" }
+$ver = $Version.TrimStart('v')
 
-# 1. commit pending changes
-$dirty = git status --porcelain
-if ($dirty) {
-    Write-Host "Committing pending changes..." -ForegroundColor Cyan
+# ---- 1. build the deploy package ----
+Write-Host "[1/6] building deploy package..." -ForegroundColor Cyan
+& (Join-Path $PSScriptRoot 'publish.ps1')
+$zip = Join-Path $root "CA-Manager-Deploy-$Version.zip"
+if (Test-Path $zip) { Remove-Item $zip -Force }
+Compress-Archive -Path (Join-Path $root 'dist\CA-Mgr') -DestinationPath $zip -Force
+Write-Host ("  package: {0} ({1:N1} MB)" -f $zip, ((Get-Item $zip).Length / 1MB))
+
+# ---- 2. commit pending changes ----
+Write-Host "[2/6] committing..." -ForegroundColor Cyan
+if (git status --porcelain) {
     git add -A
     git commit -m "CA-Manager $Version"
 }
 
-# 2. tag
+# ---- 3. tag ----
+Write-Host "[3/6] tagging $Version..." -ForegroundColor Cyan
 git tag -f $Version
-if ($LASTEXITCODE -ne 0) { throw "tag failed" }
 
-# 3. push both remotes (gitlab full / github app source)
-Write-Host "Pushing gitlab..." -ForegroundColor Cyan
+# ---- 4. push both remotes ----
+Write-Host "[4/6] pushing..." -ForegroundColor Cyan
 git push gitlab main --tags
 if ($LASTEXITCODE -ne 0) { throw "gitlab push failed" }
-Write-Host "Pushing github..." -ForegroundColor Cyan
 git push github main --tags
-if ($LASTEXITCODE -ne 0) { Write-Warning "github push failed (deploy key added yet?)" }
+if ($LASTEXITCODE -ne 0) { Write-Warning "github push failed" }
 
-# 4. GitLab release
+# ---- 5. GitLab release + package asset ----
+Write-Host "[5/6] creating GitLab release..." -ForegroundColor Cyan
 if ($Notes -eq '') { $Notes = "CA-Manager $Version" }
-$esc = $Notes.Replace('"', '\"')
+$esc = $Notes.Replace('"', '\"').Replace("`n", '\n')
 $proj = [uri]::EscapeDataString('mylab/ca-manager')
 $body = "{`"tag_name`":`"$Version`",`"name`":`"CA-Manager $Version`",`"description`":`"$esc`"}"
 curl.exe -s -X POST "http://10.3.0.159:2080/api/v4/projects/$proj/releases" `
     -H "PRIVATE-TOKEN: $token" -H "Content-Type: application/json" -d $body | Out-Null
-Write-Host "GitLab release $Version created." -ForegroundColor Green
 
-# 5. GitHub release: tag is pushed; create the Release object when a token is configured:
-#    gh release create $Version --title "CA-Manager $Version" --notes "..."   (requires gh auth)
-Write-Host "GitHub tag $Version pushed. Create the Release in UI or with: gh release create $Version" -ForegroundColor Yellow
+$zipName = Split-Path $zip -Leaf
+curl.exe -s -X PUT "http://10.3.0.159:2080/api/v4/projects/$proj/packages/generic/ca-manager-deploy/$ver/$zipName" `
+    -H "PRIVATE-TOKEN: $token" -H "Content-Type: application/octet-stream" --data-binary "@$zip" | Out-Null
+$pkgUrl = "http://10.3.0.159:2080/api/v4/projects/$proj/packages/generic/ca-manager-deploy/$ver/$zipName"
+$linkBody = "{`"name`":`"$zipName (Windows x64, self-contained)`",`"url`":`"$pkgUrl`",`"link_type`":`"package`"}"
+curl.exe -s -X POST "http://10.3.0.159:2080/api/v4/projects/$proj/releases/$Version/assets/links" `
+    -H "PRIVATE-TOKEN: $token" -H "Content-Type: application/json" -d $linkBody | Out-Null
+Write-Host "  GitLab release $Version with deploy package created." -ForegroundColor Green
+
+# ---- 6. GitHub release (tag already pushed) ----
+Write-Host "[6/6] GitHub..." -ForegroundColor Cyan
+if (Get-Command gh -ErrorAction SilentlyContinue) {
+    gh release create $Version $zip --title "CA-Manager $Version" --notes $Notes
+} else {
+    Write-Host "  Tag $Version pushed. Create the GitHub Release from the tag (or install gh CLI / provide a PAT)." -ForegroundColor Yellow
+}
+Write-Host "Done." -ForegroundColor Green
