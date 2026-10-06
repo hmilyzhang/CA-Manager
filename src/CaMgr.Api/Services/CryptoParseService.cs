@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.X509;
+using GeneralNameTag = Org.BouncyCastle.Asn1.X509.GeneralName;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Pkcs;
@@ -108,6 +110,7 @@ public static class CryptoParse
         if (der is null || der.Length == 0) return null;
         try
         {
+            der = DecodePemIfNeeded(der, "CERTIFICATE REQUEST");
             var p10 = new Pkcs10CertificationRequest(der);
             var info = p10.GetCertificationRequestInfo();
 
@@ -133,7 +136,15 @@ public static class CryptoParse
                             try
                             {
                                 var names = GeneralNames.GetInstance(ext.GetParsedValue());
-                                sans.AddRange(names.GetNames().Select(n => n.Name?.ToString() ?? ""));
+                                foreach (var n in names.GetNames())
+                                {
+                                    // IP SANs are raw 4/16-byte octets — render as dotted/colon text, not DER "#hex"
+                                    if (n.TagNo == GeneralNameTag.IPAddress && n.Name is DerOctetString octets
+                                        && octets.GetOctets() is { Length: 4 or 16 } ipBytes)
+                                        sans.Add(new System.Net.IPAddress(ipBytes).ToString());
+                                    else
+                                        sans.Add(n.Name?.ToString() ?? "");
+                                }
                             }
                             catch { }
                         }
@@ -211,6 +222,19 @@ public static class CryptoParse
         "1.2.840.10045.4.3.4" => "SHA512withECDSA",
         _ => oid
     };
+
+    /// <summary>Strips PEM armor when the payload is ASCII-armored; DER passes through.</summary>
+    private static byte[] DecodePemIfNeeded(byte[] data, string label)
+    {
+        if (data.Length < 20 || data[0] != (byte)'-') return data;
+        var text = System.Text.Encoding.ASCII.GetString(data);
+        var m = System.Text.RegularExpressions.Regex.Match(text,
+            $"-----BEGIN {label}-----(.*?)-----END {label}-----", System.Text.RegularExpressions.RegexOptions.Singleline);
+        if (!m.Success) m = System.Text.RegularExpressions.Regex.Match(text,
+            @"-----BEGIN [A-Z0-9 ]+-----(.*?)-----END [A-Z0-9 ]+-----", System.Text.RegularExpressions.RegexOptions.Singleline);
+        if (!m.Success) return data;
+        return Convert.FromBase64String(System.Text.RegularExpressions.Regex.Replace(m.Groups[1].Value, "\\s", ""));
+    }
 
     public static string FriendlyOid(string oid) => oid switch
     {
