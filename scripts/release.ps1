@@ -62,9 +62,25 @@ Write-Host "  GitLab release $Version with deploy package created." -ForegroundC
 
 # ---- 6. GitHub release (tag already pushed) ----
 Write-Host "[6/6] GitHub..." -ForegroundColor Cyan
-if (Get-Command gh -ErrorAction SilentlyContinue) {
+$ghToken = $env:GITHUB_TOKEN
+if (-not $ghToken) { $ghToken = git config --get ca-manager.githubToken }
+$zipName = Split-Path $zip -Leaf
+if ($ghToken) {
+    # create the Release object
+    $ghBody = "{`"tag_name`":`"$Version`",`"name`":`"CA-Manager $Version`",`"body`":`"$esc`"}"
+    $resp = curl.exe -s -X POST "https://api.github.com/repos/hmilyzhang/CA-Manager/releases" `
+        -H "Authorization: Bearer $ghToken" -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" -d $ghBody
+    $relId = ($resp | ConvertFrom-Json).id
+    if (-not $relId) { Write-Warning "GitHub release creation failed: $resp" }
+    else {
+        # upload the deploy zip as a release asset
+        curl.exe -s -X POST "https://uploads.github.com/repos/hmilyzhang/CA-Manager/releases/$relId/assets?name=$zipName" `
+            -H "Authorization: Bearer $ghToken" -H "Content-Type: application/zip" --data-binary "@$zip" | Out-Null
+        Write-Host "  GitHub release $Version created with deploy package attached." -ForegroundColor Green
+    }
+} elseif (Get-Command gh -ErrorAction SilentlyContinue) {
     gh release create $Version $zip --title "CA-Manager $Version" --notes $Notes
 } else {
-    Write-Host "  Tag $Version pushed. Create the GitHub Release from the tag (or install gh CLI / provide a PAT)." -ForegroundColor Yellow
+    Write-Host "  Tag $Version pushed. Configure a GitHub PAT (git config ca-manager.githubToken <token>) to automate releases." -ForegroundColor Yellow
 }
 Write-Host "Done." -ForegroundColor Green
