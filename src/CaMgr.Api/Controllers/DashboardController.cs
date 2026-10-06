@@ -13,6 +13,7 @@ public sealed class DashboardController(
     CertificateService certs,
     CaAdminService admin,
     CaContext ca,
+    CaMgr.Api.Services.ApprovalService approvals,
     IDbContextFactory<Data.AppDbContext> dbf) : Controller
 {
     [HttpGet]
@@ -20,9 +21,23 @@ public sealed class DashboardController(
     {
         await using var db = dbf.CreateDbContext();
         bool alive = await admin.TryPingAsync();
-        var issued = alive ? await certs.ListAsync(CertStatusFilter.Issued, limit: 2000) : null;
-        var pending = alive ? await certs.ListAsync(CertStatusFilter.Pending, limit: 500) : null;
-        var revoked = alive ? await certs.ListAsync(CertStatusFilter.Revoked, limit: 2000) : null;
+
+        // viewers see their own footprint instead of global CA statistics
+        System.Security.Claims.Claim? roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role);
+        var isViewer = Enum.TryParse<Data.AppRole>(roleClaim?.Value, out var myRole) && myRole == Data.AppRole.Viewer;
+        System.Collections.Generic.ISet<int>? scope = isViewer ? await approvals.GetOwnedRequestIdsAsync(User.Identity?.Name ?? "") : null;
+        var caller = User.Identity?.Name ?? "";
+
+        var issued = alive ? await certs.ListAsync(CertStatusFilter.Issued, limit: 2000, restrictRequestIds: scope) : null;
+        var pending = alive && !isViewer ? await certs.ListAsync(CertStatusFilter.Pending, limit: 500) : null;
+        var revoked = alive ? await certs.ListAsync(CertStatusFilter.Revoked, limit: 2000, restrictRequestIds: scope) : null;
+
+        int pendingCount = pending?.TotalFetched ?? 0;
+        if (isViewer)
+        {
+            var myApprovals = await approvals.ListAsync("pending", caller, canSeeAll: false);
+            pendingCount = myApprovals.Count;
+        }
 
         int now7 = 0;
         int exp30 = 0;
@@ -51,7 +66,9 @@ public sealed class DashboardController(
         }
         catch { }
 
-        var recentAudit = db.AuditLogs.OrderByDescending(a => a.Id).Take(5)
+        var recentAudit = db.AuditLogs.OrderByDescending(a => a.Id)
+            .Where(a => !isViewer || a.Username == caller)
+            .Take(5)
             .Select(a => new { a.At, a.Username, a.Action, a.ObjectId, a.Success }).ToList();
 
         return Ok(new
@@ -60,7 +77,7 @@ public sealed class DashboardController(
             totals = new
             {
                 issued = issued?.TotalFetched ?? 0,
-                pending = pending?.TotalFetched ?? 0,
+                pending = pendingCount,
                 revoked = revoked?.TotalFetched ?? 0,
                 last7Days = now7,
                 expiring30 = exp30,

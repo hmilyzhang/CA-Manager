@@ -9,12 +9,12 @@ using System.Text;
 namespace CaMgr.Api.Controllers;
 
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-public sealed class RequireRoleAttribute(AppRole min) : Attribute, IAuthorizationFilter
+public sealed class RequireRoleAttribute(params AppRole[] allowed) : Attribute, IAuthorizationFilter
 {
     public void OnAuthorization(AuthorizationFilterContext ctx)
     {
         var roleStr = ctx.HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-        if (!Enum.TryParse<AppRole>(roleStr, out var role) || role < min)
+        if (!Enum.TryParse<AppRole>(roleStr, out var role) || !allowed.Contains(role))
             ctx.Result = new JsonResult(new { error = "权限不足" }) { StatusCode = 403 };
     }
 }
@@ -28,10 +28,17 @@ public sealed class CertificatesController(
     CertificateService certs,
     CaDbService db,
     CaAdminService admin,
+    ApprovalService approvals,
     AuditService audit) : Controller
 {
     private string Ip => HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
     private string User_ => User.Identity?.Name ?? "";
+    private AppRole Role =>
+        Enum.TryParse<AppRole>(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value, out var r) ? r : AppRole.Viewer;
+
+    /// <summary>Viewers only see certificates originating from their own approved submissions.</summary>
+    private async Task<HashSet<int>?> OwnedScopeAsync()
+        => Role == AppRole.Viewer ? await approvals.GetOwnedRequestIdsAsync(User_) : null;
 
     [HttpGet]
     public async Task<IActionResult> List(
@@ -47,13 +54,16 @@ public sealed class CertificatesController(
     {
         if (!Enum.TryParse<CertStatusFilter>(status, true, out var st)) st = CertStatusFilter.All;
         limit = Math.Clamp(limit, 1, 200);
-        var result = await certs.ListAsync(st, keyword, serial, template, from?.ToUniversalTime(), to?.ToUniversalTime(), limit, before, expiringDays);
+        var scope = await OwnedScopeAsync();
+        var result = await certs.ListAsync(st, keyword, serial, template, from?.ToUniversalTime(), to?.ToUniversalTime(), limit, before, expiringDays, scope);
         return Ok(result);
     }
 
     [HttpGet("{requestId}")]
     public async Task<IActionResult> Detail(int requestId)
     {
+        var scope = await OwnedScopeAsync();
+        if (scope is not null && !scope.Contains(requestId)) return Forbid();
         var d = await certs.DetailAsync(requestId);
         return d is null ? NotFound(new { error = "请求不存在" }) : Ok(d);
     }
@@ -61,6 +71,8 @@ public sealed class CertificatesController(
     [HttpGet("{requestId}/download")]
     public async Task<IActionResult> Download(int requestId, [FromQuery] string format = "cer")
     {
+        var scope = await OwnedScopeAsync();
+        if (scope is not null && !scope.Contains(requestId)) return Forbid();
         var d = await certs.DetailAsync(requestId);
         if (d?.RawDerBase64 is null) return NotFound(new { error = "该请求没有已颁发的证书" });
         var der = Convert.FromBase64String(d.RawDerBase64);
@@ -79,7 +91,8 @@ public sealed class CertificatesController(
         [FromQuery] DateTime? from = null, [FromQuery] DateTime? to = null)
     {
         if (!Enum.TryParse<CertStatusFilter>(status, true, out var st)) st = CertStatusFilter.All;
-        var result = await certs.ListAsync(st, keyword, serial, template, from?.ToUniversalTime(), to?.ToUniversalTime(), 5000);
+        var scope = await OwnedScopeAsync();
+        var result = await certs.ListAsync(st, keyword, serial, template, from?.ToUniversalTime(), to?.ToUniversalTime(), 5000, expiringDays: 30, restrictRequestIds: scope);
 
         var sb = new StringBuilder();
         sb.AppendLine("RequestId,CommonName,SerialNumber,Status,Template,Requester,NotBefore,NotAfter,RevokedAt,RevokedReason");
@@ -96,7 +109,7 @@ public sealed class CertificatesController(
     }
 
     [HttpPost("{requestId}/revoke")]
-    [RequireRole(AppRole.Operator)]
+    [RequireRole(AppRole.Operator, AppRole.Admin)]
     public async Task<IActionResult> Revoke(int requestId, [FromBody] RevokeRequest req)
     {
         if (string.IsNullOrWhiteSpace(req.ConfirmSerial) ||
@@ -121,7 +134,7 @@ public sealed class CertificatesController(
     }
 
     [HttpPost("{requestId}/unrevoke")]
-    [RequireRole(AppRole.Operator)]
+    [RequireRole(AppRole.Operator, AppRole.Admin)]
     public async Task<IActionResult> Unrevoke(int requestId, [FromQuery] string? serial = null)
     {
         var detail = await certs.DetailAsync(requestId);

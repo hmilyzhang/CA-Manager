@@ -21,6 +21,7 @@
             :disabled="row.username === 'admin'">
             <el-option value="Admin" :label="$t('role.Admin')" />
             <el-option value="Operator" :label="$t('role.Operator')" />
+            <el-option value="Auditor" :label="$t('role.Auditor')" />
             <el-option value="Viewer" :label="$t('role.Viewer')" />
           </el-select>
         </template>
@@ -51,6 +52,7 @@
           <el-select v-model="createForm.role" style="width: 100%">
             <el-option value="Viewer" :label="$t('role.Viewer')" />
             <el-option value="Operator" :label="$t('role.Operator')" />
+            <el-option value="Auditor" :label="$t('role.Auditor')" />
             <el-option value="Admin" :label="$t('role.Admin')" />
           </el-select>
         </el-form-item>

@@ -80,13 +80,23 @@ public sealed class ApprovalService(
         return entry.Id;
     }
 
-    public async Task<List<ApprovalDto>> ListAsync(string? status, string caller, bool isOperator)
+    /// <summary>CA request ids owned by a viewer (via their approved submissions).</summary>
+    public async Task<HashSet<int>> GetOwnedRequestIdsAsync(string username)
+    {
+        await using var ctx = dbf.CreateDbContext();
+        var ids = await ctx.ApprovalRequests.AsNoTracking()
+            .Where(a => a.Username == username && a.RequestId != null)
+            .Select(a => a.RequestId!.Value).ToListAsync();
+        return [.. ids];
+    }
+
+    public async Task<List<ApprovalDto>> ListAsync(string? status, string caller, bool canSeeAll)
     {
         await using var db = dbf.CreateDbContext();
         var q = db.ApprovalRequests.AsNoTracking().AsQueryable();
         if (!string.IsNullOrWhiteSpace(status) && status != "all")
             q = q.Where(a => a.Status == status);
-        if (!isOperator)
+        if (!canSeeAll)
             q = q.Where(a => a.Username == caller);
         var rows = await q.OrderByDescending(a => a.Id).Take(500).ToListAsync();
         return rows.Select(a => new ApprovalDto

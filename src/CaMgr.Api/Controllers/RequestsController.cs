@@ -25,8 +25,9 @@ public sealed class RequestsController(
         Enum.TryParse<AppRole>(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value, out var role)
         && role >= AppRole.Operator;
 
-    /// <summary>Pending/failed/denied queue.</summary>
+    /// <summary>Pending/failed/denied queue (global view: operator/auditor/admin).</summary>
     [HttpGet("queue")]
+    [RequireRole(AppRole.Operator, AppRole.Admin, AppRole.Auditor)]
     public async Task<IActionResult> Queue([FromQuery] string status = "pending", [FromQuery] int limit = 50)
     {
         var filter = status switch
@@ -41,7 +42,7 @@ public sealed class RequestsController(
     }
 
     [HttpPost("{requestId}/issue")]
-    [RequireRole(AppRole.Operator)]
+    [RequireRole(AppRole.Operator, AppRole.Admin)]
     public async Task<IActionResult> Issue(int requestId)
     {
         try
@@ -66,7 +67,7 @@ public sealed class RequestsController(
     }
 
     [HttpPost("{requestId}/deny")]
-    [RequireRole(AppRole.Operator)]
+    [RequireRole(AppRole.Operator, AppRole.Admin)]
     public async Task<IActionResult> Deny(int requestId)
     {
         try
@@ -83,7 +84,7 @@ public sealed class RequestsController(
     }
 
     [HttpPost("{requestId}/resubmit")]
-    [RequireRole(AppRole.Operator)]
+    [RequireRole(AppRole.Operator, AppRole.Admin)]
     public async Task<IActionResult> Resubmit(int requestId) => await Issue(requestId);
 
     /// <summary>Submit a new CSR. Viewer submissions go to the approval queue.</summary>

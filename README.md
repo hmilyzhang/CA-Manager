@@ -18,7 +18,7 @@ Move the entire day-to-day operation of Windows AD CS (Active Directory Certific
 | Templates | Templates enabled on the CA (with AD details), admins can enable/disable templates |
 | CA & CRL | CA properties / cert chain / CDP / AIA, CRL period view & change, **manual CRL / Delta publish**, CRL download & content parsing |
 | Notifications | SMTP mail (intranet anonymous / STARTTLS / SSL): daily digest (expiring certs, CA cert, CRL status, pending backlog) + per-requester notices |
-| Users | Local accounts + AD domain accounts (LDAP), three-tier RBAC (Admin / Operator / Viewer+request) |
+| Users | Local accounts + AD domain accounts (LDAP), four-tier RBAC (Admin / Operator / Auditor / User+request) |
 | Audit Log | Every sensitive operation (logins, revocations, issuance, config changes, PGP generation…), query & CSV export |
 
 ## Architecture

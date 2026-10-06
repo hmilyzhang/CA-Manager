@@ -6,9 +6,12 @@
 
 | Role | Can do |
 |------|--------|
-| Viewer | Search / download certificates and CRLs, view the dashboard, **submit certificate requests (approval required)**, **generate PGP key pairs** |
-| Operator | + issue / deny / resubmit requests, submit CSRs (immediate), revoke / unrevoke, publish CRLs, **approve/reject viewer requests** |
-| Administrator | + change CRL periods, enable/disable templates, manage users, view the audit log, notification & LDAP settings |
+| User (Viewer) | Submit certificate requests (approval required), generate PGP key pairs; sees **only their own** certificates, requests and dashboard statistics |
+| Operator | Sees everything globally + issue / deny / resubmit requests, submit CSRs (immediate), revoke / unrevoke, publish CRLs, **approve/reject viewer requests** |
+| Auditor | Sees everything globally (certificates, queues, CRL, **audit log**) but performs **no actions** |
+| Administrator | Sees everything globally + change CRL periods, enable/disable templates, manage users, notification & LDAP settings |
+
+Data visibility is enforced server-side: viewers can only open certificates originating from their own approved submissions (403 otherwise); the dashboard shows their personal footprint.
 
 Account sources: local accounts (managed here) and AD domain accounts (LDAP bind verification).
 Domain role mapping: matched against `memberOf` at login via the `ldap.adminGroup` / `ldap.operatorGroup` settings (both **empty by default** — designed for PAM-managed environments where Domain Admin passwords are not known; unmapped domain users get Viewer with request rights). Recommended: create dedicated groups, e.g. `CA-Manager-Admins` and `CA-Manager-Operators`, and set them in `ldap.adminGroup` / `ldap.operatorGroup`. The local `admin` account stays as the emergency fallback.

@@ -112,7 +112,7 @@ public sealed class NotifyController(
 
     /// <summary>Run one notify scan immediately (also what the daily scheduler calls).</summary>
     [HttpPost("run-now")]
-    [RequireRole(AppRole.Operator)]
+    [RequireRole(AppRole.Operator, AppRole.Admin)]
     public async Task<IActionResult> RunNow()
     {
         var r = await notify.RunAsync(User_, Ip, audit);

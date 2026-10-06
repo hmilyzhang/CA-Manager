@@ -124,7 +124,7 @@ public sealed class CaController(
     }
 
     [HttpPost("crl/publish")]
-    [RequireRole(AppRole.Operator)]
+    [RequireRole(AppRole.Operator, AppRole.Admin)]
     public async Task<IActionResult> PublishCrl([FromBody] PublishCrlRequest req)
     {
         try

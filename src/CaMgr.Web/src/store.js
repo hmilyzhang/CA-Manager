@@ -5,9 +5,16 @@ export const store = reactive({
   user: null, // { username, role, source, mustChangePassword }
 })
 
+// action hierarchy: Auditor has read-all rights but performs no actions
 export function roleAtLeast(role, min) {
-  const order = { Viewer: 0, Operator: 1, Admin: 2 }
-  return (order[role] ?? -1) >= (order[min] ?? 99)
+  if (min === 'Operator') return role === 'Operator' || role === 'Admin'
+  if (min === 'Admin') return role === 'Admin'
+  return false
+}
+
+// global read access: Admin and Auditor
+export function canSeeAll(role) {
+  return role === 'Admin' || role === 'Auditor'
 }
 
 export function roleLabel(role) {

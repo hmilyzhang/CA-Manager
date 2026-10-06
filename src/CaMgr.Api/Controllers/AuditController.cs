@@ -9,7 +9,7 @@ namespace CaMgr.Api.Controllers;
 [ApiController]
 [Route("api/audit")]
 [Authorize]
-[RequireRole(AppRole.Admin)]
+[RequireRole(AppRole.Admin, AppRole.Auditor)]
 public sealed class AuditController(IDbContextFactory<AppDbContext> dbf) : Controller
 {
     [HttpGet]

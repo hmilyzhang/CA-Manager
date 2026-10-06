@@ -15,15 +15,15 @@
         <el-menu-item index="/dashboard"><el-icon><Odometer /></el-icon>{{ $t('nav.dashboard') }}</el-menu-item>
         <el-menu-item index="/certificates"><el-icon><Postcard /></el-icon>{{ $t('nav.certificates') }}</el-menu-item>
         <el-menu-item index="/expiring"><el-icon><Timer /></el-icon>{{ $t('nav.expiring') }}</el-menu-item>
-        <el-menu-item index="/requests"><el-icon><List /></el-icon>{{ $t('nav.requests') }}</el-menu-item>
+        <el-menu-item index="/requests" v-if="roleAtLeast(role, 'Operator') || role === 'Auditor'"><el-icon><List /></el-icon>{{ $t('nav.requests') }}</el-menu-item>
         <el-menu-item index="/approvals"><el-icon><Stamp /></el-icon>{{ $t('nav.approvals') }}</el-menu-item>
-        <el-menu-item index="/new-request" v-if="roleAtLeast(role, 'Operator')"><el-icon><Upload /></el-icon>{{ $t('nav.newRequest') }}</el-menu-item>
-        <el-menu-item index="/pgp" v-if="roleAtLeast(role, 'Operator')"><el-icon><Key /></el-icon>{{ $t('nav.pgp') }}</el-menu-item>
+        <el-menu-item index="/new-request" v-if="role !== 'Auditor'"><el-icon><Upload /></el-icon>{{ $t('nav.newRequest') }}</el-menu-item>
+        <el-menu-item index="/pgp" v-if="role !== 'Auditor'"><el-icon><Key /></el-icon>{{ $t('nav.pgp') }}</el-menu-item>
         <el-menu-item index="/templates"><el-icon><Files /></el-icon>{{ $t('nav.templates') }}</el-menu-item>
         <el-menu-item index="/ca"><el-icon><Setting /></el-icon>{{ $t('nav.ca') }}</el-menu-item>
         <el-menu-item index="/notify" v-if="roleAtLeast(role, 'Admin')"><el-icon><Bell /></el-icon>{{ $t('nav.notify') }}</el-menu-item>
         <el-menu-item index="/users" v-if="roleAtLeast(role, 'Admin')"><el-icon><User /></el-icon>{{ $t('nav.users') }}</el-menu-item>
-        <el-menu-item index="/audit" v-if="roleAtLeast(role, 'Admin')"><el-icon><Document /></el-icon>{{ $t('nav.audit') }}</el-menu-item>
+        <el-menu-item index="/audit" v-if="roleAtLeast(role, 'Admin') || role === 'Auditor'"><el-icon><Document /></el-icon>{{ $t('nav.audit') }}</el-menu-item>
       </el-menu>
       <div class="sidebar-foot">CA-Manager v1.5</div>
     </el-aside>

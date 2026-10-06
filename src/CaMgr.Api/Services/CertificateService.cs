@@ -119,7 +119,8 @@ public sealed class CertificateService(CaDbService db, CaAdminService admin, ILo
         DateTime? from = null, DateTime? to = null,
         int limit = 50,
         int? beforeRequestId = null,
-        int expiringDays = 30)
+        int expiringDays = 30,
+        ISet<int>? restrictRequestIds = null)
     {
         var restrictions = new List<ViewRestriction>();
 
@@ -161,10 +162,11 @@ public sealed class CertificateService(CaDbService db, CaAdminService admin, ILo
         var expiringCutoff = DateTime.Now.AddDays(expiringDays);
 
         Func<CaRow, bool>? post = null;
-        if (kw || status == CertStatusFilter.Expiring)
+        if (kw || status == CertStatusFilter.Expiring || restrictRequestIds is not null)
         {
             post = row =>
             {
+                if (restrictRequestIds is not null && !restrictRequestIds.Contains(row.RequestId)) return false;
                 if (kw)
                 {
                     var k = keyword!.Trim();

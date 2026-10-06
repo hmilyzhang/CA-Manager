@@ -19,6 +19,8 @@ public sealed class ApprovalsController(
     private string User_ => User.Identity?.Name ?? "";
     private bool IsOperator =>
         Enum.TryParse<AppRole>(User.FindFirst(ClaimTypes.Role)?.Value, out var role) && role >= AppRole.Operator;
+    private bool CanSeeAll =>
+        Enum.TryParse<AppRole>(User.FindFirst(ClaimTypes.Role)?.Value, out var role) && role >= AppRole.Operator;
 
     /// <summary>List approval requests. Operators/admins see all; viewers see their own.</summary>
     [HttpGet]
@@ -29,7 +31,7 @@ public sealed class ApprovalsController(
     }
 
     [HttpPost("{id:int}/approve")]
-    [RequireRole(AppRole.Operator)]
+    [RequireRole(AppRole.Operator, AppRole.Admin)]
     public async Task<IActionResult> Approve(int id)
     {
         try
@@ -54,7 +56,7 @@ public sealed class ApprovalsController(
     }
 
     [HttpPost("{id:int}/reject")]
-    [RequireRole(AppRole.Operator)]
+    [RequireRole(AppRole.Operator, AppRole.Admin)]
     public async Task<IActionResult> Reject(int id, [FromBody] RejectRequest req)
     {
         try
