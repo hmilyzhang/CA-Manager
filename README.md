@@ -1,67 +1,72 @@
-# CA-Manager — AD CS 证书服务 Web 管理系统
+# CA-Manager — Web Management Console for AD CS
 
-把 Windows AD CS（Active Directory 证书服务）的全部日常运维搬到浏览器：不再需要远程桌面登录 CA 服务器执行 certutil。
+> English | [简体中文](README.zh-CN.md)
 
-## 功能总览
+Move the entire day-to-day operation of Windows AD CS (Active Directory Certificate Services) into the browser — no more remote-desktop sessions on the CA server to run certutil.
 
-| 模块 | 功能 |
-|------|------|
-| 仪表盘 | CA 状态/证书统计/近 30 天趋势/最新操作 |
-| 证书管理 | 查询（状态/关键字/序列号/时间/模板筛选）、详情（SAN/EKU/密钥/指纹/链）、下载 CER/PEM、CSV 导出、**吊销**（7 种原因+失效日期+序列号二次确认）、**取消吊销**（certificateHold） |
-| 到期提醒 | 30/60/90 天阈值、CA 证书到期告警 |
-| 请求处理 | 待处理/已拒绝/失败队列、**颁发/拒绝/重新提交** |
-| 提交申请 | 粘贴 CSR（PEM/Base64）+ 选择模板 → 提交并颁发 |
-| 证书模板 | 已启用模板列表（含 AD 详情）、管理员启停模板 |
-| CA 与 CRL | CA 属性/证书链/CDP/AIA、CRL 周期查看与修改、**手动发布 CRL/Delta**、CRL 下载与内容解析 |
-| 用户管理 | 本地账号 + AD 域账号（LDAP），三级 RBAC（管理员/操作员/只读） |
-| 审计日志 | 全部敏感操作记录（登录/吊销/颁发/配置变更…），查询与 CSV 导出 |
+## Features
 
-## 技术架构
+| Module | Capabilities |
+|--------|--------------|
+| Dashboard | CA status, certificate statistics, 30-day issuance trend, recent operations |
+| Certificates | Search (status / keyword / serial / date / template filters), detail (SAN / EKU / keys / fingerprints / chain), CER & PEM download, CSV export, **revocation** (7 reasons + effective date + serial-number confirmation), **unrevoke** (certificateHold) |
+| Expiring | 30/60/90-day thresholds, CA certificate expiry alert |
+| Requests | Pending / denied / failed queues, **issue / deny / resubmit** |
+| New Request | Two modes: **self-service** (server generates the key pair; multi-value SAN with mixed DNS + IP; download a ready PFX on issuance) and **paste CSR** (PEM/Base64, private key stays on your machine) |
+| PGP Keys | OpenPGP key pairs for file encryption (RSA / ECC, GnuPG-compatible; private key returned once, never stored server-side) |
+| Templates | Templates enabled on the CA (with AD details), admins can enable/disable templates |
+| CA & CRL | CA properties / cert chain / CDP / AIA, CRL period view & change, **manual CRL / Delta publish**, CRL download & content parsing |
+| Notifications | SMTP mail (intranet anonymous / STARTTLS / SSL): daily digest (expiring certs, CA cert, CRL status, pending backlog) + per-requester notices |
+| Users | Local accounts + AD domain accounts (LDAP), three-tier RBAC (Admin / Operator / Viewer) |
+| Audit Log | Every sensitive operation (logins, revocations, issuance, config changes, PGP generation…), query & CSV export |
 
-- **后端**：ASP.NET Core (.NET 10)，通过 COM（ICertAdmin2 / ICertView2 / ICertRequest2，强类型 vtable 互操作）管理本机 AD CS；专用 STA 线程执行全部 COM 调用
-- **前端**：Vue 3 + Element Plus + ECharts，构建产物由后端 wwwroot 托管，单端口单服务
-- **数据库**：SQLite（Web 用户 / 审计日志 / 设置），零运维
-- **部署**：self-contained 发布（服务器无需安装 .NET），注册为 Windows 服务（LocalSystem，默认具备 CA 管理权限）
+## Architecture
 
-## 快速开始
+- **Backend**: ASP.NET Core (.NET 10) managing the local AD CS through COM (ICertAdmin2 / ICertView2 / ICertRequest2, strongly-typed vtable interop); all COM calls run on a dedicated STA thread
+- **Frontend**: Vue 3 + Element Plus + ECharts, bilingual UI (English default, Chinese switchable), served from the backend wwwroot — single service, single port
+- **Database**: SQLite (web users / audit log / settings) — zero maintenance
+- **Deployment**: self-contained publish (no .NET runtime needed on the server), registered as a Windows service (LocalSystem, which has CA administration rights by default)
+
+## Quick Start
 
 ```powershell
-# 1. 构建（开发机上，需要 Node 20+ 和 .NET 10 SDK）
+# 1. Build (on a build machine; needs Node 20+ and .NET 10 SDK)
 powershell -File scripts\publish.ps1
 
-# 2. 安装服务（CA 服务器上，管理员 PowerShell）
-powershell -File scripts\install-service.ps1            # 默认 https://+:8443，证书申请失败自动回退 HTTP
-powershell -File scripts\install-service.ps1 -UseHttp   # 直接 HTTP
-powershell -File scripts\install-service.ps1 -Port 9000 # 自定义端口
+# 2. Install the service (on the CA server, admin PowerShell)
+powershell -File scripts\install-service.ps1            # default https://+:8443, falls back to HTTP if cert enrollment fails
+powershell -File scripts\install-service.ps1 -UseHttp   # plain HTTP
+powershell -File scripts\install-service.ps1 -Port 9000 # custom port
 
-# 3. 访问
-# http(s)://<主机名>:8443
-# 初始账号 admin，密码见 publish\initial-admin-password.txt（首登强制改密）
+# 3. Browse
+# http(s)://<hostname>:8443
+# Initial account: admin — password in publish\initial-admin-password.txt (change forced on first login)
 
-# 日常更新
-powershell -File scripts\update.ps1     # 停服务 → 重建 → 启服务
+# Day-to-day updates
+powershell -File scripts\update.ps1     # stop service -> rebuild -> start
 
-# 卸载
+# Uninstall
 powershell -File scripts\uninstall-service.ps1
 ```
 
-## 目录结构
+## Repository Layout
 
 ```
-D:\CA-Mgr\
-├── src\CaMgr.Api\        # 后端（COM 互操作/服务/控制器/数据层）
-├── src\CaMgr.Web\        # 前端（Vue3 + Element Plus）
-├── scripts\              # 发布/安装/更新/卸载脚本
-├── docs\                 # 部署与运维文档
-└── publish\              # 发布产物（服务从此目录运行）
+CA-Manager\
+├── src\CaMgr.Api\        # backend (COM interop / services / controllers / data layer)
+├── src\CaMgr.Web\        # frontend (Vue3 + Element Plus)
+├── scripts\              # publish / install / update / uninstall / release scripts
+├── docs\                 # deployment & operations guides (bilingual)
+└── publish\              # publish output (the service runs from here)
 ```
 
-## 安全要点
+## Security Notes
 
-- 高危操作（吊销/CRL 周期/模板启停）强制二次确认并全量审计
-- 登录失败 5 次锁定 15 分钟；会话 8 小时滑动过期
-- 建议生产环境启用 HTTPS 并限制防火墙来源（见 docs\deploy.md）
+- Dangerous operations (revocation / CRL period / template toggling) require explicit confirmation and are fully audited
+- 5 failed logins lock the account for 15 minutes; sessions expire after 8 sliding hours
+- PGP private keys are returned exactly once in the generation response; no key material is ever stored server-side
+- Enable HTTPS and restrict firewall sources in production (see docs\deploy.md)
 
-## 已明确排除（保持服务器本地操作）
+## Explicitly Out of Scope (stay local on the server)
 
-CA 证书续期、CA 服务启停、数据库维护、AD 模板对象的创建/修改。
+CA certificate renewal, starting/stopping the CA service, database maintenance, creation/modification of AD template objects.

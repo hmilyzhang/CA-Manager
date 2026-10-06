@@ -1,72 +1,74 @@
-# CA-Manager 部署手册
+# CA-Manager Deployment Guide
 
-## 前置条件
+> English | [简体中文](deploy.zh-CN.md)
 
-| 项 | 要求 |
-|----|------|
-| 运行位置 | AD CS 服务器本机（COM 本地调用；本系统不支持远程管理其他 CA） |
-| 操作系统 | Windows Server 2016+（已在 Server 2025 验证） |
-| CA 角色 | 企业版或独立版 AD CS |
-| 构建环境 | Node.js 20+ 与 .NET 10 SDK（仅在构建机需要；服务器无需） |
-| 服务账户 | 默认 LocalSystem（本机即具备 CA 管理权限）。如需专用账户，将其加入本地 `CA Administrators` / `Cert Publishers` 并以该账户安装服务 |
-| 端口 | 默认 8443（可自定义），防火墙需放行 |
+## Prerequisites
 
-## 构建与安装
+| Item | Requirement |
+|------|-------------|
+| Location | Must run on the AD CS server itself (local COM; remote management of another CA is not supported) |
+| OS | Windows Server 2016+ (verified on Server 2025) |
+| CA role | Enterprise or Stand-alone AD CS |
+| Build environment | Node.js 20+ and .NET 10 SDK (build machine only; not needed on the server) |
+| Service account | LocalSystem by default (has CA administration rights locally). For a dedicated account, add it to local `CA Administrators` / `Cert Publishers` and install the service under it |
+| Port | 8443 by default (customizable), must be allowed through the firewall |
+
+## Build & Install
 
 ```powershell
-# 构建机：发布（产物 publish\ 目录，可整体拷贝到 CA 服务器）
+# Build machine: publish (output in publish\, copy the whole folder to the CA server)
 powershell -File scripts\publish.ps1
 
-# CA 服务器（管理员 PowerShell）：
+# CA server (admin PowerShell):
 powershell -File scripts\install-service.ps1
 ```
 
-安装脚本自动完成：
-1. 尝试向本机 CA 申请 WebServer 模板 HTTPS 证书（CN=主机 FQDN）并绑定端口；失败则回退 HTTP 并提示
-2. 写入 `publish\appsettings.Production.json` 监听地址
-3. `sc create CA-Manager`（LocalSystem、开机自启、崩溃自动重启）
-4. 启动服务并打印访问地址
+The install script automatically:
+1. Requests an HTTPS certificate from the local CA (WebServer template, CN = host FQDN) and binds it to the port; falls back to HTTP with a warning on failure
+2. Writes the listening address into `publish\appsettings.Production.json`
+3. Creates the service `CA-Manager` (LocalSystem, auto-start, auto-restart on crash)
+4. Starts the service and prints the access URL
 
-## 首次登录
+## First Login
 
-1. 打开 `https://<主机名>:8443`（回退 HTTP 时为 `http://`）
-2. 初始账号 `admin`，初始密码在 `publish\initial-admin-password.txt`
-3. 首次登录强制修改密码，改密后此文件即可删除
+1. Open `https://<hostname>:8443` (or `http://` when it fell back to HTTP)
+2. Initial account `admin`, initial password in `publish\initial-admin-password.txt`
+3. A password change is forced on first login; delete the password file afterwards
 
-## 防火墙
+## Firewall
 
 ```powershell
 New-NetFirewallRule -DisplayName "CA-Manager" -Direction Inbound -Protocol TCP -LocalPort 8443 -RemoteAddress Intranet -Action Allow
 ```
 
-## 生产环境 HTTPS（若自动申请失败）
+## Production HTTPS (if automatic enrollment failed)
 
-手动用本 CA 签发一张服务器证书后执行：
+Issue a server certificate from the local CA manually, then:
 
 ```powershell
-$thumb = "<证书SHA1指纹>"
+$thumb = "<certificate SHA1 thumbprint>"
 netsh http add sslcert ipport=0.0.0.0:8443 certhash=$thumb appid="{4d8a5f2e-6b3c-4a9e-9f2e-ca7mgr000001}" certstorename=MY
-# 然后编辑 publish\appsettings.Production.json 的 Kestrel Endpoints 为 https://+:8443
+# then set the Kestrel endpoint in publish\appsettings.Production.json to https://+:8443
 Restart-Service CA-Manager
 ```
 
-## 升级 / 回滚 / 卸载
+## Upgrade / Rollback / Uninstall
 
 ```powershell
-powershell -File scripts\update.ps1       # 升级（保留 publish\data 数据）
-powershell -File scripts\uninstall-service.ps1   # 卸载服务（数据保留在 publish\data）
+powershell -File scripts\update.ps1       # upgrade (keeps publish\data)
+powershell -File scripts\uninstall-service.ps1   # remove the service (data kept in publish\data)
 ```
 
-## 数据与备份
+## Data & Backup
 
-- `publish\data\camgr.db`：Web 用户、审计日志、系统设置——纳入常规备份即可
-- 审计日志仅追加；CA 数据本身仍由 AD CS 管理，本系统不复制证书库
+- `publish\data\camgr.db`: web users, audit log, settings — include in normal backups
+- The audit log is append-only; certificate data itself remains managed by AD CS — this app does not copy the CA database
 
-## 常见问题
+## Troubleshooting
 
-| 现象 | 原因与处理 |
-|------|-----------|
-| 颁发/吊销报 `Access is denied 0x80070005` | 服务未以 LocalSystem 运行，或当前 Web 用户角色不足；检查服务账户是否在 CA Administrators |
-| 列表为空且日志出现 `too many active sessions 0x8009400F` | CA 数据库会话耗尽（旧版本泄漏已修复）；重启 CA-Manager 服务并升级到最新版本 |
-| CA 显示不可达 | 检查 CertSvc 服务是否运行；本机 COM 依赖 RPC |
-| HTTPS 证书申请失败 | 多因 WebServer 模板权限；按上文手动配置 |
+| Symptom | Cause & fix |
+|---------|-------------|
+| Issue/revoke fails with `Access is denied 0x80070005` | Service not running as LocalSystem, or the web user's role is insufficient; check the service account is in CA Administrators |
+| Empty lists and `too many active sessions 0x8009400F` in the log | CA database sessions exhausted (leak fixed in current version); restart the CA-Manager service and upgrade |
+| CA shows unreachable | Check the CertSvc service is running; local COM depends on RPC |
+| HTTPS certificate enrollment failed | Usually WebServer template permissions; configure manually as shown above |
