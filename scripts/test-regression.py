@@ -77,7 +77,17 @@ expect('viewer: forbidden users page', forbidden(viewer2, 'GET', BASE+'/api/user
 expect('viewer: forbidden audit log', forbidden(viewer2, 'GET', BASE+'/api/audit'))
 expect('viewer: forbidden CRL publish', forbidden(viewer2, 'POST', BASE+'/api/ca/crl/publish', {'base':True,'delta':False}))
 d = call(viewer2, 'GET', BASE+'/api/dashboard')
-expect('viewer: dashboard scoped (no global issued)', d['totals']['issued'] <= 3, d['totals'])
+# dynamic expectation: issued/pending/revoked must equal the viewer's own footprint
+own_appr = call(viewer2, 'GET', BASE+'/api/approvals?status=all')
+own_rids = {a['requestId'] for a in own_appr if a.get('requestId')}
+own_certs = [c for c in call(viewer2, 'GET', BASE+'/api/certificates?limit=500')['items'] if c['requestId'] in own_rids]
+exp_issued = len([c for c in own_certs if c['status'] == 'issued'])
+exp_revoked = len([c for c in own_certs if c['status'] == 'revoked'])
+exp_pending = len([a for a in own_appr if a['status'] == 'pending'])
+ok_d = (d['totals']['issued'] == exp_issued and d['totals']['pending'] == exp_pending
+        and d['totals']['revoked'] == exp_revoked)
+expect('viewer: dashboard scoped (matches own footprint)', ok_d,
+       f"got {d['totals']} expected issued={exp_issued} pending={exp_pending} revoked={exp_revoked}")
 
 # ---------- Operator: approves both, immediate actions, no admin config ----------
 allq = call(operator, 'GET', BASE+'/api/approvals?status=pending')
