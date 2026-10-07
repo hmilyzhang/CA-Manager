@@ -70,6 +70,7 @@ import { api } from '../api.js'
 
 const { t } = useI18n()
 const certs = ref([])
+const excluded = ref([])
 const loading = ref(false)
 const applying = ref(false)
 const form = reactive({ mode: 'http', httpPort: 8443, httpsPort: 8443, thumbprint: '' })

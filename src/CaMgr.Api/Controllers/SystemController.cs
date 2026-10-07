@@ -42,13 +42,22 @@ public sealed class SystemController(ILogger<SystemController> log) : Controller
         var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
         store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
         var now = DateTime.Now;
-        var certs = store.Certificates.Cast<X509Certificate2>()
-            .Where(c => c.HasPrivateKey && c.NotAfter > now)
-            .Where(c => c.Extensions.OfType<X509EnhancedKeyUsageExtension>()
+        const string ServerAuth = "1.3.6.1.5.5.7.3.1";
+        var selectable = new List<object>();
+        var excluded = new List<object>();
+        foreach (var c in store.Certificates.Cast<X509Certificate2>())
+        {
+            string? reason = null;
+            if (c.NotAfter <= now) reason = "expired";
+            else if (!c.HasPrivateKey) reason = "no-private-key";
+            else if (c.Extensions.OfType<X509BasicConstraintsExtension>().Any(bc => bc.CertificateAuthority))
+                reason = "ca-cert";
+            else if (!c.Extensions.OfType<X509EnhancedKeyUsageExtension>()
                 .Any(e => e.EnhancedKeyUsages.Cast<System.Security.Cryptography.Oid>()
-                    .Any(o => o.Value == "1.3.6.1.5.5.7.3.1")))
-            .OrderByDescending(c => c.NotAfter)
-            .Select(c => new
+                    .Any(o => o.Value == ServerAuth)))
+                reason = "no-server-auth";
+
+            var item = new
             {
                 thumbprint = c.Thumbprint,
                 subject = c.Subject,
@@ -56,10 +65,12 @@ public sealed class SystemController(ILogger<SystemController> log) : Controller
                 notAfter = c.NotAfter,
                 san = c.Extensions.OfType<X509SubjectAlternativeNameExtension>()
                     .SelectMany(e => e.EnumerateDnsNames()).ToList(),
-            })
-            .ToList();
+                reason,
+            };
+            if (reason is null) selectable.Add(item); else excluded.Add(item);
+        }
         store.Close();
-        return Ok(new { certs });
+        return Ok(new { certs = selectable, excluded });
     }
 
     /// <summary>
