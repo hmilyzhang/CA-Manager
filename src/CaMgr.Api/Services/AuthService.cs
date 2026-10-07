@@ -54,19 +54,23 @@ public sealed class AuthService(IDbContextFactory<AppDbContext> dbf, ILogger<Aut
         await db.SaveChangesAsync();
     }
 
-    /// <summary>Upsert of a domain user after successful LDAP bind.</summary>
-    public async Task<UserEntity> UpsertAdUserAsync(string username, AppRole role, string? displayName, string? groups)
+    /// <summary>
+    /// Upsert of a domain user after successful LDAP bind. mappedRole null means the
+    /// group mapping found nothing - the existing (possibly manually assigned) role is
+    /// then KEPT instead of being reset to Viewer on every login.
+    /// </summary>
+    public async Task<UserEntity> UpsertAdUserAsync(string username, AppRole? mappedRole, string? displayName, string? groups)
     {
         await using var db = dbf.CreateDbContext();
         var user = await db.Users.FirstOrDefaultAsync(u => u.Username == username && u.Source == UserSource.Ad);
         if (user is null)
         {
-            user = new UserEntity { Username = username, Source = UserSource.Ad, Role = role, DisplayName = displayName, AdGroups = groups };
+            user = new UserEntity { Username = username, Source = UserSource.Ad, Role = mappedRole ?? AppRole.Viewer, DisplayName = displayName, AdGroups = groups };
             db.Users.Add(user);
         }
         else
         {
-            user.Role = role;
+            if (mappedRole.HasValue) user.Role = mappedRole.Value; // mapping hit -> sync
             user.DisplayName = displayName ?? user.DisplayName;
             user.AdGroups = groups ?? user.AdGroups;
         }

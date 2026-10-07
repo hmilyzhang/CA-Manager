@@ -4,7 +4,7 @@ export const messages = {
   zh: {
     nav: {
       dashboard: '仪表盘', certificates: '证书管理', expiring: '到期提醒', requests: '请求处理',
-      newRequest: '提交申请', approvals: '证书审批', pgp: 'PGP 密钥', templates: '证书模板', ca: 'CA 与 CRL', notify: '通知设置', users: '用户管理', audit: '审计日志',
+      newRequest: '提交申请', approvals: '证书审批', pgp: 'PGP 密钥', templates: '证书模板', ca: 'CA 与 CRL', notify: '通知设置', system: '系统设置', users: '用户管理', audit: '审计日志',
     },
     common: {
       search: '查询', export: '导出 CSV', detail: '详情', download: '下载', back: '返回',
@@ -137,6 +137,13 @@ export const messages = {
       deleteConfirm: '确认删除用户 {name}？', deleteTitle: '删除用户', deleted: '已删除',
       pwdLen: '密码至少 8 位',
     },
+    system: {
+      title: '系统设置', hint: '选择本机可用于 HTTPS 的服务器证书并绑定端口。绑定后服务会自动重启（约 5-10 秒）。',
+      current: '当前访问地址', currentHint: '由 publish\appsettings.Production.json 控制，绑定后自动更新。',
+      certs: '本机可用证书（Server Authentication）', port: 'HTTPS 端口',
+      bind: '绑定并重启服务', bindConfirm: '将证书绑定到 0.0.0.0:{port} 并重启服务？页面将在几秒后恢复。',
+      bindHint: '绑定后服务自动重启，请稍候刷新页面。',
+    },
     audit: {
       title: '审计日志', actionType: '操作类型', userContains: '用户名包含', start: '开始', end: '结束',
     },
@@ -187,7 +194,7 @@ export const messages = {
   en: {
     nav: {
       dashboard: 'Dashboard', certificates: 'Certificates', expiring: 'Expiring', requests: 'Requests',
-      newRequest: 'New Request', approvals: 'Approvals', pgp: 'PGP Keys', templates: 'Templates', ca: 'CA & CRL', notify: 'Notifications', users: 'Users', audit: 'Audit Log',
+      newRequest: 'New Request', approvals: 'Approvals', pgp: 'PGP Keys', templates: 'Templates', ca: 'CA & CRL', notify: 'Notifications', system: 'System', users: 'Users', audit: 'Audit Log',
     },
     common: {
       search: 'Search', export: 'Export CSV', detail: 'Detail', download: 'Download', back: 'Back',
@@ -319,6 +326,13 @@ export const messages = {
       resetTitle: 'Reset Password', pwdReset: 'Password reset', updated: 'Updated',
       deleteConfirm: 'Delete user {name}?', deleteTitle: 'Delete User', deleted: 'Deleted',
       pwdLen: 'Password must be at least 8 characters',
+    },
+    system: {
+      title: 'System Settings', hint: 'Pick a local server certificate for HTTPS and bind the port. The service restarts automatically after binding (5-10 s).',
+      current: 'Current address', currentHint: 'Controlled by publish\appsettings.Production.json - updated automatically on bind.',
+      certs: 'Local certificates (Server Authentication)', port: 'HTTPS port',
+      bind: 'Bind & restart service', bindConfirm: 'Bind the certificate to 0.0.0.0:{port} and restart the service? The page will recover in a few seconds.',
+      bindHint: 'The service restarts automatically - refresh in a moment.',
     },
     audit: {
       title: 'Audit Log', actionType: 'Action', userContains: 'Username contains', start: 'From', end: 'To',

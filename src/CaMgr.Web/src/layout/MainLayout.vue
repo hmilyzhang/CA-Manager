@@ -24,6 +24,7 @@
         <el-menu-item index="/notify" v-if="roleAtLeast(role, 'Admin')"><el-icon><Bell /></el-icon>{{ $t('nav.notify') }}</el-menu-item>
         <el-menu-item index="/users" v-if="roleAtLeast(role, 'Admin')"><el-icon><User /></el-icon>{{ $t('nav.users') }}</el-menu-item>
         <el-menu-item index="/audit" v-if="roleAtLeast(role, 'Admin') || role === 'Auditor'"><el-icon><Document /></el-icon>{{ $t('nav.audit') }}</el-menu-item>
+        <el-menu-item index="/system" v-if="roleAtLeast(role, 'Admin')"><el-icon><Monitor /></el-icon>{{ $t('nav.system') }}</el-menu-item>
       </el-menu>
       <div class="sidebar-foot">CA-Manager v1.5.6</div>
     </el-aside>
@@ -100,13 +101,17 @@ async function onCommand(cmd) {
 }
 .logo {
   color: #fff;
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 20px 22px 16px;
+  padding: 14px 22px 10px;
   letter-spacing: 0.5px;
+}
+.sidebar :deep(.el-menu-item) {
+  height: 40px;
+  line-height: 40px;
 }
 .sidebar-foot {
   margin-top: auto;

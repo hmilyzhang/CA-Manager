@@ -22,6 +22,7 @@ const routes = [
       { path: 'pgp', component: () => import('./views/PgpTools.vue') },
       { path: 'users', component: () => import('./views/Users.vue') },
       { path: 'audit', component: () => import('./views/Audit.vue') },
+      { path: 'system', component: () => import('./views/System.vue') },
     ],
   },
 ]
