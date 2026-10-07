@@ -72,9 +72,9 @@ CertificateTemplate = WebServer
         $httpsCertThumb = (New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($cert)).Thumbprint
         Write-Host "HTTPS certificate issued and installed: $httpsCertThumb" -ForegroundColor Green
         # 绑定端口
-        netsh http add sslcert hostnameport="${fqdn}:$Port" certhash=$httpsCertThumb appid=`{4d8a5f2e-6b3c-4a9e-9f2e-ca7mgr000001`} certstorename=MY 2>$null
+        netsh http add sslcert hostnameport="${fqdn}:$Port" certhash=$httpsCertThumb appid=`{4d8a5f2e-6b3c-4a9e-9f2e-0a1b2c3d4e5f`} certstorename=MY 2>$null
         if ($LASTEXITCODE -ne 0) {
-            netsh http add sslcert ipport=0.0.0.0:$Port certhash=$httpsCertThumb appid=`{4d8a5f2e-6b3c-4a9e-9f2e-ca7mgr000001`} certstorename=MY 2>$null
+            netsh http add sslcert ipport=0.0.0.0:$Port certhash=$httpsCertThumb appid=`{4d8a5f2e-6b3c-4a9e-9f2e-0a1b2c3d4e5f`} certstorename=MY 2>$null
         }
     } catch {
         Write-Warning "HTTPS enrollment failed ($_) - looking for an existing server certificate on this machine..."
@@ -87,7 +87,7 @@ CertificateTemplate = WebServer
         if ($cand) {
             $httpsCertThumb = $cand.Thumbprint
             Write-Host "Using existing certificate: $($cand.Subject) ($httpsCertThumb)" -ForegroundColor Green
-            netsh http add sslcert ipport=0.0.0.0:$Port certhash=$httpsCertThumb appid=`{4d8a5f2e-6b3c-4a9e-9f2e-ca7mgr000001`} certstorename=MY 2>$null
+            netsh http add sslcert ipport=0.0.0.0:$Port certhash=$httpsCertThumb appid=`{4d8a5f2e-6b3c-4a9e-9f2e-0a1b2c3d4e5f`} certstorename=MY 2>$null
         } else {
             Write-Warning "No existing server certificate found - falling back to HTTP. See docs/deploy.md to configure HTTPS."
             $useHttp = $true

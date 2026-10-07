@@ -16,7 +16,7 @@ public record SystemModeRequest(string Mode, int? HttpPort, int? HttpsPort, stri
 [RequireRole(AppRole.Admin)]
 public sealed class SystemController(ILogger<SystemController> log) : Controller
 {
-    private const string AppId = "{4d8a5f2e-6b3c-4a9e-9f2e-ca7mgr000001}";
+    private const string AppId = "{4d8a5f2e-6b3c-4a9e-9f2e-0a1b2c3d4e5f}";
     private static string SettingsPath => Path.Combine(AppContext.BaseDirectory, "appsettings.Production.json");
 
     public sealed record EndpointInfo(string Url, int Port);
