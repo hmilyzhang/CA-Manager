@@ -25,7 +25,14 @@ public sealed class TemplatesController(
     [HttpGet]
     public async Task<IActionResult> List()
     {
-        var templates = await admin.GetTemplatesAsync();
+        // stand-alone CAs have no templates - CR_PROP_TEMPLATES is unsupported there
+        List<(string Name, string Oid)> templates;
+        try { templates = await admin.GetTemplatesAsync(); }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[CA-Manager] template list unavailable: {ex.Message}");
+            templates = new List<(string Name, string Oid)>();
+        }
         var adInfo = AdTemplateReader.Lookup(templates.Select(t => t.Name).ToList());
         return Ok(templates.Select(t =>
         {

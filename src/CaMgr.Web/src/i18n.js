@@ -152,6 +152,13 @@ export const messages = {
       pfxPwdPh: '申请时设置的 PFX 密码', pfxDownloaded: 'PFX 已下载，暂存私钥已销毁',
       st_pending: '待审批', st_approved: '已批准', st_rejected: '已拒绝',
     },
+    ldap: {
+      title: 'AD 域集成（LDAP 登录）', enabled: '启用域账号登录',
+      host: '域控地址（可选）', hostPh: '留空 = 本机域控',
+      domain: 'NetBIOS 域名（可选）', adminGroup: '管理员组（AD 组名）',
+      operatorGroup: '操作员组（AD 组名）', allowUnmapped: '未匹配组用户授予普通用户',
+      save: '保存', saved: '已保存，下次登录生效',
+    },
     pgp: {
       title: 'PGP 密钥生成', hint: '生成用于文件加密的 OpenPGP 密钥对（GnuPG 兼容）。私钥仅在本次响应中返回，服务器不留存任何密钥材料，仅记录审计日志。',
       form: '生成参数', algo: '算法', algoEcc: 'ECC（Ed25519 + X25519，推荐）',
@@ -327,6 +334,13 @@ export const messages = {
       pfxOnce: 'The private key is encrypted with the password chosen at submission. The escrowed key is wiped immediately after this download.',
       pfxPwdPh: 'PFX password chosen at submission', pfxDownloaded: 'PFX downloaded; escrowed key wiped',
       st_pending: 'Pending', st_approved: 'Approved', st_rejected: 'Rejected',
+    },
+    ldap: {
+      title: 'AD Directory Integration (LDAP login)', enabled: 'Enable domain login',
+      host: 'Domain controller (optional)', hostPh: 'Blank = this DC',
+      domain: 'NetBIOS domain (optional)', adminGroup: 'Admin group (AD group name)',
+      operatorGroup: 'Operator group (AD group name)', allowUnmapped: 'Grant unmapped users the User role',
+      save: 'Save', saved: 'Saved - applies from next login',
     },
     pgp: {
       title: 'PGP Key Generation', hint: 'Generate OpenPGP key pairs for file encryption (GnuPG-compatible). Private keys are returned once and never stored; only an audit record is kept.',

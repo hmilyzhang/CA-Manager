@@ -15,7 +15,7 @@ Data visibility is enforced server-side: viewers can only open certificates orig
 
 Account sources: local accounts (managed here) and AD domain accounts (LDAP bind verification).
 Domain role mapping: matched against `memberOf` at login via the `ldap.adminGroup` / `ldap.operatorGroup` settings (both **empty by default** — designed for PAM-managed environments where Domain Admin passwords are not known; unmapped domain users get Viewer with request rights). Recommended: create dedicated groups, e.g. `CA-Manager-Admins` and `CA-Manager-Operators`, and set them in `ldap.adminGroup` / `ldap.operatorGroup`. The local `admin` account stays as the emergency fallback.
-Configure via Admin → Users page / the settings API (`/api/settings`).
+Configure on the **Users** page → "AD Directory Integration" card (enable login, domain controller, NetBIOS domain, role-mapping groups, unmapped-user policy).
 
 ## Approval Workflow (viewer submissions)
 

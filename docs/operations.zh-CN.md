@@ -15,7 +15,7 @@
 
 用户来源：本地账号（本系统管理）与 AD 域账号（LDAP 绑定验证）。
 域账号角色映射：登录后按 `memberOf` 匹配 `ldap.adminGroup` / `ldap.operatorGroup` 设置的组（**默认均为空**——专为 PAM 托管域管密码的场景设计，无需知道 Domain Admins 密码；未匹配的域账号默认成为可申请证书的只读用户）。推荐做法：在 AD 中创建专用组如 `CA-Manager-Admins` / `CA-Manager-Operators` 并填入对应设置项；本地 `admin` 账号保留为应急后门。
-设置入口：管理员 → 用户管理/系统设置 API（`/api/settings`）。
+配置入口：管理员 → **用户管理** 页下方的 "AD 域集成" 卡片（启用登录、域控地址、NetBIOS 域名、角色映射组、未匹配用户策略）。
 
 ## 审批流程（普通用户申请）
 

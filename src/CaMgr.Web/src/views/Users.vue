@@ -44,6 +44,34 @@
       </el-table-column>
     </el-table>
 
+
+    <el-card shadow="never" style="margin-top: 14px">
+      <template #header>{{ $t('ldap.title') }}</template>
+      <el-form label-width="210px">
+        <el-form-item :label="$t('ldap.enabled')">
+          <el-switch v-model="ldap.enabled" />
+        </el-form-item>
+        <el-form-item :label="$t('ldap.host')">
+          <el-input v-model="ldap.host" :placeholder="$t('ldap.hostPh')" style="width: 300px" />
+        </el-form-item>
+        <el-form-item :label="$t('ldap.domain')">
+          <el-input v-model="ldap.domain" placeholder="HOME" style="width: 300px" />
+        </el-form-item>
+        <el-form-item :label="$t('ldap.adminGroup')">
+          <el-input v-model="ldap.adminGroup" placeholder="CA-Manager-Admins" style="width: 300px" />
+        </el-form-item>
+        <el-form-item :label="$t('ldap.operatorGroup')">
+          <el-input v-model="ldap.operatorGroup" placeholder="CA-Manager-Operators" style="width: 300px" />
+        </el-form-item>
+        <el-form-item :label="$t('ldap.allowUnmapped')">
+          <el-switch v-model="ldap.allowUnmapped" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" :loading="ldapSaving" @click="saveLdap">{{ $t('ldap.save') }}</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+
     <el-dialog v-model="createDlg" :title="$t('users.createTitle')" width="440">
       <el-form label-width="110px">
         <el-form-item :label="$t('users.username')"><el-input v-model="createForm.username" /></el-form-item>
@@ -67,7 +95,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { api } from '../api.js'
@@ -78,6 +106,8 @@ const users = ref([])
 const loading = ref(false)
 const createDlg = ref(false)
 const createForm = ref({ username: '', displayName: '', role: 'Operator', password: '' })
+const ldap = reactive({ enabled: false, host: '', domain: '', adminGroup: '', operatorGroup: '', allowUnmapped: true })
+const ldapSaving = ref(false)
 const fmt = (d) => fmtDate(d)
 
 async function reload() {
@@ -89,6 +119,33 @@ async function reload() {
   } finally {
     loading.value = false
   }
+}
+
+async function loadLdap() {
+  try {
+    const st = await api.get('/api/settings')
+    ldap.enabled = st['ldap.enabled'] === 'true'
+    ldap.host = st['ldap.host'] || ''
+    ldap.domain = st['ldap.domain'] || ''
+    ldap.adminGroup = st['ldap.adminGroup'] || ''
+    ldap.operatorGroup = st['ldap.operatorGroup'] || ''
+    ldap.allowUnmapped = st['ldap.allowUnmapped'] !== 'false'
+  } catch { /* settings may be empty on fresh installs */ }
+}
+
+async function saveLdap() {
+  ldapSaving.value = true
+  try {
+    await api.put('/api/settings', {
+      'ldap.enabled': ldap.enabled ? 'true' : 'false',
+      'ldap.host': ldap.host,
+      'ldap.domain': ldap.domain,
+      'ldap.adminGroup': ldap.adminGroup,
+      'ldap.operatorGroup': ldap.operatorGroup,
+      'ldap.allowUnmapped': ldap.allowUnmapped ? 'true' : 'false',
+    })
+    ElMessage.success(t('ldap.saved'))
+  } catch (e) { ElMessage.error(e.message) } finally { ldapSaving.value = false }
 }
 
 function openCreate() {
@@ -139,5 +196,5 @@ async function remove(row) {
   } catch (e) { if (e !== 'cancel') ElMessage.error(e.message) }
 }
 
-onMounted(reload)
+onMounted(() => { reload(); loadLdap() })
 </script>
