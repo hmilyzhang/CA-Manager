@@ -1,4 +1,4 @@
-using System.Security.Cryptography.X509Certificates;
+﻿using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using CaMgr.Api.Data;
 using CaMgr.Api.Services;
@@ -14,34 +14,22 @@ public record SystemModeRequest(string Mode, int? HttpPort, int? HttpsPort, stri
 [Route("api/system")]
 [Authorize]
 [RequireRole(AppRole.Admin)]
-public sealed class SystemController(ILogger<SystemController> log) : Controller
+public sealed class SystemController(ILogger<SystemController> log, IConfiguration configuration) : Controller
 {
     private static string SettingsPath => Path.Combine(AppContext.BaseDirectory, "appsettings.Production.json");
     private const int DefaultHttpPort = 8442;
 
     public sealed record ListenerInfo(string Mode, int HttpPort, int HttpsPort, string? Thumbprint);
 
-    private static ListenerInfo Current()
+    /// <summary>Reads the MERGED configuration - reflects what the running service actually uses
+    /// (appsettings.json base + appsettings.Production.json overrides).</summary>
+    private ListenerInfo Current()
     {
-        try
-        {
-            if (System.IO.File.Exists(SettingsPath))
-            {
-                using var doc = JsonDocument.Parse(System.IO.File.ReadAllText(SettingsPath));
-                if (doc.RootElement.TryGetProperty("Listeners", out var l))
-                {
-                    string Get(string name, string def) =>
-                        l.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String && !string.IsNullOrWhiteSpace(v.GetString()) ? v.GetString()! : def;
-                    return new ListenerInfo(
-                        Get("Mode", "http"),
-                        int.TryParse(Get("HttpPort", DefaultHttpPort.ToString()), out var p) ? p : DefaultHttpPort,
-                        int.TryParse(Get("HttpsPort", "8444"), out var p2) ? p2 : 8444,
-                        l.TryGetProperty("Thumbprint", out var t) && t.ValueKind == JsonValueKind.String ? t.GetString() : null);
-                }
-            }
-        }
-        catch { /* corrupt file -> defaults */ }
-        return new ListenerInfo("http", DefaultHttpPort, 8444, null);
+        var mode = configuration["Listeners:Mode"] ?? "http";
+        var httpPort = int.TryParse(configuration["Listeners:HttpPort"], out var hp) ? hp : DefaultHttpPort;
+        var httpsPort = int.TryParse(configuration["Listeners:HttpsPort"], out var sp) ? sp : 8444;
+        var thumb = configuration["Listeners:Thumbprint"];
+        return new ListenerInfo(mode, httpPort, httpsPort, thumb);
     }
 
     /// <summary>Current listener configuration.</summary>
