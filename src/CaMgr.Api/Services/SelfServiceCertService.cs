@@ -38,8 +38,7 @@ public sealed class SelfServiceCertService(CaRequestService submitter, ILogger<S
             return (null!, "请填写通用名称 (CN)");
         if (!IsValidHost(req.CommonName))
             return (null!, $"通用名称无效: {req.CommonName}");
-        if (string.IsNullOrWhiteSpace(req.Template))
-            return (null!, "请选择证书模板");
+        // template is optional: stand-alone CAs have no templates (attribute is ignored by the CA)
         if (req.KeyAlgorithm is not ("RSA2048" or "RSA4096" or "ECDSA_P256"))
             return (null!, "密钥算法无效");
         if (requirePfxPassword && (string.IsNullOrWhiteSpace(req.PfxPassword) || req.PfxPassword.Length < 8))

@@ -64,6 +64,15 @@ powershell -File scripts\uninstall-service.ps1   # 卸载服务（数据保留�
 - `publish\data\camgr.db`：Web 用户、审计日志、系统设置——纳入常规备份即可
 - 审计日志仅追加；CA 数据本身仍由 AD CS 管理，本系统不复制证书库
 
+## Stand-alone CA（独立 CA）注意事项
+
+独立 CA 没有模板概念，且默认策略是"申请一律挂起等待管理员颁发"：
+
+- **安装时的 HTTPS 证书**：`certreq -submit` 会返回"待处理"，安装脚本回退 HTTP。处理办法：在 CA-Manager **请求处理**页对该请求点**颁发**，然后回到服务器执行 `certreq -retrieve <请求ID> cert.cer` 与 `certreq -accept cert.cer` 完成安装，再按上文切换 HTTPS 绑定。
+- **SAN**：独立 CA 默认忽略申请属性里的 SAN。需在 CA 服务器（管理员）启用标志：`certutil -setreg policy\EditFlags +EDITF_ATTRIBUTESUBJECTALTNAME2` 并重启 CertSvc，否则签出的证书不含 SAN。
+- **模板**：模板下拉显示"无需选择模板"——独立 CA 会忽略 CertificateTemplate 属性。
+- **审批**：默认 pending-first 策略下，所有提交都在 CA 队列等待；在**请求处理**页点"颁发"即可（普通用户提交在此之外仍有应用内审批）。
+
 ## 常见问题
 
 | 现象 | 原因与处理 |

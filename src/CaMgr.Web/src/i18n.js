@@ -89,7 +89,8 @@ export const messages = {
     },
     newReq: {
       title: '提交新申请', cardTitle: '提交 CSR（证书签名请求）', template: '证书模板',
-      selectTemplate: '选择模板', csr: 'CSR 内容',
+      selectTemplate: '选择模板',
+      noTemplates: 'Stand-alone CA：无需选择模板', csr: 'CSR 内容',
       csrPlaceholder: '粘贴 PEM (-----BEGIN NEW CERTIFICATE REQUEST-----) 或 Base64 编码的 PKCS#10 / CMC 请求',
       submitToCa: '提交到 CA', viewQueue: '查看请求队列', precheck: 'CSR 预检',
       pendingParse: '(待提交后解析)', parseFailed: '(Base64 解析失败，请检查格式)',
@@ -264,7 +265,8 @@ export const messages = {
     },
     newReq: {
       title: 'New Request', cardTitle: 'Submit a CSR (Certificate Signing Request)', template: 'Certificate Template',
-      selectTemplate: 'Select template', csr: 'CSR Content',
+      selectTemplate: 'Select template',
+      noTemplates: 'Stand-alone CA: no template needed', csr: 'CSR Content',
       csrPlaceholder: 'Paste PEM (-----BEGIN NEW CERTIFICATE REQUEST-----) or Base64-encoded PKCS#10 / CMC request',
       submitToCa: 'Submit to CA', viewQueue: 'View request queue', precheck: 'CSR Precheck',
       pendingParse: '(parsed after submission)', parseFailed: '(Base64 parse failed — check format)',

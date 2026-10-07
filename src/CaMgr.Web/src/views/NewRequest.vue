@@ -33,9 +33,10 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item :label="$t('newReq.template')">
-                  <el-select v-model="form.template" filterable :placeholder="$t('newReq.selectTemplate')" style="width: 320px">
+                  <el-select v-if="templates.length" v-model="form.template" filterable :placeholder="$t('newReq.selectTemplate')" style="width: 320px">
                     <el-option v-for="tpl in templates" :key="tpl.name" :label="`${tpl.name}${tpl.displayName ? ' — ' + tpl.displayName : ''}`" :value="tpl.name" />
                   </el-select>
+                  <el-input v-else :model-value="$t('newReq.noTemplates')" disabled style="width: 320px" />
                 </el-form-item>
                 <template v-if="isViewer">
                   <el-form-item :label="$t('newReq.pfxPwd')">
@@ -57,9 +58,10 @@
             <el-tab-pane :label="$t('newReq.tabPaste')" name="paste">
               <el-form label-width="130px" style="margin-top: 8px">
                 <el-form-item :label="$t('newReq.template')">
-                  <el-select v-model="template" filterable :placeholder="$t('newReq.selectTemplate')" style="width: 100%">
+                  <el-select v-if="templates.length" v-model="template" filterable :placeholder="$t('newReq.selectTemplate')" style="width: 100%">
                     <el-option v-for="tpl in templates" :key="tpl.name" :label="`${tpl.name}${tpl.displayName ? ' — ' + tpl.displayName : ''}`" :value="tpl.name" />
                   </el-select>
+                  <el-input v-else :model-value="$t('newReq.noTemplates')" disabled style="width: 100%" />
                 </el-form-item>
                 <el-form-item :label="$t('newReq.csr')">
                   <el-input v-model="csr" type="textarea" :rows="12" class="mono" style="font-size: 12px"
@@ -177,7 +179,7 @@ const pasteIcon = computed(() => {
 
 async function submitSelf() {
   if (!form.value.cn.trim()) return ElMessage.warning(t('newReq.needCn'))
-  if (!form.value.template) return ElMessage.warning(t('newReq.needTemplate'))
+  if (templates.value.length && !form.value.template) return ElMessage.warning(t('newReq.needTemplate'))
   if (isViewer.value) {
     if (!form.value.pfxPassword || form.value.pfxPassword.length < 8) return ElMessage.warning(t('login.pwdLen'))
     if (form.value.pfxPassword !== form.value.pfxPassword2) return ElMessage.warning(t('login.pwdMismatch'))
@@ -201,7 +203,7 @@ async function submitSelf() {
 
 async function submit() {
   if (!csr.value.trim()) return ElMessage.warning(t('newReq.needCsr'))
-  if (!template.value) return ElMessage.warning(t('newReq.needTemplate'))
+  if (templates.value.length && !template.value) return ElMessage.warning(t('newReq.needTemplate'))
   submitting.value = true
   pasteResult.value = null
   try {

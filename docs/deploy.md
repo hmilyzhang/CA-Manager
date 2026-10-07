@@ -64,6 +64,15 @@ powershell -File scripts\uninstall-service.ps1   # remove the service (data kept
 - `publish\data\camgr.db`: web users, audit log, settings — include in normal backups
 - The audit log is append-only; certificate data itself remains managed by AD CS — this app does not copy the CA database
 
+## Stand-alone CA Notes
+
+On a stand-alone CA (no templates, requests pending by default):
+
+- **HTTPS enrollment at install time**: `certreq -submit` returns "pending" and the installer falls back to HTTP. Issue the pending request from CA-Manager (**Requests** page → **Issue**), then complete it on the server with `certreq -retrieve <RequestId> cert.cer` and `certreq -accept cert.cer`, and switch the binding to HTTPS as shown above.
+- **SAN**: stand-alone CAs ignore the SAN request attribute unless the flag `EDITF_ATTRIBUTESUBJECTALTNAME2` is enabled (CA server, admin): `certutil -setreg policy\EditFlags +EDITF_ATTRIBUTESUBJECTALTNAME2` then restart CertSvc. Without it, issued certificates will not contain SAN entries.
+- **Templates**: the template dropdown shows "no template needed" — the CertificateTemplate attribute is ignored by stand-alone CAs.
+- **Approvals**: with the default pending-first policy every submitted request waits in the CA queue; approve it on the **Requests** page (the in-app approval flow still applies to viewer submissions before that).
+
 ## Troubleshooting
 
 | Symptom | Cause & fix |
