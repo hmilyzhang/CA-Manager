@@ -26,7 +26,7 @@
         <el-menu-item index="/audit" v-if="roleAtLeast(role, 'Admin') || role === 'Auditor'"><el-icon><Document /></el-icon>{{ $t('nav.audit') }}</el-menu-item>
         <el-menu-item index="/system" v-if="roleAtLeast(role, 'Admin')"><el-icon><Monitor /></el-icon>{{ $t('nav.system') }}</el-menu-item>
       </el-menu>
-      <div class="sidebar-foot">CA-Manager v1.5.6</div>
+      <div class="sidebar-foot">CA-Manager v1.6.2</div>
     </el-aside>
 
     <el-container>

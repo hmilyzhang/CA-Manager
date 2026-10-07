@@ -2,8 +2,55 @@
 using CaMgr.Api.Data;
 using CaMgr.Api.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+
+// Emergency admin password reset (run from the publish folder while the service may stay running):
+//   CaMgr.Api.exe reset-admin              -> generates a temporary password, prints it, forces change at next login
+//   CaMgr.Api.exe reset-admin <password>   -> sets the given password (min 8 chars)
+if (args.Length > 0 && args[0] == "reset-admin")
+{
+    var resetDataDir = Path.Combine(AppContext.BaseDirectory, "data");
+    Directory.CreateDirectory(resetDataDir);
+    var dbPath = Path.Combine(resetDataDir, "camgr.db");
+    if (!File.Exists(dbPath))
+    {
+        Console.Error.WriteLine($"Database not found: {dbPath}");
+        return 1;
+    }
+    var newPassword = args.Length > 1 ? args[1] : "Adm-" + Guid.NewGuid().ToString("N")[..10];
+    if (newPassword.Length < 8)
+    {
+        Console.Error.WriteLine("Password must be at least 8 characters.");
+        return 1;
+    }
+    var hasher = new PasswordHasher<UserEntity>();
+    var hash = hasher.HashPassword(new UserEntity { Username = "admin" }, newPassword);
+    using (var conn = new SqliteConnection($"Data Source={dbPath}"))
+    {
+        conn.Open();
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = """
+            UPDATE Users
+            SET PasswordHash = $h, MustChangePassword = 1, FailedAttempts = 0, LockedUntil = NULL
+            WHERE Username = 'admin' AND Source = 0
+            """;
+        cmd.Parameters.AddWithValue("$h", hash);
+        if (cmd.ExecuteNonQuery() == 0)
+        {
+            Console.Error.WriteLine("Local 'admin' account not found.");
+            return 1;
+        }
+    }
+    Console.WriteLine();
+    Console.WriteLine("Admin password has been reset.");
+    Console.WriteLine($"  Username: admin");
+    Console.WriteLine($"  New password: {newPassword}");
+    Console.WriteLine("  (change forced at next login; no service restart needed)");
+    return 0;
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -106,3 +153,5 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
+return 0;

@@ -53,6 +53,15 @@ Changes take effect at the next publication. Delta CRL period 0 disables Delta C
 Recorded: logins (including failures) / logout / password changes / revocations / unrevokes / issuance / denials / resubmits / CSR submissions / CRL publications / config changes / template changes / user management.
 Fields: time, user, source IP, action, object type, object, parameter summary, result. Filterable queries and CSV export.
 
+## Emergency Admin Password Reset
+
+If the admin password is lost, run from the publish folder on the server (no .NET needed, the self-contained exe handles it; the service may stay running):
+
+```powershell
+.\CaMgr.Api.exe reset-admin           # generates a temporary password, forces change at next login
+.\CaMgr.Api.exe reset-admin "New#12345678"   # or set a specific one (min 8 chars)
+```
+
 ## Service Operations
 
 ```powershell
