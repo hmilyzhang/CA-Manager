@@ -128,7 +128,7 @@ export const messages = {
       periodTitle: 'CRL 周期', published: 'CRL 发布已触发',
     },
     users: {
-      title: '用户管理', create: '新建用户',
+      title: '用户管理', create: '新建用户', tabList: '用户列表', tabAd: 'AD 域集成',
       hint: '角色：管理员=全部权限 · 操作员=颁发/吊销/提交 · 只读=仅查询下载',
       local: '本地', ad: 'AD 域', createTitle: '新建本地用户', username: '用户名',
       initPwd: '初始密码', initPwdPlaceholder: '至少 8 位', created: '用户已创建',
@@ -324,7 +324,7 @@ export const messages = {
       periodTitle: 'CRL Period', published: 'CRL publication triggered',
     },
     users: {
-      title: 'User Management', create: 'New User',
+      title: 'User Management', create: 'New User', tabList: 'Users', tabAd: 'AD Integration',
       hint: 'Roles: Administrator = full access · Operator = issue/revoke/submit · Viewer = read-only',
       local: 'Local', ad: 'AD Domain', createTitle: 'Create Local User', username: 'Username',
       initPwd: 'Initial Password', initPwdPlaceholder: 'At least 8 characters', created: 'User created',

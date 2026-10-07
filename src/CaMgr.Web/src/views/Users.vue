@@ -2,12 +2,14 @@
   <div class="page">
     <div class="page-title">{{ $t('users.title') }}</div>
 
-    <div class="filter-bar">
-      <el-button type="primary" @click="openCreate"><el-icon><Plus /></el-icon>&nbsp;{{ $t('users.create') }}</el-button>
-      <span style="color:#909399;font-size:13px">{{ $t('users.hint') }}</span>
-    </div>
+    <el-tabs v-model="tab" type="card" class="user-tabs">
+      <el-tab-pane :label="$t('users.tabList')" name="list">
+        <div class="filter-bar">
+          <el-button type="primary" @click="openCreate"><el-icon><Plus /></el-icon>&nbsp;{{ $t('users.create') }}</el-button>
+          <span style="color:#909399;font-size:13px">{{ $t('users.hint') }}</span>
+        </div>
 
-    <el-table :data="users" v-loading="loading" stripe>
+        <el-table :data="users" v-loading="loading" stripe>
       <el-table-column prop="username" :label="$t('users.username')" min-width="140" />
       <el-table-column prop="displayName" :label="$t('common.displayName')" min-width="120" />
       <el-table-column :label="$t('common.source')" width="90">
@@ -43,10 +45,11 @@
         </template>
       </el-table-column>
     </el-table>
+      </el-tab-pane>
 
-
-    <el-card shadow="never" style="margin-top: 14px">
-      <template #header>{{ $t('ldap.title') }}</template>
+      <el-tab-pane :label="$t('users.tabAd')" name="ldap">
+        <el-card shadow="never">
+          <template #header>{{ $t('ldap.title') }}</template>
       <el-form label-width="210px">
         <el-form-item :label="$t('ldap.enabled')">
           <el-switch v-model="ldap.enabled" />
@@ -70,7 +73,9 @@
           <el-button type="primary" :loading="ldapSaving" @click="saveLdap">{{ $t('ldap.save') }}</el-button>
         </el-form-item>
       </el-form>
-    </el-card>
+        </el-card>
+      </el-tab-pane>
+    </el-tabs>
 
     <el-dialog v-model="createDlg" :title="$t('users.createTitle')" width="440">
       <el-form label-width="110px">
@@ -102,6 +107,7 @@ import { api } from '../api.js'
 import { fmtDate } from '../i18n.js'
 
 const { t } = useI18n()
+const tab = ref('list')
 const users = ref([])
 const loading = ref(false)
 const createDlg = ref(false)
