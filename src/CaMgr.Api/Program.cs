@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
 
 // Emergency admin password reset (run from the publish folder while the service may stay running):
@@ -56,6 +58,47 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Windows service hosting (no-op when run interactively)
 builder.Host.UseWindowsService(options => options.ServiceName = "CA-Manager");
+
+// Listener configuration: section "Listeners" in appsettings(.Production).json
+//   { "Listeners": { "Mode": "http|https|both", "HttpPort": 8442, "HttpsPort": 8444, "Thumbprint": "<sha1>" } }
+// Absent section = HTTP on 8442 (legacy default).
+var listenerMode = builder.Configuration["Listeners:Mode"] ?? "http";
+var listenerHttpPort = int.TryParse(builder.Configuration["Listeners:HttpPort"], out var lhp) ? lhp : 8442;
+var listenerHttpsPort = int.TryParse(builder.Configuration["Listeners:HttpsPort"], out var lsp) ? lsp : 8444;
+var listenerThumbprint = builder.Configuration["Listeners:Thumbprint"];
+
+builder.WebHost.ConfigureKestrel(o =>
+{
+    if (listenerMode is "http" or "both")
+        o.ListenAnyIP(listenerHttpPort);
+
+    if (listenerMode is "https" or "both")
+    {
+        X509Certificate2? cert = null;
+        try
+        {
+            using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+            store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+            cert = store.Certificates.Cast<X509Certificate2>()
+                .FirstOrDefault(c => c.Thumbprint == listenerThumbprint && c.HasPrivateKey);
+            store.Close();
+        }
+        catch { /* fall through to the fallback below */ }
+
+        if (cert is not null)
+        {
+            o.ListenAnyIP(listenerHttpsPort, l => l.UseHttps(cert));
+        }
+        else
+        {
+            // never crash-loop over a bad certificate: fall back to plain HTTP and log loudly
+            o.ListenAnyIP(listenerHttpPort);
+            var logger = o.ApplicationServices.GetRequiredService<ILogger<Program>>();
+            logger.LogError("HTTPS certificate '{Thumbprint}' not found in LocalMachine\\My - falling back to HTTP on port {Port}. " +
+                            "Pick a certificate in System settings and re-apply.", listenerThumbprint, listenerHttpPort);
+        }
+    }
+});
 
 var dataDir = Path.Combine(AppContext.BaseDirectory, "data");
 Directory.CreateDirectory(dataDir);
