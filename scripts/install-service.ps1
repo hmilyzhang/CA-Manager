@@ -5,7 +5,8 @@
 # HTTPS 证书: 优先向本机 CA 申请 (WebServer 模板, CN=主机FQDN)；失败则回退 HTTP。
 param(
     [int]$Port = 8443,
-    [switch]$UseHttp
+    [switch]$UseHttp,
+    [switch]$NoHttps
 )
 
 $ErrorActionPreference = 'Stop'
@@ -39,6 +40,7 @@ if ($legacy) {
 $useHttp = $UseHttp
 $httpsCertThumb = $null
 
+if ($NoHttps) { $useHttp = $true }
 if (-not $useHttp) {
     Write-Host "Requesting HTTPS certificate from the local CA..." -ForegroundColor Cyan
     $fqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
@@ -75,8 +77,21 @@ CertificateTemplate = WebServer
             netsh http add sslcert ipport=0.0.0.0:$Port certhash=$httpsCertThumb appid=`{4d8a5f2e-6b3c-4a9e-9f2e-ca7mgr000001`} certstorename=MY 2>$null
         }
     } catch {
-        Write-Warning "HTTPS enrollment failed ($_) - falling back to HTTP. See docs/deploy.md to configure HTTPS manually."
-        $useHttp = $true
+        Write-Warning "HTTPS enrollment failed ($_) - looking for an existing server certificate on this machine..."
+        # fall back to an existing machine certificate with Server Authentication EKU (newest valid one)
+        $cand = Get-ChildItem Cert:\LocalMachine\My -ErrorAction SilentlyContinue |
+            Where-Object {
+                $_.HasPrivateKey -and $_.NotAfter -gt (Get-Date) -and
+                ($_.EnhancedKeyUsageList | Where-Object { $_.Value -eq '1.3.6.1.5.5.7.3.1' })
+            } | Sort-Object NotAfter -Descending | Select-Object -First 1
+        if ($cand) {
+            $httpsCertThumb = $cand.Thumbprint
+            Write-Host "Using existing certificate: $($cand.Subject) ($httpsCertThumb)" -ForegroundColor Green
+            netsh http add sslcert ipport=0.0.0.0:$Port certhash=$httpsCertThumb appid=`{4d8a5f2e-6b3c-4a9e-9f2e-ca7mgr000001`} certstorename=MY 2>$null
+        } else {
+            Write-Warning "No existing server certificate found - falling back to HTTP. See docs/deploy.md to configure HTTPS."
+            $useHttp = $true
+        }
     }
 }
 

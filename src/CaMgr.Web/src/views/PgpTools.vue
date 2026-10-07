@@ -91,7 +91,7 @@ gpg -d file.txt.gpg</pre>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { api } from '../api.js'
