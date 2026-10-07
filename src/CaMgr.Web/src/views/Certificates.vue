@@ -43,12 +43,14 @@
       <el-table-column :label="$t('certs.revokedReason')" width="110">
         <template #default="{ row }">{{ reasonText(row.revokedReason) }}</template>
       </el-table-column>
-      <el-table-column width="220" :label="$t('common.action')">
+      <el-table-column width="330" :label="$t('common.action')" class-name="nowrap-cell">
         <template #default="{ row }">
-          <el-button size="small" @click.stop="goDetail(row)">{{ $t('common.detail') }}</el-button>
-          <el-button size="small" type="primary" plain @click.stop="downloadCerts(row)">{{ $t('common.download') }}</el-button>
-          <el-button v-if="row.status === 'issued' && canOperate" size="small" type="danger" plain @click.stop="openRevoke(row)">{{ $t('common.revoke') }}</el-button>
-          <el-button v-if="row.status === 'revoked' && row.revokedReason === 6 && canOperate" size="small" type="warning" plain @click.stop="unrevoke(row)">{{ $t('common.unrevoke') }}</el-button>
+          <div style="display: flex; gap: 6px; flex-wrap: nowrap; align-items: center">
+            <el-button size="small" @click.stop="goDetail(row)">{{ $t('common.detail') }}</el-button>
+            <el-button size="small" type="primary" plain @click.stop="downloadCerts(row)">{{ $t('common.download') }}</el-button>
+            <el-button v-if="row.status === 'issued' && canOperate" size="small" type="danger" plain @click.stop="openRevoke(row)">{{ $t('common.revoke') }}</el-button>
+            <el-button v-if="row.status === 'revoked' && row.revokedReason === 6 && canOperate" size="small" type="warning" plain @click.stop="unrevoke(row)">{{ $t('common.unrevoke') }}</el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
