@@ -1,4 +1,3 @@
-using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using CaMgr.Api.Data;
@@ -8,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CaMgr.Api.Controllers;
 
-public record HttpsBindRequest(string Thumbprint, int? Port);
+/// <summary>mode: "http" (default) | "https" | "both"</summary>
+public record SystemModeRequest(string Mode, int? HttpPort, int? HttpsPort, string? Thumbprint);
 
 [ApiController]
 [Route("api/system")]
@@ -17,6 +17,23 @@ public record HttpsBindRequest(string Thumbprint, int? Port);
 public sealed class SystemController(ILogger<SystemController> log) : Controller
 {
     private const string AppId = "{4d8a5f2e-6b3c-4a9e-9f2e-ca7mgr000001}";
+    private static string SettingsPath => Path.Combine(AppContext.BaseDirectory, "appsettings.Production.json");
+
+    public sealed record EndpointInfo(string Url, int Port);
+
+    /// <summary>Current listener configuration parsed from appsettings.Production.json.</summary>
+    [HttpGet("endpoints")]
+    public IActionResult Endpoints()
+    {
+        var (http, https) = ReadEndpoints();
+        return Ok(new
+        {
+            mode = https is null ? "http" : http is null ? "https" : "both",
+            httpPort = http?.Port,
+            httpsPort = https?.Port,
+            currentUrls = new[] { http?.Url, https?.Url }.Where(u => u is not null).ToList(),
+        });
+    }
 
     /// <summary>Machine certificates usable for HTTPS (Server Authentication EKU, private key, not expired).</summary>
     [HttpGet("certs")]
@@ -42,76 +59,114 @@ public sealed class SystemController(ILogger<SystemController> log) : Controller
             })
             .ToList();
         store.Close();
-
-        var settingsPath = Path.Combine(AppContext.BaseDirectory, "appsettings.Production.json");
-        string? current = null;
-        if (System.IO.File.Exists(settingsPath))
-        {
-            try
-            {
-                using var doc = JsonDocument.Parse(System.IO.File.ReadAllText(settingsPath));
-                current = doc.RootElement.TryGetProperty("Kestrel", out var k)
-                       && k.TryGetProperty("Endpoints", out var e)
-                       && e.TryGetProperty("Http", out var h)
-                       && h.TryGetProperty("Url", out var u) ? u.GetString() : null;
-            }
-            catch { /* corrupt settings file */ }
-        }
-        return Ok(new { certs, current });
+        return Ok(new { certs });
     }
 
-    /// <summary>Binds the chosen certificate to the HTTPS port, updates the production config,
-    /// then restarts the service (failure actions bring it back within seconds).</summary>
-    [HttpPost("https")]
-    public IActionResult BindHttps([FromBody] HttpsBindRequest req)
+    /// <summary>
+    /// Applies the listener mode (http / https / both), binds the certificate for HTTPS
+    /// via netsh, rewrites appsettings.Production.json and restarts the service
+    /// (SCM failure actions bring it back within seconds).
+    /// </summary>
+    [HttpPost("apply")]
+    public IActionResult Apply([FromBody] SystemModeRequest req)
     {
-        var port = req.Port ?? 8443;
-        if (port is < 1 or > 65535) return BadRequest(new { error = "端口无效" });
+        var httpPort = req.HttpPort ?? 8443;
+        var httpsPort = req.HttpsPort ?? 8443;
 
-        var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-        store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-        var cert = store.Certificates.Cast<X509Certificate2>().FirstOrDefault(c => c.Thumbprint == req.Thumbprint);
-        store.Close();
-        if (cert is null) return BadRequest(new { error = "本机证书存储中找不到该指纹的证书" });
-
-        // 1. sslcert binding (delete stale binding for the port first)
-        RunNetsh($"http delete sslcert ipport=0.0.0.0:{port}");
-        var (ok, output) = RunNetsh($"http add sslcert ipport=0.0.0.0:{port} certhash={req.Thumbprint} appid={AppId} certstorename=MY");
-        if (!ok && !output.Contains("already", StringComparison.OrdinalIgnoreCase))
-            return BadRequest(new { error = $"netsh 绑定失败: {output.Trim()}" });
-
-        // 2. switch the production config to https (the file only carries the Kestrel endpoint)
-        var settingsPath = Path.Combine(AppContext.BaseDirectory, "appsettings.Production.json");
-        using (var ms = new MemoryStream())
+        switch (req.Mode)
         {
-            using (var w = new Utf8JsonWriter(ms, new JsonWriterOptions { Indented = true }))
-            {
-                w.WriteStartObject();
-                w.WriteStartObject("Kestrel");
-                w.WriteStartObject("Endpoints");
-                w.WriteStartObject("Http");
-                w.WriteString("Url", $"https://+:{port}");
-                w.WriteEndObject();
-                w.WriteEndObject();
-                w.WriteEndObject();
-                w.WriteEndObject();
-            }
-            System.IO.File.WriteAllText(settingsPath, System.Text.Encoding.UTF8.GetString(ms.ToArray()));
+            case "http":
+                if (httpPort is < 1 or > 65535) return BadRequest(new { error = "HTTP 端口无效" });
+                break;
+            case "https":
+            case "both":
+                if (httpsPort is < 1 or > 65535) return BadRequest(new { error = "HTTPS 端口无效" });
+                if (req.Mode == "both" && httpPort is < 1 or > 65535) return BadRequest(new { error = "HTTP 端口无效" });
+                if (req.Mode == "both" && httpsPort == httpPort) return BadRequest(new { error = "HTTP 与 HTTPS 端口不能相同" });
+                // certificate must exist in the machine store
+                var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+                store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+                var cert = store.Certificates.Cast<X509Certificate2>().FirstOrDefault(c => c.Thumbprint == req.Thumbprint);
+                store.Close();
+                if (cert is null) return BadRequest(new { error = "请选择本机证书存储中的证书" });
+
+                RunNetsh($"http delete sslcert ipport=0.0.0.0:{httpsPort}");
+                var (ok, output) = RunNetsh($"http add sslcert ipport=0.0.0.0:{httpsPort} certhash={req.Thumbprint} appid={AppId} certstorename=MY");
+                if (!ok && !output.Contains("already", StringComparison.OrdinalIgnoreCase))
+                    return BadRequest(new { error = $"netsh 绑定失败: {output.Trim()}" });
+                break;
+            default:
+                return BadRequest(new { error = "模式无效" });
         }
 
-        // 3. schedule self-restart (SCM failure actions bring the service back)
+        WriteEndpoints(req.Mode, httpPort, httpsPort);
+
         Task.Run(async () =>
         {
             await Task.Delay(800);
-            log.LogWarning("HTTPS binding applied - restarting service to re-listen on https://+:{Port}", port);
-            Environment.Exit(1); // non-zero exit triggers the configured failure action (restart)
+            log.LogWarning("Listener mode {Mode} applied - restarting service to re-listen", req.Mode);
+            Environment.Exit(1); // triggers the configured failure action (auto-restart)
         });
 
-        return Ok(new
+        var reopened = req.Mode switch
         {
-            message = $"HTTPS 已绑定到端口 {port}，服务正在自动重启（约 5-10 秒），请稍后刷新页面。",
-            url = $"https://+: {port}".Replace("+ :", "+"),
-        });
+            "http" => $"http://+:{httpPort}",
+            "https" => $"https://+:{httpsPort}",
+            _ => $"http://+:{httpPort} + https://+:{httpsPort}",
+        };
+        return Ok(new { message = $"监听模式已切换为 {req.Mode}，服务正在自动重启（5-10 秒）。重新打开: {reopened}" });
+    }
+
+    private static (EndpointInfo? http, EndpointInfo? https) ReadEndpoints()
+    {
+        EndpointInfo? Parse(JsonElement e)
+        {
+            if (!e.TryGetProperty("Url", out var u)) return null;
+            var url = u.GetString();
+            if (url is null) return null;
+            var m = System.Text.RegularExpressions.Regex.Match(url, @":(\d+)$");
+            return new EndpointInfo(url, m.Success ? int.Parse(m.Groups[1].Value) : 0);
+        }
+
+        if (!System.IO.File.Exists(SettingsPath)) return (new EndpointInfo("http://+:8443", 8443), null);
+        try
+        {
+            using var doc = JsonDocument.Parse(System.IO.File.ReadAllText(SettingsPath));
+            if (!doc.RootElement.TryGetProperty("Kestrel", out var k) ||
+                !k.TryGetProperty("Endpoints", out var eps)) return (new EndpointInfo("http://+:8443", 8443), null);
+
+            EndpointInfo? http = eps.TryGetProperty("Http", out var h) ? Parse(h) : null;
+            EndpointInfo? https = eps.TryGetProperty("Https", out var hs) ? Parse(hs) : null;
+            return (http, https);
+        }
+        catch { return (new EndpointInfo("http://+:8443", 8443), null); }
+    }
+
+    private static void WriteEndpoints(string mode, int httpPort, int httpsPort)
+    {
+        using var ms = new MemoryStream();
+        using (var w = new Utf8JsonWriter(ms, new JsonWriterOptions { Indented = true }))
+        {
+            w.WriteStartObject();
+            w.WriteStartObject("Kestrel");
+            w.WriteStartObject("Endpoints");
+            if (mode is "http" or "both")
+            {
+                w.WriteStartObject("Http");
+                w.WriteString("Url", $"http://+:{httpPort}");
+                w.WriteEndObject();
+            }
+            if (mode is "https" or "both")
+            {
+                w.WriteStartObject("Https");
+                w.WriteString("Url", $"https://+:{httpsPort}");
+                w.WriteEndObject();
+            }
+            w.WriteEndObject();
+            w.WriteEndObject();
+            w.WriteEndObject();
+        }
+        System.IO.File.WriteAllText(SettingsPath, System.Text.Encoding.UTF8.GetString(ms.ToArray()));
     }
 
     private static (bool ok, string output) RunNetsh(string args)
