@@ -110,8 +110,8 @@ Write-Host "Creating service $svcName (binPath=$exe)..." -ForegroundColor Cyan
 sc.exe create $svcName binPath= "`"$exe`"" start= auto DisplayName= "CA-Manager Web Console" | Out-Null
 if ($LASTEXITCODE -ne 0) { throw "sc create 失败" }
 # sc.exe 写中文会乱码，通过注册表设置中文显示名与描述
-Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$svcName" -Name DisplayName -Value "CA-Manager 证书服务管理"
-Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$svcName" -Name Description -Value "CA-Manager - AD CS Web 管理控制台 (证书查询/吊销/请求处理/CRL/模板)"
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$svcName" -Name DisplayName -Value "CA-Manager Certificate Services Management"
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$svcName" -Name Description -Value "CA-Manager - AD CS web management console (certificates / revocation / requests / CRL / templates)"
 sc.exe failure $svcName reset= 86400 actions= restart/5000/restart/5000/restart/60000 | Out-Null
 
 # 本服务即本机 CA 管理，LocalSystem 默认具有 CA 管理员权限
