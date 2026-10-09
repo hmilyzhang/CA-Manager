@@ -8,6 +8,9 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 $svc = Get-Service -Name $svcName -ErrorAction SilentlyContinue
 if ($svc) {
     if ($svc.Status -ne 'Stopped') { Stop-Service -Name $svcName -Force }
+    # kill lingering app processes (they can keep holding ports after sc delete)
+    Get-Process -Name 'CaMgr.Api' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 2
     sc.exe delete $svcName
     Write-Host "Service removed. Data (publish\data) is kept." -ForegroundColor Green
 } else {
