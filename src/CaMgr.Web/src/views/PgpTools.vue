@@ -99,7 +99,7 @@ import { store, roleAtLeast } from '../store.js'
 import { fmtDate } from '../i18n.js'
 
 const { t } = useI18n()
-const form = ref({ name: '', email: '', algorithm: 'RSA3072', password: '', password2: '', validityYears: 2 })
+const form = ref({ name: '', email: '', algorithm: 'ECC', password: '', password2: '', validityYears: 2 })
 const generating = ref(false)
 const result = ref(null)
 const pending = ref(null)

@@ -152,7 +152,7 @@ const submitting = ref(false)
 
 // self-service form
 const isViewer = computed(() => !roleAtLeast(store.user?.role, 'Operator'))
-const form = ref({ cn: '', san: [], keyAlgorithm: 'RSA2048', template: '', pfxPassword: '', pfxPassword2: '' })
+const form = ref({ cn: '', san: [], keyAlgorithm: 'RSA4096', template: '', pfxPassword: '', pfxPassword2: '' })
 const sanInput = ref('')
 const selfResult = ref(null)
 
