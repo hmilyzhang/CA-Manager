@@ -22,7 +22,7 @@ export const messages = {
     role: { Viewer: '只读', Operator: '操作员', Admin: '管理员' },
     status: {
       issued: '已颁发', revoked: '已吊销', pending: '待处理', denied: '已拒绝', failed: '失败',
-      cacert: 'CA证书', kracert: 'KRA证书', foreign: '外部', other: '其他', all: '全部',
+      cacert: 'CA证书', kracert: 'KRA证书', foreign: '外部', other: '其他', all: '全部', expired: '已过期',
     },
     period: { Hours: '小时', Days: '天', Weeks: '周', Months: '月', Years: '年' },
     caType: { 0: '企业根 CA', 1: '企业从属 CA', 3: '独立根 CA', 4: '独立从属 CA' },
@@ -218,7 +218,7 @@ export const messages = {
     role: { Viewer: 'Viewer', Operator: 'Operator', Admin: 'Administrator' },
     status: {
       issued: 'Issued', revoked: 'Revoked', pending: 'Pending', denied: 'Denied', failed: 'Failed',
-      cacert: 'CA Cert', kracert: 'KRA Cert', foreign: 'Foreign', other: 'Other', all: 'All',
+      cacert: 'CA Cert', kracert: 'KRA Cert', foreign: 'Foreign', other: 'Other', all: 'All', expired: 'Expired',
     },
     period: { Hours: 'hours', Days: 'days', Weeks: 'weeks', Months: 'months', Years: 'years' },
     caType: { 0: 'Enterprise Root CA', 1: 'Enterprise Subordinate CA', 3: 'Standalone Root CA', 4: 'Standalone Subordinate CA' },
@@ -258,6 +258,9 @@ export const messages = {
       confirmRevoke: 'Revoke', revokedOk: 'Certificate revoked; effective after next CRL publication', serialMismatch: 'Serial number does not match',
       unrevokeConfirm: 'Unrevoke this certificate? (only certificateHold can be undone)', unrevokeTitle: 'Unrevoke',
       unrevokedOk: 'Revocation removed',
+      selected: '{n} selected', batchRevoke: 'Batch revoke', batchTitle: 'Batch revoke',
+      batchWarn: 'Revocation will be applied to {n} selected certificates (irreversible except certificateHold). The same reason applies to all.',
+      batchDone: 'Batch revoke done: {n} revoked, {f} failed',
       reasons: {
         0: 'Unspecified', 1: 'Key Compromise', 2: 'CA Compromise',
         3: 'Affiliation Changed', 4: 'Superseded',

@@ -3,10 +3,11 @@
     <div class="page-title">{{ $t('certs.title') }}</div>
 
     <div class="filter-bar">
-      <el-radio-group v-model="status" @change="reload(true)">
+      <el-radio-group v-model="status" @change="onStatusChange">
         <el-radio-button value="all">{{ $t('status.all') }}</el-radio-button>
         <el-radio-button value="issued">{{ $t('status.issued') }}</el-radio-button>
         <el-radio-button value="revoked">{{ $t('status.revoked') }}</el-radio-button>
+        <el-radio-button value="expired">{{ $t('status.expired') }}</el-radio-button>
         <el-radio-button value="denied">{{ $t('status.denied') }}</el-radio-button>
         <el-radio-button value="failed">{{ $t('status.failed') }}</el-radio-button>
         <el-radio-button value="pending">{{ $t('status.pending') }}</el-radio-button>
@@ -20,14 +21,22 @@
       <span v-if="result.truncated" style="color:#e6a23c;font-size:12px">{{ $t('common.truncated') }}</span>
     </div>
 
-    <el-table :data="result.items" v-loading="loading" @row-click="goDetail" row-class-name="clickable" stripe>
+    <div v-if="canOperate && selectedSerials.length" class="filter-bar" style="background:#fdf6ec; padding:10px; border-radius:8px">
+      <span style="color:#e6a23c;font-weight:600">{{ $t('certs.selected', { n: selectedSerials.length }) }}</span>
+      <el-button type="danger" plain @click="openBatchRevoke">{{ $t('certs.batchRevoke') }}</el-button>
+      <el-button text @click="clearSelection">{{ $t('common.cancel') }}</el-button>
+    </div>
+
+    <el-table ref="tableRef" :data="result.items" v-loading="loading" stripe row-key="requestId"
+      @selection-change="onSelectionChange" @row-click="goDetail" row-class-name="clickable">
+      <el-table-column v-if="canOperate" type="selection" width="42" reserve-selection />
       <el-table-column prop="requestId" :label="$t('common.requestId')" width="90" />
       <el-table-column :label="$t('common.commonName')" min-width="200" show-overflow-tooltip>
         <template #default="{ row }">{{ row.commonName || $t('common.none') }}</template>
       </el-table-column>
       <el-table-column :label="$t('common.status')" width="110">
         <template #default="{ row }">
-          <el-tag :type="statusTag(row.status)" effect="light">{{ statusText(row.status) }}</el-tag>
+          <el-tag :type="statusTag(displayStatus(row))" effect="light">{{ statusText(displayStatus(row)) }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="template" :label="$t('common.template')" min-width="140" show-overflow-tooltip />
@@ -83,6 +92,25 @@
         <el-button type="danger" :loading="revoking" @click="doRevoke">{{ $t('certs.confirmRevoke') }}</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="batchDlg" :title="$t('certs.batchTitle')" width="520">
+      <el-alert type="warning" :closable="false" style="margin-bottom: 12px"
+        :title="$t('certs.batchWarn', { n: selectedSerials.length })" />
+      <el-form label-width="90px">
+        <el-form-item :label="$t('certs.reasonLabel')">
+          <el-select v-model="batchForm.reason" style="width: 100%">
+            <el-option v-for="r in reasonOptions.filter(x => x.value !== 6)" :key="r.value" :label="$t('certs.reasons.' + r.value)" :value="r.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('certs.effectiveFrom')">
+          <el-date-picker v-model="batchForm.effectiveFrom" type="datetime" :placeholder="$t('certs.effectivePlaceholder')" style="width: 100%" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="batchDlg = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="danger" :loading="batchRunning" @click="doBatchRevoke">{{ $t('certs.batchRevoke') }}</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -95,6 +123,8 @@ import { api } from '../api.js'
 import { store, roleAtLeast } from '../store.js'
 import { fmtDay } from '../i18n.js'
 
+const tableRef = ref(null)
+
 const router = useRouter()
 const { t } = useI18n()
 const canOperate = computed(() => roleAtLeast(store.user?.role, 'Operator'))
@@ -105,6 +135,54 @@ const loading = ref(false)
 const result = ref({ items: [], totalFetched: 0 })
 const page = ref(1)
 const limit = 50
+
+const selectionRows = ref([])
+const selectedSerials = ref([])
+const batchDlg = ref(false)
+const batchForm = ref({ reason: 4, effectiveFrom: null })
+const batchRunning = ref(false)
+const batchResult = ref(null)
+
+const selectedCertRows = computed(() => result.value.items.filter(r => selectedSerials.value.includes(r.requestId)))
+
+function onSelectionChange(rows) {
+  selectionRows.value = rows
+  selectedSerials.value = rows.map(r => r.requestId)
+}
+function clearSelection() {
+  if (tableRef.value) tableRef.value.clearSelection()
+  selectedSerials.value = []
+}
+function displayStatus(row) {
+  if (row.status === 'issued' && row.notAfter && new Date(row.notAfter) < new Date()) return 'expired'
+  return row.status
+}
+
+function openBatchRevoke() {
+  batchForm.value = { reason: 4, effectiveFrom: null }
+  batchDlg.value = true
+}
+
+async function doBatchRevoke() {
+  batchRunning.value = true
+  try {
+    const r = await api.post('/api/certificates/batch-revoke', {
+      target: 'selected',
+      serials: selectedSerials.value,
+      reason: batchForm.value.reason,
+      effectiveFrom: batchForm.value.effectiveFrom,
+    })
+    batchResult.value = r
+    ElMessage.success(t('certs.batchDone', { n: r.revoked, f: r.failed }))
+    batchDlg.value = false
+    clearSelection()
+    reload(false)
+  } catch (e) {
+    ElMessage.error(e.message)
+  } finally {
+    batchRunning.value = false
+  }
+}
 
 const revokeDlg = ref(false)
 const revokeTarget = ref(null)

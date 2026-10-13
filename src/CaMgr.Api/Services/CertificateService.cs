@@ -4,7 +4,7 @@ using CaMgr.Api.CaInterop;
 
 namespace CaMgr.Api.Services;
 
-public enum CertStatusFilter { All, Issued, Revoked, Pending, Failed, Denied, Expiring }
+public enum CertStatusFilter { All, Issued, Revoked, Pending, Failed, Denied, Expiring, Expired }
 
 public class CertificateDto
 {
@@ -141,6 +141,11 @@ public sealed class CertificateService(CaDbService db, CaAdminService admin, ILo
             case CertStatusFilter.Failed:
                 restrictions.Add(new ViewRestriction(DbCol.Disposition, CaConst.CVR_SEEK_EQ, CaConst.DB_DISP_ERROR));
                 break;
+            case CertStatusFilter.Expired:
+                // issued certs; expired ones are post-filtered in memory (the NotAfter
+                // restriction is unreliable in combined ICertView restrictions)
+                restrictions.Add(new ViewRestriction(DbCol.Disposition, CaConst.CVR_SEEK_EQ, CaConst.DB_DISP_ISSUED));
+                break;
         }
 
         if (!string.IsNullOrWhiteSpace(serial))
@@ -162,11 +167,16 @@ public sealed class CertificateService(CaDbService db, CaAdminService admin, ILo
         var expiringCutoff = DateTime.Now.AddDays(expiringDays);
 
         Func<CaRow, bool>? post = null;
-        if (kw || status == CertStatusFilter.Expiring || restrictRequestIds is not null)
+        if (kw || status == CertStatusFilter.Expiring || status == CertStatusFilter.Expired || restrictRequestIds is not null)
         {
             post = row =>
             {
                 if (restrictRequestIds is not null && !restrictRequestIds.Contains(row.RequestId)) return false;
+                if (status == CertStatusFilter.Expired)
+                {
+                    var exp = CaDbService.Date(row, DbCol.NotAfter);
+                    if (exp is null || exp.Value >= DateTime.Now) return false;
+                }
                 if (kw)
                 {
                     var k = keyword!.Trim();
@@ -192,6 +202,24 @@ public sealed class CertificateService(CaDbService db, CaAdminService admin, ILo
         var truncated = rows.Count >= maxScan;
         var page = rows.Take(limit).Select(ToDto).ToList();
         return new CertificateListResult { Items = page, TotalFetched = rows.Count, Truncated = truncated };
+    }
+
+    /// <summary>Serials of certificates that were issued, are past NotAfter, and were never revoked.</summary>
+    public async Task<List<string>> ExpiredNotRevokedSerialsAsync()
+    {
+        var rows = await db.QueryAsync(
+            [DbCol.SerialNumber, DbCol.NotAfter, DbCol.Disposition, DbCol.RevokedReason],
+            [
+                new ViewRestriction(DbCol.Disposition, CaConst.CVR_SEEK_EQ, CaConst.DB_DISP_ISSUED),
+            ],
+            maxRows: 20000);
+        return rows
+            .Where(r => (CaDbService.Int(r, DbCol.RevokedReason) ?? -1) != CaConst.CRL_REASON_UNREVOKE)
+            .Where(r => (CaDbService.Date(r, DbCol.NotAfter) ?? DateTime.MinValue) < DateTime.Now)
+            .Select(r => CaDbService.Str(r, DbCol.SerialNumber)?.Trim())
+            .Where(x => !string.IsNullOrEmpty(x))
+            .Select(x => x!)
+            .ToList();
     }
 
     public async Task<CertificateDetailDto?> DetailAsync(int requestId)

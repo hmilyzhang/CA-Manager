@@ -20,6 +20,7 @@ public sealed class RequireRoleAttribute(params AppRole[] allowed) : Attribute, 
 }
 
 public record RevokeRequest(string SerialNumber, int Reason, DateTime? EffectiveFrom, string? ConfirmSerial);
+public record BatchRevokeRequest(string Target, List<string>? Serials, int Reason, DateTime? EffectiveFrom);
 
 [ApiController]
 [Route("api/certificates")]
@@ -152,5 +153,54 @@ public sealed class CertificatesController(
             await audit.LogAsync(AuditActions.Unrevoke, "certificate", detail.SerialNumber ?? serial, ex.Message, User_, Ip, success: false);
             return BadRequest(new { error = CaError.Describe(ex) });
         }
+    }
+
+    /// <summary>
+    /// Batch revocation. Target "selected" revokes the given serials; "expired" revokes
+    /// every issued-but-past-expiry certificate that was never revoked.
+    /// </summary>
+    [HttpPost("batch-revoke")]
+    [RequireRole(AppRole.Operator)]
+    public async Task<IActionResult> BatchRevoke([FromBody] BatchRevokeRequest req)
+    {
+        List<string> serials;
+        switch (req.Target)
+        {
+            case "selected":
+                serials = (req.Serials ?? [])
+                    .Select(x => x.Trim().Replace(" ", "").ToUpperInvariant())
+                    .Where(x => x.Length > 0).Distinct().ToList();
+                if (serials.Count == 0) return BadRequest(new { error = "未选择任何证书" });
+                if (serials.Count > 2000) return BadRequest(new { error = "单批最多 2000 张，请分批操作" });
+                break;
+            case "expired":
+                serials = await certs.ExpiredNotRevokedSerialsAsync();
+                if (serials.Count == 0) return Ok(new { requested = 0, revoked = 0, skipped = 0, failures = Array.Empty<object>(), message = "没有已过期未吊销的证书" });
+                break;
+            default:
+                return BadRequest(new { error = "目标无效" });
+        }
+
+        int revoked = 0, failed = 0;
+        var failures = new List<object>();
+        foreach (var serial in serials)
+        {
+            try
+            {
+                await admin.RevokeCertificateAsync(serial, req.Reason, req.EffectiveFrom);
+                revoked++;
+                await audit.LogAsync(AuditActions.Revoke, "certificate", serial,
+                    $"batch target={req.Target} reason={CertificateService.RevocationReasonText(req.Reason)}", User_, Ip);
+            }
+            catch (Exception ex)
+            {
+                failed++;
+                var err = ex.Message;
+                failures.Add(new { serial, error = err });
+                await audit.LogAsync(AuditActions.Revoke, "certificate", serial, err, User_, Ip, success: false);
+            }
+        }
+
+        return Ok(new { requested = serials.Count, revoked, failed, failures });
     }
 }
