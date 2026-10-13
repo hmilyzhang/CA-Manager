@@ -1,4 +1,4 @@
-using System.DirectoryServices.Protocols;
+﻿using System.DirectoryServices.Protocols;
 using System.Security.Claims;
 using CaMgr.Api.Data;
 
@@ -92,6 +92,22 @@ public sealed class LdapAuthService(
             var search = new SearchRequest(nc, $"(&(objectClass=user)(sAMAccountName={Escape(account)}))", SearchScope.Subtree, ["displayName"]);
             var resp = (SearchResponse)conn.SendRequest(search);
             return resp.Entries.Count > 0 ? resp.Entries[0].Attributes["displayName"]?[0]?.ToString() : null;
+        }
+        catch { return null; }
+    }
+
+    /// <summary>Fetches the canonical sAMAccountName for the bound account (AD casing).</summary>
+    private static string? CanonicalAccount(LdapConnection conn, string bindUser)
+    {
+        try
+        {
+            var sep = (char)92;
+            var account = bindUser.Contains(sep) ? bindUser.Split(sep)[1] : bindUser.Split('@')[0];
+            var rd = new SearchRequest("rootDse", "(objectClass=*)", SearchScope.Base, ["defaultNamingContext"]);
+            var nc = ((SearchResponse)conn.SendRequest(rd)).Entries[0].Attributes["defaultNamingContext"][0].ToString();
+            var search = new SearchRequest(nc, $"(&(objectClass=user)(sAMAccountName={Escape(account)}))", SearchScope.Subtree, ["sAMAccountName"]);
+            var resp = (SearchResponse)conn.SendRequest(search);
+            return resp.Entries.Count > 0 ? resp.Entries[0].Attributes["sAMAccountName"][0].ToString() : null;
         }
         catch { return null; }
     }

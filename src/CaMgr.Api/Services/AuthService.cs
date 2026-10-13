@@ -17,7 +17,7 @@ public sealed class AuthService(IDbContextFactory<AppDbContext> dbf, ILogger<Aut
     public async Task<LoginOutcome> LoginLocalAsync(string username, string password)
     {
         await using var db = dbf.CreateDbContext();
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Username == username && u.Source == UserSource.Local);
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower() && u.Source == UserSource.Local);
         if (user is null)
             return new LoginOutcome(null, "用户名或密码错误", false);
         if (!user.Enabled)
@@ -65,7 +65,8 @@ public sealed class AuthService(IDbContextFactory<AppDbContext> dbf, ILogger<Aut
     public async Task<UserEntity> UpsertAdUserAsync(string username, AppRole? mappedRole, string? displayName, string? groups)
     {
         await using var db = dbf.CreateDbContext();
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Username == username);
+        // SQLite comparisons are case-sensitive by default - AD names are not
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());
         if (user is null)
         {
             user = new UserEntity { Username = username, Source = UserSource.Ad, Role = mappedRole ?? AppRole.Viewer, DisplayName = displayName, AdGroups = groups };

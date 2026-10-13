@@ -35,7 +35,7 @@ public sealed class AuthController(
         UserEntity? user;
         await using (var db = dbf.CreateDbContext())
         {
-            user = await db.Users.FirstOrDefaultAsync(u => u.Username == req.Username && u.Source == UserSource.Ad);
+            user = await db.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == req.Username.ToLower() && u.Source == UserSource.Ad);
         }
         var adEnabled = await settings.GetAsync("ldap.enabled", "false") == "true";
 
