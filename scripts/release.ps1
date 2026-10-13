@@ -16,9 +16,11 @@ if (-not $token -and $remote -match 'oauth2:([^@]+)@') { $token = $Matches[1] }
 if (-not $token) { throw "GitLab token not found (set GITLAB_TOKEN or keep it in the gitlab remote url)" }
 $ver = $Version.TrimStart('v')
 
-# ---- 0. bump the sidebar version ----
-$layout = Join-Path $root 'src\CaMgr.Web\src\layout\MainLayout.vue'
-(Get-Content $layout -Raw) -replace 'CA-Manager v[\d.]+', "CA-Manager $Version" | Set-Content $layout -Encoding UTF8
+# ---- 0. bump the package version (sidebar reads it at build time) ----
+$pkgPath = Join-Path $root 'src\CaMgr.Web\package.json'
+$pkg = Get-Content $pkgPath -Raw | ConvertFrom-Json
+$pkg.version = $Version.TrimStart('v')
+Set-Content $pkgPath -Value ($pkg | ConvertTo-Json -Depth 10) -Encoding UTF8
 
 # ---- 1. build the deploy package ----
 Write-Host "[1/6] building deploy package..." -ForegroundColor Cyan

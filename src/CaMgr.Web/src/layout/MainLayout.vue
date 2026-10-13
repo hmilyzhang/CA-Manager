@@ -83,6 +83,7 @@ import { curLang, setLang } from '../i18n.js'
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
+const appVersion = __APP_VERSION__
 const collapsed = ref(localStorage.getItem('camgr-sidebar') === '1')
 function toggleSidebar() {
   collapsed.value = !collapsed.value
