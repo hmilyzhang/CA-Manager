@@ -30,8 +30,7 @@
             </el-form-item>
             <el-form-item :label="$t('pgp.validity')">
               <el-select v-model="form.validityYears" style="width: 280px">
-                <el-option :value="0" :label="$t('pgp.never')" />
-                <el-option v-for="y in [1,2,3,5,10]" :key="y" :value="y" :label="$t('pgp.years', { n: y })" />
+                <el-option v-for="y in [1, 2]" :key="y" :value="y" :label="$t('pgp.years', { n: y })" />
               </el-select>
             </el-form-item>
             <el-form-item>
