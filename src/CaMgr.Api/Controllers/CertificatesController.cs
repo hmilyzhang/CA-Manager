@@ -50,13 +50,13 @@ public sealed class CertificatesController(
         [FromQuery] DateTime? from = null,
         [FromQuery] DateTime? to = null,
         [FromQuery] int limit = 50,
-        [FromQuery] int? before = null,
+        [FromQuery] int page = 1,
         [FromQuery] int expiringDays = 30)
     {
         if (!Enum.TryParse<CertStatusFilter>(status, true, out var st)) st = CertStatusFilter.All;
         limit = Math.Clamp(limit, 1, 200);
         var scope = await OwnedScopeAsync();
-        var result = await certs.ListAsync(st, keyword, serial, template, from?.ToUniversalTime(), to?.ToUniversalTime(), limit, before, expiringDays, scope);
+        var result = await certs.ListAsync(st, keyword, serial, template, from?.ToUniversalTime(), to?.ToUniversalTime(), limit, page, expiringDays, scope);
         return Ok(result);
     }
 

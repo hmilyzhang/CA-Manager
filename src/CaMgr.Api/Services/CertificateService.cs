@@ -118,7 +118,7 @@ public sealed class CertificateService(CaDbService db, CaAdminService admin, ILo
         string? template = null,
         DateTime? from = null, DateTime? to = null,
         int limit = 50,
-        int? beforeRequestId = null,
+        int page = 1,
         int expiringDays = 30,
         ISet<int>? restrictRequestIds = null)
     {
@@ -153,8 +153,7 @@ public sealed class CertificateService(CaDbService db, CaAdminService admin, ILo
             var s = serial.Trim().Replace(" ", "").Replace(":", "");
             restrictions.Add(new ViewRestriction(DbCol.SerialNumber, CaConst.CVR_SEEK_EQ, s.ToUpperInvariant()));
         }
-        if (beforeRequestId.HasValue)
-            restrictions.Add(new ViewRestriction(DbCol.RequestId, CaConst.CVR_SEEK_LT, beforeRequestId.Value));
+        // pagination is done in-memory over the full matching set (see maxScan above)
         if (from.HasValue)
             restrictions.Add(new ViewRestriction(DbCol.SubmittedWhen, CaConst.CVR_SEEK_GE, from.Value));
         if (to.HasValue)
@@ -163,7 +162,6 @@ public sealed class CertificateService(CaDbService db, CaAdminService admin, ILo
             restrictions.Add(new ViewRestriction(DbCol.CertificateTemplate, CaConst.CVR_SEEK_EQ, template.Trim()));
 
         bool kw = !string.IsNullOrWhiteSpace(keyword);
-        int maxScan = Math.Max(limit * 20, 1000);
         var expiringCutoff = DateTime.Now.AddDays(expiringDays);
 
         Func<CaRow, bool>? post = null;
@@ -198,10 +196,11 @@ public sealed class CertificateService(CaDbService db, CaAdminService admin, ILo
             };
         }
 
-        var rows = await db.QueryAsync(ListColumns, restrictions, maxScan, postFilter: post);
+        var maxScan = Math.Min(20000, Math.Max(1000, Math.Max(1, page) * limit + limit));
+        var rows = await db.QueryAsync(ListColumns, restrictions, maxRows: maxScan, postFilter: post);
         var truncated = rows.Count >= maxScan;
-        var page = rows.Take(limit).Select(ToDto).ToList();
-        return new CertificateListResult { Items = page, TotalFetched = rows.Count, Truncated = truncated };
+        var items = rows.Skip((Math.Max(1, page) - 1) * limit).Take(limit).Select(ToDto).ToList();
+        return new CertificateListResult { Items = items, TotalFetched = rows.Count, Truncated = truncated };
     }
 
     /// <summary>Serials of certificates that were issued, are past NotAfter, and were never revoked.</summary>

@@ -209,8 +209,7 @@ async function reload(reset) {
     const params = new URLSearchParams({ status: status.value, limit: String(limit) })
     if (keyword.value) params.set('keyword', keyword.value)
     if (range.value?.length === 2) { params.set('from', range.value[0]); params.set('to', range.value[1]) }
-    const before = result.value.items[(page.value - 1) * limit - 1]?.requestId
-    if (page.value > 1 && before) params.set('before', before)
+    params.set('page', String(page.value))
     result.value = await api.get('/api/certificates?' + params.toString())
   } catch (e) {
     ElMessage.error(e.message)
