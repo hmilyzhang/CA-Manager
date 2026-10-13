@@ -58,11 +58,14 @@ public sealed class AuthService(IDbContextFactory<AppDbContext> dbf, ILogger<Aut
     /// Upsert of a domain user after successful LDAP bind. mappedRole null means the
     /// group mapping found nothing - the existing (possibly manually assigned) role is
     /// then KEPT instead of being reset to Viewer on every login.
+    /// A pre-existing LOCAL account with the same username is converted to an AD account
+    /// (its local password hash is dropped - LDAP authenticates from now on) so there is
+    /// exactly one identity per username.
     /// </summary>
     public async Task<UserEntity> UpsertAdUserAsync(string username, AppRole? mappedRole, string? displayName, string? groups)
     {
         await using var db = dbf.CreateDbContext();
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Username == username && u.Source == UserSource.Ad);
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Username == username);
         if (user is null)
         {
             user = new UserEntity { Username = username, Source = UserSource.Ad, Role = mappedRole ?? AppRole.Viewer, DisplayName = displayName, AdGroups = groups };
@@ -70,6 +73,14 @@ public sealed class AuthService(IDbContextFactory<AppDbContext> dbf, ILogger<Aut
         }
         else
         {
+            if (user.Source == UserSource.Local)
+            {
+                user.Source = UserSource.Ad;
+                user.PasswordHash = null;          // LDAP authenticates from now on
+                user.MustChangePassword = false;
+                user.FailedAttempts = 0;
+                user.LockedUntil = null;
+            }
             if (mappedRole.HasValue) user.Role = mappedRole.Value; // mapping hit -> sync
             user.DisplayName = displayName ?? user.DisplayName;
             user.AdGroups = groups ?? user.AdGroups;

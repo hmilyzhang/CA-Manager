@@ -46,7 +46,7 @@ public sealed class LdapAuthService(
             var display = ResolveDisplayName(conn, bindUser);
             var user = await auth.UpsertAdUserAsync(
                 username.Contains('\\') ? username.Split('\\')[1] : username.Split('@')[0],
-                role ?? AppRole.Viewer,
+                role,
                 display,
                 string.Join(",", groups));
             return new LoginOutcome(user, "", user.MustChangePassword);

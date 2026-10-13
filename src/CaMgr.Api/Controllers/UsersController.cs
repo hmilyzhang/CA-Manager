@@ -96,6 +96,8 @@ public sealed class UsersController(
         }
         if (!string.IsNullOrWhiteSpace(req.Password))
         {
+            if (user.Source == UserSource.Ad)
+                return BadRequest(new { error = "域账号密码在 AD 中管理，无法在此重置" });
             if (req.Password.Length < 8) return BadRequest(new { error = "密码至少 8 位" });
             user.PasswordHash = new Microsoft.AspNetCore.Identity.PasswordHasher<UserEntity>().HashPassword(user, req.Password);
             user.MustChangePassword = true;

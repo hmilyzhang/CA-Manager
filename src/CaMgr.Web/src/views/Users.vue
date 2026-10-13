@@ -39,7 +39,10 @@
       <el-table-column :label="$t('common.action')" width="330" class-name="nowrap-cell">
         <template #default="{ row }">
           <div style="display: flex; gap: 6px; flex-wrap: nowrap; align-items: center">
-            <el-button size="small" @click="resetPassword(row)">{{ $t('users.resetPwd') }}</el-button>
+            <el-tooltip v-if="row.source === 'Ad'" :content="$t('users.adPwdHint')">
+            <el-button size="small" disabled>{{ $t('users.resetPwd') }}</el-button>
+          </el-tooltip>
+          <el-button v-else size="small" @click="resetPassword(row)">{{ $t('users.resetPwd') }}</el-button>
             <el-button size="small" :type="row.enabled ? 'warning' : 'success'" plain @click="toggleEnabled(row)"
               :disabled="row.username === 'admin'">{{ row.enabled ? $t('common.disable') : $t('common.enable') }}</el-button>
             <el-button size="small" type="danger" plain @click="remove(row)" :disabled="row.username === 'admin'">{{ $t('common.delete') }}</el-button>
