@@ -6,8 +6,10 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 
 $root = Split-Path -Parent $PSScriptRoot
-Write-Host "停止服务..." -ForegroundColor Cyan
-Stop-Service CA-Mgr -Force -ErrorAction SilentlyContinue
+Write-Host "Stopping service..." -ForegroundColor Cyan
+Stop-Service CA-Manager -Force -ErrorAction SilentlyContinue
+# kill lingering app processes (a hung process keeps the dll locked)
+Get-Process -Name 'CaMgr.Api' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 Start-Sleep -Seconds 2
 
 Write-Host "构建前端..." -ForegroundColor Cyan
@@ -23,6 +25,6 @@ if (-not (Test-Path $dotnet)) { $dotnet = 'dotnet' }
 if ($LASTEXITCODE -ne 0) { throw "发布失败" }
 
 Write-Host "启动服务..." -ForegroundColor Cyan
-Start-Service CA-Mgr
+Start-Service CA-Manager
 Start-Sleep -Seconds 3
-(Get-Service CA-Mgr).Status
+(Get-Service CA-Manager).Status
