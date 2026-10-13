@@ -258,7 +258,7 @@ public sealed class ApprovalService(
                 if (!smtp.Enabled) return;
                 var opt = await GetRecipientsAsync();
                 if (opt.Count == 0) return;
-                var typeText = type == "self" ? "自助生成" : "CSR 提交";
+                var typeText = type == "self" ? "Self-service generation" : "CSR submission";
                 var html = "<div style=\"font-family:Segoe UI,Microsoft YaHei,Arial,sans-serif\">" +
                            $"<h3 style=\"color:#2563eb\">证书申请待审批</h3>" +
                            $"<p>用户 <b>{System.Net.WebUtility.HtmlEncode(username)}</b> 提交了证书申请，请登录 CA-Manager 在“审批”页面处理：</p>" +

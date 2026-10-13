@@ -131,7 +131,7 @@ public sealed class NotifyService(
         if (anyEvent && opt.Recipients.Count > 0)
         {
             var html = BuildDigestHtml(expiring, caCertText, crlText, pendingCount, opt.ExpiringDays, notes);
-            var err = await mail.SendAsync(smtp, opt.Recipients, "[CA-Manager] 每日 PKI 通知", html);
+            var err = await mail.SendAsync(smtp, opt.Recipients, "[CA-Manager] Daily PKI Notification", html);
             if (err is null) digestTo = opt.Recipients.Count;
             else notes.Add("汇总邮件发送失败: " + err);
         }
@@ -143,7 +143,7 @@ public sealed class NotifyService(
             foreach (var g in expiring.Where(x => !string.IsNullOrWhiteSpace(x.Email)).GroupBy(x => x.Email!.Trim(), StringComparer.OrdinalIgnoreCase))
             {
                 var html = BuildRequesterHtml(g.Key, g.ToList(), opt.ExpiringDays);
-                var err = await mail.SendAsync(smtp, [g.Key], "[CA-Manager] 您的证书即将到期", html);
+                var err = await mail.SendAsync(smtp, [g.Key], "[CA-Manager] Your certificates are expiring", html);
                 if (err is null) requesterMails++;
                 else notes.Add($"申请者邮件({g.Key})失败: " + err);
             }
@@ -173,9 +173,9 @@ public sealed class NotifyService(
         if (string.IsNullOrWhiteSpace(to)) return "未指定测试收件人";
         var html = "<div style=\"font-family:Segoe UI,Arial,sans-serif\">" +
                    "<h3>CA-Manager 测试邮件</h3>" +
-                   $"<p>这是一封测试邮件。如果您收到它，说明 SMTP 配置正确。</p>" +
+                   $"<p>If you received this mail, the SMTP configuration works.</p>" +
                    $"<p style=\"color:#888;font-size:12px\">{DateTime.Now:yyyy-MM-dd HH:mm:ss} · {smtp.Host}:{smtp.Port} ({smtp.Mode})</p></div>";
-        return await mail.SendAsync(smtp, [to], "[CA-Manager] 测试邮件", html);
+        return await mail.SendAsync(smtp, [to], "[CA-Manager] Test mail", html);
     }
 
     private sealed record ExpiringRow(int RequestId, string? CommonName, DateTime NotAfter, string? Template, string? Email);
@@ -214,7 +214,7 @@ public sealed class NotifyService(
     {
         var sb = new StringBuilder();
         sb.Append("<table style=\"border-collapse:collapse;font-size:13px\" cellpadding=\"6\" border=\"1\">");
-        sb.Append("<tr style=\"background:#f0f2f5\"><th>请求ID</th><th>通用名称</th><th>模板</th><th>到期时间</th><th>剩余天数</th></tr>");
+        sb.Append("<tr style=\"background:#f0f2f5\"><th>Request ID</th><th>Common Name</th><th>Template</th><th>Expires</th><th>Days left</th></tr>");
         foreach (var x in rows)
         {
             var left = (int)(x.NotAfter - DateTime.Now).TotalDays;

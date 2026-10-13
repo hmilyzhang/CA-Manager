@@ -1,12 +1,14 @@
-<template>
+﻿<template>
   <el-container style="height: 100%">
-    <el-aside width="216px" class="sidebar">
+    <el-aside :width="collapsed ? '64px' : '216px'" class="sidebar">
       <div class="logo">
         <el-icon :size="22"><Lock /></el-icon>
-        <span>CA-Manager</span>
+        <span v-if="!collapsed">CA-Manager</span>
       </div>
       <el-menu
         :default-active="$route.path"
+        :collapse="collapsed"
+        :collapse-transition="false"
         router
         background-color="#1d2535"
         text-color="#aeb6c6"
@@ -31,7 +33,11 @@
 
     <el-container>
       <el-header class="topbar">
-        <div></div>
+        <div style="display: flex; align-items: center; gap: 10px">
+          <el-button text @click="toggleSidebar" style="padding: 6px">
+            <el-icon :size="18"><Expand v-if="collapsed" /><Fold v-else /></el-icon>
+          </el-button>
+        </div>
         <div style="display: flex; align-items: center; gap: 14px">
           <el-dropdown @command="onLang" trigger="click">
             <span class="lang-chip clickable">
@@ -77,6 +83,11 @@ import { curLang, setLang } from '../i18n.js'
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
+const collapsed = ref(localStorage.getItem('camgr-sidebar') === '1')
+function toggleSidebar() {
+  collapsed.value = !collapsed.value
+  localStorage.setItem('camgr-sidebar', collapsed.value ? '1' : '0')
+}
 const role = computed(() => store.user?.role || 'Viewer')
 const viewKey = computed(() => route.path + '-' + curLang())
 
@@ -98,7 +109,10 @@ async function onCommand(cmd) {
   background: #1d2535;
   display: flex;
   flex-direction: column;
+  transition: width 0.2s;
+  overflow-x: hidden;
 }
+.sidebar :deep(.el-menu--collapse) { width: 64px; }
 .logo {
   color: #fff;
   font-size: 18px;
