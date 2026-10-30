@@ -3,13 +3,20 @@
 
 Covers: Viewer (self-scoped + approval flows), Operator (immediate actions, approvals,
 no admin config), Auditor (global read-only), Admin (full)."""
-import json, os, urllib.request
+import json, os, ssl, urllib.request
+
+# accept self-signed/internal-CA certificates on the target instance
+_ssl_ctx = ssl.create_default_context()
+_ssl_ctx.check_hostname = False
+_ssl_ctx.verify_mode = ssl.CERT_NONE
+urllib.request.install_opener(urllib.request.build_opener(
+    urllib.request.HTTPSHandler(context=_ssl_ctx)))
 
 BASE = os.environ.get('CAMGR_BASE', 'http://127.0.0.1:8442')
 ADMIN_PW = os.environ.get('CAMGR_ADMIN_PW', 'Camgr#2026!Lab')
 results = []
 
-def session(): return urllib.request.build_opener(urllib.request.HTTPCookieProcessor())
+def session(): return urllib.request.build_opener(urllib.request.HTTPCookieProcessor(), urllib.request.HTTPSHandler(context=_ssl_ctx))
 
 def call(op, method, url, obj=None, raw=False):
     data = json.dumps(obj, ensure_ascii=False).encode('utf-8') if obj is not None else b''

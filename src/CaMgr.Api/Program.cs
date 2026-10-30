@@ -121,6 +121,7 @@ builder.Services.AddSingleton<NotifyService>();
 builder.Services.AddSingleton<SelfServiceCertService>();
 builder.Services.AddSingleton<ApprovalService>();
 builder.Services.AddSingleton<PgpService>();
+builder.Services.AddSingleton<ApiTokenService>();
 builder.Services.AddHostedService<NotifyBackgroundService>();
 
 builder.Services.AddControllers()
@@ -181,6 +182,18 @@ using (var scope = app.Services.CreateScope())
             "CreatedAt" TEXT NOT NULL
         );
         CREATE INDEX IF NOT EXISTS "IX_ApprovalRequests_Status" ON "ApprovalRequests" ("Status");
+        CREATE TABLE IF NOT EXISTS "ApiTokens" (
+            "Id" INTEGER NOT NULL CONSTRAINT "pk_ApiTokens" PRIMARY KEY AUTOINCREMENT,
+            "Name" TEXT NOT NULL,
+            "TokenHash" TEXT NOT NULL,
+            "Role" INTEGER NOT NULL DEFAULT 1,
+            "CreatedBy" TEXT NOT NULL DEFAULT '',
+            "CreatedAt" TEXT NOT NULL,
+            "ExpiresAt" TEXT NOT NULL,
+            "LastUsedAt" TEXT NULL,
+            "Enabled" INTEGER NOT NULL DEFAULT 1
+        );
+        CREATE UNIQUE INDEX IF NOT EXISTS "IX_ApiTokens_TokenHash" ON "ApiTokens" ("TokenHash");
         """);
     var auth = scope.ServiceProvider.GetRequiredService<AuthService>();
     await auth.SeedAdminAsync();
@@ -188,6 +201,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseStaticFiles();
 app.UseAuthentication();
+app.UseMiddleware<CaMgr.Api.Middleware.ApiTokenAuthMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();

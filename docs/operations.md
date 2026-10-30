@@ -53,6 +53,28 @@ Changes take effect at the next publication. Delta CRL period 0 disables Delta C
 Recorded: logins (including failures) / logout / password changes / revocations / unrevokes / issuance / denials / resubmits / CSR submissions / CRL publications / config changes / template changes / user management.
 Fields: time, user, source IP, action, object type, object, parameter summary, result. Filterable queries and CSV export.
 
+## Machine Automation (API Tokens)
+
+Web servers can request and renew certificates through the REST API without a browser login.
+
+**Setup (admin, Users page → "API Tokens" tab):**
+1. Create one token per machine (name it after the machine/purpose)
+2. Copy the plaintext token immediately - it is shown only once and stored hashed
+3. Tokens are Operator-level (immediate issuance, no approval) and expire after 1 year
+
+**API endpoints** (Bearer authentication, JSON):
+
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /api/automation/certificate` | Request a new certificate (CN/SAN/key algorithm/template/PFX password) - returns the PFX on issuance |
+| `POST /api/automation/renew` | Re-key renewal: reads the old certificate (by serial number) and issues a replacement with the same subject/SAN/template. Old certificate is kept |
+| `GET /api/automation/status/{requestId}` | Check request status |
+
+See `scripts/api-example.ps1` in the repository for a complete Windows example
+(request + PFX import into `LocalMachine\My`). Every API call is audited with
+the token name; tokens never appear in logs; revoke from the same tab if a
+machine is decommissioned.
+
 ## Emergency Admin Password Reset
 
 If the admin password is lost, run from the publish folder on the server (no .NET needed, the self-contained exe handles it; the service may stay running):

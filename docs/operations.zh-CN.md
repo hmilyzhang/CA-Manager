@@ -53,6 +53,26 @@
 记录项：登录（含失败）/登出/改密/吊销/取消吊销/颁发/拒绝/重提交/提交申请/发布 CRL/配置修改/模板变更/用户增删改。
 字段：时间、用户、来源 IP、操作、对象类型、对象、参数摘要、结果。支持按条件查询与 CSV 导出。
 
+## 机器自动化（API Token）
+
+Web 服务器可通过 REST API 免浏览器登录自动申请/更换证书。
+
+**配置（管理员，用户管理页 → "API Tokens" 标签页）：**
+1. 每台机器创建一个 Token（以机器名/用途命名）
+2. 明文 Token 只显示一次，请立即复制保存——库中只存哈希
+3. Token 为操作员权限（可即时颁发、免审批），有效期 1 年
+
+**API 端点**（Bearer 认证，JSON）：
+
+| 端点 | 用途 |
+|------|------|
+| `POST /api/automation/certificate` | 申请新证书（CN/SAN/密钥算法/模板/PFX 密码）——颁发后直接返回 PFX |
+| `POST /api/automation/renew` | 换发：按旧证书序列号读取原参数，签发替换证书。旧证书默认保留 |
+| `GET /api/automation/status/{requestId}` | 查询申请状态 |
+
+完整 Windows 示例（申请 + 导入 `LocalMachine\My`）见仓库 `scripts/api-example.ps1`。
+所有调用均以 Token 名记审计；Token 本体不出现在日志中；机器退役时在同页吊销。
+
 ## 管理员密码应急重置
 
 忘记 admin 密码时，在该服务器 publish 目录下执行（自包含 exe，服务器无需 .NET；服务可保持运行）：

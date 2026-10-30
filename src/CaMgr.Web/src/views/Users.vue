@@ -52,6 +52,36 @@
     </el-table>
       </el-tab-pane>
 
+      <el-tab-pane :label="$t('apitokens.tab')" name="tokens">
+        <div class="filter-bar">
+          <el-button type="primary" @click="tokenDlg = true"><el-icon><Plus /></el-icon>&nbsp;{{ $t('apitokens.create') }}</el-button>
+          <span style="color:#909399;font-size:13px">{{ $t('apitokens.hint') }}</span>
+        </div>
+        <el-table :data="apiTokens" v-loading="tokensLoading" stripe>
+          <el-table-column prop="id" label="#" width="60" />
+          <el-table-column prop="name" :label="$t('apitokens.name')" min-width="180" />
+          <el-table-column prop="createdBy" :label="$t('apitokens.createdBy')" min-width="110" />
+          <el-table-column :label="$t('pgp.validity')" width="200">
+            <template #default="{ row }">{{ fmt(row.createdAt) }} → {{ fmt(row.expiresAt) }}</template>
+          </el-table-column>
+          <el-table-column :label="$t('apitokens.lastUsed')" width="160">
+            <template #default="{ row }">{{ fmt(row.lastUsedAt) }}</template>
+          </el-table-column>
+          <el-table-column :label="$t('common.status')" width="90">
+            <template #default="{ row }">
+              <el-tag :type="row.enabled && !row.expired ? 'success' : 'danger'" size="small">
+                {{ row.enabled && !row.expired ? $t('common.enable') : $t('apitokens.invalid') }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('common.action')" width="110">
+            <template #default="{ row }">
+              <el-button size="small" type="danger" plain @click="revokeToken(row)">{{ $t('common.delete') }}</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+
       <el-tab-pane :label="$t('users.tabAd')" name="ldap">
         <el-card shadow="never">
           <template #header>{{ $t('ldap.title') }}</template>
@@ -101,6 +131,28 @@
         <el-button type="primary" @click="doCreate">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="tokenDlg" :title="$t('apitokens.create')" width="440">
+      <el-form label-width="110px">
+        <el-form-item :label="$t('apitokens.name')"><el-input v-model="tokenName" placeholder="web-server-01" /></el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="tokenDlg = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" :loading="tokenSaving" @click="createToken">{{ $t('apitokens.create') }}</el-button>
+      </template>
+    </el-dialog>
+
+    <el-dialog v-model="createdToken.show" title="API Token" width="520" :close-on-click-modal="false">
+      <el-alert type="warning" :closable="false" style="margin-bottom: 10px" :title="$t('apitokens.onceWarning')" />
+      <el-input :model-value="createdToken.plaintext" readonly class="mono" style="font-size: 13px">
+        <template #append>
+          <el-button @click="copyToken">{{ $t('pgp.copyPub') }}</el-button>
+        </template>
+      </el-input>
+      <template #footer>
+        <el-button type="primary" @click="createdToken.show = false">{{ $t('common.confirm') }}</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -119,6 +171,12 @@ const createDlg = ref(false)
 const createForm = ref({ username: '', displayName: '', role: 'Operator', password: '' })
 const ldap = reactive({ enabled: false, host: '', domain: '', adminGroup: '', operatorGroup: '', allowUnmapped: true })
 const ldapSaving = ref(false)
+const apiTokens = ref([])
+const tokensLoading = ref(false)
+const tokenDlg = ref(false)
+const tokenName = ref('')
+const tokenSaving = ref(false)
+const createdToken = reactive({ plaintext: '', expiresAt: '', show: false })
 const fmt = (d) => fmtDate(d)
 
 async function reload() {
@@ -130,6 +188,34 @@ async function reload() {
   } finally {
     loading.value = false
   }
+}
+
+async function loadTokens() {
+  tokensLoading.value = true
+  try { apiTokens.value = await api.get('/api/apitokens') } catch {} finally { tokensLoading.value = false }
+}
+
+async function createToken() {
+  if (!tokenName.value.trim()) return ElMessage.warning(t('apitokens.nameRequired'))
+  tokenSaving.value = true
+  try {
+    const r = await api.post('/api/apitokens', { name: tokenName.value.trim() })
+    createdToken.plaintext = r.plaintext
+    createdToken.expiresAt = fmt(r.info.expiresAt)
+    createdToken.show = true
+    tokenDlg.value = false
+    tokenName.value = ''
+    loadTokens()
+  } catch (e) { ElMessage.error(e.message) } finally { tokenSaving.value = false }
+}
+
+async function revokeToken(row) {
+  try {
+    await ElMessageBox.confirm(t('apitokens.revokeConfirm', { name: row.name }), t('apitokens.revoke'), { type: 'warning' })
+    await api.post('/api/apitokens/revoke', { id: row.id })
+    ElMessage.success(t('apitokens.revoked'))
+    loadTokens()
+  } catch (e) { if (e !== 'cancel') ElMessage.error(e.message) }
 }
 
 async function loadLdap() {
@@ -207,5 +293,5 @@ async function remove(row) {
   } catch (e) { if (e !== 'cancel') ElMessage.error(e.message) }
 }
 
-onMounted(() => { reload(); loadLdap() })
+onMounted(() => { reload(); loadLdap(); loadTokens() })
 </script>

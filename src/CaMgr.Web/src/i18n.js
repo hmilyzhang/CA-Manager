@@ -172,6 +172,14 @@ export const messages = {
       operatorGroup: '操作员组（AD 组名）', allowUnmapped: '未匹配组用户授予普通用户',
       save: '保存', saved: '已保存，下次登录生效',
     },
+    apitokens: {
+      tab: 'API Tokens', create: '新建 Token', name: '名称（机器名/用途）',
+      hint: '每台机器一个 Token（操作员权限，1 年有效）。调用方式见 docs/operations.md',
+      createdBy: '创建人', lastUsed: '最后使用', invalid: '已失效',
+      nameRequired: '请填写 Token 名称', revoke: '吊销',
+      revokeConfirm: '吊销 Token "{name}"？使用它的机器将无法再调用 API。',
+      revoked: 'Token 已吊销', onceWarning: 'Token 明文只显示这一次，请立即复制保存！',
+    },
     pgp: {
       title: 'PGP 密钥生成', hint: '生成用于文件加密的 OpenPGP 密钥对（GnuPG 兼容）。私钥仅在本次响应中返回，服务器不留存任何密钥材料，仅记录审计日志。',
       form: '生成参数', algo: '算法', algoEcc: 'ECC（Ed25519 + X25519，推荐）',
@@ -370,6 +378,14 @@ export const messages = {
       domain: 'NetBIOS domain (optional)', adminGroup: 'Admin group (AD group name)',
       operatorGroup: 'Operator group (AD group name)', allowUnmapped: 'Grant unmapped users the User role',
       save: 'Save', saved: 'Saved - applies from next login',
+    },
+    apitokens: {
+      tab: 'API Tokens', create: 'Create Token', name: 'Name (machine/purpose)',
+      hint: 'One token per machine (Operator role, 1-year validity). See docs/operations.md for usage',
+      createdBy: 'Created By', lastUsed: 'Last Used', invalid: 'Invalid',
+      nameRequired: 'Enter a token name', revoke: 'Revoke',
+      revokeConfirm: 'Revoke token "{name}"? Machines using it will lose API access.',
+      revoked: 'Token revoked', onceWarning: 'The token is shown only once - copy and store it now!',
     },
     pgp: {
       title: 'PGP Key Generation', hint: 'Generate OpenPGP key pairs for file encryption (GnuPG-compatible). Private keys are returned once and never stored; only an audit record is kept.',
