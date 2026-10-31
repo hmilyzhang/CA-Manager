@@ -1,6 +1,6 @@
 {
   "name": "camgr-web",
-  "version": "1.6.17",
+  "version": "1.7.1",
   "private": true,
   "type": "module",
   "scripts": {
