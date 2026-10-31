@@ -4,7 +4,7 @@ export const messages = {
   zh: {
     nav: {
       dashboard: '仪表盘', certificates: '证书管理', expiring: '到期提醒', requests: '请求处理',
-      newRequest: '提交申请', approvals: '证书审批', pgp: 'PGP 密钥', templates: '证书模板', ca: 'CA 与 CRL', notify: '通知设置', system: '系统设置', users: '用户管理', audit: '审计日志',
+      newRequest: '提交申请', approvals: '证书审批', pgp: 'PGP 密钥', templates: '证书模板', ca: 'CA 与 CRL', notify: '通知设置', system: '系统设置', apidocs: 'API 文档', users: '用户管理', audit: '审计日志',
     },
     common: {
       search: '查询', export: '导出 CSV', detail: '详情', download: '下载', back: '返回',
@@ -180,6 +180,24 @@ export const messages = {
       revokeConfirm: '吊销 Token "{name}"？使用它的机器将无法再调用 API。',
       revoked: 'Token 已吊销', onceWarning: 'Token 明文只显示这一次，请立即复制保存！',
     },
+    apidocs: {
+      title: 'API 文档（机器自动化）',
+      intro: '供服务器等机器通过 REST API 自动申请/更换证书。先在 用户管理 → API Tokens 创建 Token（操作员权限、1 年有效），然后带 Bearer 头调用以下端点。以下示例可直接复制到 PHP / Java / curl / PowerShell 使用。',
+      auth: '认证', authText: '所有自动化端点都需要 Bearer 头（cam_ 前缀的 API Token，在 用户管理 → API Tokens 创建）。',
+      authNote: 'Token 权限为', authRole: '（可即时颁发证书）。',
+      endpoints: '端点一览', purpose: '用途',
+      epRequest: '申请新证书（自助生成 + 提交 CA，颁发即返回 PFX）',
+      epRenew: '换发：按旧证书序列号沿用原参数签发替换证书（旧证书保留）',
+      epStatus: '查询申请状态',
+      request: '请求体', response: '响应示例', fields: '字段说明', desc: '说明',
+      errors: '错误码',
+      e401: 'Token 无效 / 已过期 / 已吊销，或缺少 Bearer 头',
+      e403: '权限不足（Token 为操作员级，不能调用管理员接口）',
+      e400: '参数缺失或无效（如未选证书、端口相同、密码太短）',
+      e404: '请求 ID 或旧证书序列号不存在',
+      psTitle: 'PowerShell 完整示例脚本',
+      psText: '仓库 scripts\api-example.ps1：申请证书 → 下载 PFX → 导入 LocalMachine → 输出指纹，可直接用于服务器部署脚本。',
+    },
     pgp: {
       title: 'PGP 密钥生成', hint: '生成用于文件加密的 OpenPGP 密钥对（GnuPG 兼容）。私钥仅在本次响应中返回，服务器不留存任何密钥材料，仅记录审计日志。',
       form: '生成参数', algo: '算法', algoEcc: 'ECC（Ed25519 + X25519，推荐）',
@@ -208,7 +226,7 @@ export const messages = {
   en: {
     nav: {
       dashboard: 'Dashboard', certificates: 'Certificates', expiring: 'Expiring', requests: 'Requests',
-      newRequest: 'New Request', approvals: 'Approvals', pgp: 'PGP Keys', templates: 'Templates', ca: 'CA & CRL', notify: 'Notifications', system: 'System', users: 'Users', audit: 'Audit Log',
+      newRequest: 'New Request', approvals: 'Approvals', pgp: 'PGP Keys', templates: 'Templates', ca: 'CA & CRL', notify: 'Notifications', system: 'System', apidocs: 'API Docs', users: 'Users', audit: 'Audit Log',
     },
     common: {
       search: 'Search', export: 'Export CSV', detail: 'Detail', download: 'Download', back: 'Back',
@@ -386,6 +404,24 @@ export const messages = {
       nameRequired: 'Enter a token name', revoke: 'Revoke',
       revokeConfirm: 'Revoke token "{name}"? Machines using it will lose API access.',
       revoked: 'Token revoked', onceWarning: 'The token is shown only once - copy and store it now!',
+    },
+    apidocs: {
+      title: 'API Documentation (machine automation)',
+      intro: 'Servers request and renew certificates through the REST API without a browser. First create a token (Users > API Tokens, Operator role, 1-year validity), then call the endpoints below with a Bearer header. The examples can be copied straight into PHP / Java / curl / PowerShell.',
+      auth: 'Authentication', authText: 'All automation endpoints require a Bearer header with a cam_ API token (create it in Users > API Tokens).',
+      authNote: 'Token role is', authRole: '(certificates are issued immediately, no approval).',
+      endpoints: 'Endpoints', purpose: 'Purpose',
+      epRequest: 'Request a new certificate (self-service generation + CA submission, PFX returned on issuance)',
+      epRenew: 'Re-key renewal: issues a replacement with the same subject/SAN/template as the certificate identified by serial number (old certificate is kept)',
+      epStatus: 'Query the status of a submitted request',
+      request: 'Request body', response: 'Response example', fields: 'Fields', desc: 'Description',
+      errors: 'Error codes',
+      e401: 'Token invalid / expired / revoked, or the Bearer header is missing',
+      e403: 'Insufficient role (tokens are Operator-level and cannot call admin endpoints)',
+      e400: 'Missing or invalid parameters (no certificate selected, same ports, short password...)',
+      e404: 'Request id or old certificate serial number not found',
+      psTitle: 'Full PowerShell example',
+      psText: 'Repository scripts\api-example.ps1: request -> download PFX -> import to LocalMachine -> print the thumbprint, ready for server deployment scripts.',
     },
     pgp: {
       title: 'PGP Key Generation', hint: 'Generate OpenPGP key pairs for file encryption (GnuPG-compatible). Private keys are returned once and never stored; only an audit record is kept.',

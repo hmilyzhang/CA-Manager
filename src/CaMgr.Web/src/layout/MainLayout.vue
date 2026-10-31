@@ -27,6 +27,7 @@
         <el-menu-item index="/users" v-if="roleAtLeast(role, 'Admin')"><el-icon><User /></el-icon>{{ $t('nav.users') }}</el-menu-item>
         <el-menu-item index="/audit" v-if="roleAtLeast(role, 'Admin') || role === 'Auditor'"><el-icon><Document /></el-icon>{{ $t('nav.audit') }}</el-menu-item>
         <el-menu-item index="/system" v-if="roleAtLeast(role, 'Admin')"><el-icon><Monitor /></el-icon>{{ $t('nav.system') }}</el-menu-item>
+        <el-menu-item index="/apidocs"><el-icon><Document /></el-icon>{{ $t('nav.apidocs') }}</el-menu-item>
       </el-menu>
       <div class="sidebar-foot">CA-Manager v{{ appVersion }}</div>
     </el-aside>
