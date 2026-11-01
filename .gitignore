@@ -48,3 +48,4 @@ scripts/smtp-sink.py
 *.pfx
 *.pem
 .zcode/
+.zcodeignore
