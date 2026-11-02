@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page">
     <div class="page-title">{{ $t('dashboard.title') }}</div>
 
@@ -36,6 +36,14 @@
               <template v-else> · {{ $t('dashboard.disabled') }}</template>
             </el-descriptions-item>
           </el-descriptions>
+          <div style="margin-top: 12px; display: flex; gap: 10px">
+            <el-button size="small" plain @click="dl('cer')">
+              <el-icon><Download /></el-icon>&nbsp;{{ $t('dashboard.dlCaCert') }}
+            </el-button>
+            <el-button size="small" plain @click="dl('zip')">
+              <el-icon><Download /></el-icon>&nbsp;{{ $t('dashboard.dlCaPack') }}
+            </el-button>
+          </div>
         </el-card>
         <el-card shadow="never" style="margin-top: 14px">
           <template #header>{{ $t('dashboard.latestOps') }}</template>
@@ -78,6 +86,10 @@ const caCertSoon = computed(() => {
   if (!data.value.caCertificateExpiry) return false
   return new Date(data.value.caCertificateExpiry).getFullYear() - new Date().getFullYear() < 2
 })
+
+function dl(format) {
+  api.download(`/api/ca/certificate?format=${format}`, `ca-certificate.${format}`)
+}
 
 function renderChart() {
   if (!chartEl.value) return

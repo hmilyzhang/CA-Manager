@@ -31,6 +31,9 @@ public sealed class DashboardController(
         var issued = alive ? await certs.ListAsync(CertStatusFilter.Issued, limit: 2000, restrictRequestIds: scope) : null;
         var pending = alive && !isViewer ? await certs.ListAsync(CertStatusFilter.Pending, limit: 500) : null;
         var revoked = alive ? await certs.ListAsync(CertStatusFilter.Revoked, limit: 2000, restrictRequestIds: scope) : null;
+        // trend over ALL requests in the last 30 days (a lone SubmittedWhen restriction works;
+        // combined seek-type restrictions are the ones AD CS drops)
+        var recent30 = alive ? await certs.ListAsync(CertStatusFilter.All, from: DateTime.Now.AddDays(-30), limit: 2000, restrictRequestIds: scope) : null;
 
         int pendingCount = pending?.TotalFetched ?? 0;
         if (isViewer)
@@ -48,6 +51,14 @@ public sealed class DashboardController(
         if (issued is not null)
         {
             foreach (var c in issued.Items)
+            {
+                if (c.NotAfter.HasValue && c.NotAfter.Value >= DateTime.Now && c.NotAfter.Value <= cutoff30) exp30++;
+            }
+        }
+
+        if (recent30 is not null)
+        {
+            foreach (var c in recent30.Items)
             {
                 if (c.SubmittedAt >= cutoff7) now7++;
                 if (c.NotAfter.HasValue && c.NotAfter.Value >= DateTime.Now && c.NotAfter.Value <= cutoff30) exp30++;

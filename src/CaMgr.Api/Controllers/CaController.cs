@@ -1,4 +1,4 @@
-using CaMgr.Api.CaInterop;
+﻿using CaMgr.Api.CaInterop;
 using CaMgr.Api.Data;
 using CaMgr.Api.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +23,57 @@ public sealed class CaController(
 {
     private string Ip => HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
     private string User_ => User.Identity?.Name ?? "";
+
+    /// <summary>
+    /// Downloads the CA's own certificate. Formats: cer (DER, default), p7b (PKCS#7 chain),
+    /// zip (both files + a README with import instructions).
+    /// </summary>
+    [HttpGet("certificate")]
+    public async Task<IActionResult> Certificate([FromQuery] string format = "cer")
+    {
+        var der = await admin.GetCaPropertyBytesAsync(CaConst.CR_PROP_CASIGCERT, 0);
+        if (der is null || der.Length == 0) return NotFound(new { error = "CA 证书不可用" });
+        var chain = await admin.GetCaPropertyBytesAsync(CaConst.CR_PROP_CASIGCERTCHAIN, 0);
+        var name = (await admin.GetCaPropertyAsync(CaConst.CR_PROP_SANITIZEDCANAME, 0, CaConst.PROPTYPE_STRING) as string) ?? "ca";
+        var baseName = System.Text.RegularExpressions.Regex.Replace(name, "[^A-Za-z0-9._-]", "-");
+
+        switch (format.ToLowerInvariant())
+        {
+            case "p7b":
+                if (chain is null || chain.Length == 0) return NotFound(new { error = "证书链不可用" });
+                return File(chain, "application/x-pkcs7-certificates", $"{baseName}.p7b");
+
+            case "zip":
+                using (var zipMs = new MemoryStream())
+                {
+                    using (var archive = new System.IO.Compression.ZipArchive(zipMs, System.IO.Compression.ZipArchiveMode.Create, true))
+                    {
+                        var e1 = archive.CreateEntry($"{baseName}.cer");
+                        using (var s = e1.Open()) s.Write(der, 0, der.Length);
+                        if (chain is { Length: > 0 })
+                        {
+                            var e2 = archive.CreateEntry($"{baseName}.p7b");
+                            using (var s = e2.Open()) s.Write(chain, 0, chain.Length);
+                        }
+                        var readme = archive.CreateEntry("README.txt");
+                        using (var s = readme.Open())
+                        using (var w = new StreamWriter(s))
+                        {
+                            w.WriteLine("CA-Manager - CA certificate distribution package");
+                            w.WriteLine($"{baseName}.cer  - CA certificate (DER, for trust store import)");
+                            if (chain is { Length: > 0 }) w.WriteLine($"{baseName}.p7b  - full CA certificate chain (PKCS#7)");
+                            w.WriteLine();
+                            w.WriteLine("Windows: double-click .cer -> Install Certificate -> Local Machine -> Trusted Root Certification Authorities");
+                            w.WriteLine("Linux (OpenSSL): openssl x509 -inform der -in file.cer -out file.pem && cp file.pem /etc/ssl/certs && update-ca-certificates");
+                        }
+                    }
+                    return File(zipMs.ToArray(), "application/zip", $"{baseName}-certs.zip");
+                }
+
+            default: // cer
+                return File(der, "application/x-x509-ca-cert", $"{baseName}.cer");
+        }
+    }
 
     /// <summary>CA overview: name, type, health, CA certificate, CRL windows.</summary>
     [HttpGet("info")]
