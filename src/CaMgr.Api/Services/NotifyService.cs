@@ -1,6 +1,7 @@
-using System.Security.Cryptography.X509Certificates;
+﻿using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using CaMgr.Api.CaInterop;
+using Microsoft.EntityFrameworkCore;
 
 namespace CaMgr.Api.Services;
 
@@ -32,6 +33,8 @@ public sealed class NotifyService(
     CertificateService certs,
     CaAdminService admin,
     CaDbService db,
+    Microsoft.EntityFrameworkCore.IDbContextFactory<Data.AppDbContext> dbf,
+    InventoryService inventory,
     ILogger<NotifyService> log)
 {
     public async Task<NotifyOptions> GetOptionsAsync()
@@ -116,7 +119,20 @@ public sealed class NotifyService(
         }
         catch (Exception ex) { notes.Add("待处理请求读取失败: " + ex.Message); }
 
-        bool anyEvent = expiring.Count > 0 || caCertExpiring || crlStale || pendingCount > 0;
+        // ---- event 5: inventory items (PGP / imported) expiring within threshold ----
+        var invExpiring = new List<(string Subject, string Owner, DateTime ExpiresAt)>();
+        try
+        {
+            using var idb = dbf.CreateDbContext();
+            var cutoff = DateTime.UtcNow.AddDays(opt.ExpiringDays);
+            var rows = await idb.InventoryItems.AsNoTracking()
+                .Where(i => i.Status == "active" && i.ExpiresAt < cutoff && i.ItemType != "x509")
+                .ToListAsync();
+            invExpiring = rows.Select(i => (i.Subject, i.Owner, i.ExpiresAt)).ToList();
+        }
+        catch (Exception ex) { notes.Add("清单读取失败: " + ex.Message); }
+
+        bool anyEvent = expiring.Count > 0 || caCertExpiring || crlStale || pendingCount > 0 || invExpiring.Count > 0;
 
         var r = result with
         {
@@ -130,7 +146,7 @@ public sealed class NotifyService(
         int digestTo = 0;
         if (anyEvent && opt.Recipients.Count > 0)
         {
-            var html = BuildDigestHtml(expiring, caCertText, crlText, pendingCount, opt.ExpiringDays, notes);
+            var html = BuildDigestHtml(expiring, caCertText, crlText, pendingCount, opt.ExpiringDays, notes, invExpiring);
             var err = await mail.SendAsync(smtp, opt.Recipients, "[CA-Manager] Daily PKI Notification", html);
             if (err is null) digestTo = opt.Recipients.Count;
             else notes.Add("汇总邮件发送失败: " + err);
@@ -226,7 +242,7 @@ public sealed class NotifyService(
         return sb.ToString();
     }
 
-    private static string BuildDigestHtml(List<ExpiringRow> expiring, string? caCert, string? crl, int pending, int days, List<string> notes)
+    private static string BuildDigestHtml(List<ExpiringRow> expiring, string? caCert, string? crl, int pending, int days, List<string> notes, List<(string Subject, string Owner, DateTime ExpiresAt)> invExpiring)
     {
         var sb = new StringBuilder();
         sb.Append("<div style=\"font-family:Segoe UI,Microsoft YaHei,Arial,sans-serif;max-width:800px\">");
@@ -251,6 +267,15 @@ public sealed class NotifyService(
         {
             sb.Append($"<h4>④ 待处理请求积压（{pending} 条）</h4>");
             sb.Append("<p>请登录 CA-Mgr 在“请求处理”页面审批。</p>");
+        }
+        if (invExpiring.Count > 0)
+        {
+            sb.Append($"<h4>5. 清单资产到期（PGP/导入，{invExpiring.Count} 项）</h4>");
+            sb.Append("<table style=\"border-collapse:collapse;font-size:13px\" cellpadding=\"6\" border=\"1\">");
+            sb.Append("<tr style=\"background:#f0f2f5\"><th>Subject</th><th>责任人</th><th>到期</th></tr>");
+            foreach (var i in invExpiring)
+                sb.Append($"<tr><td>{Escape(i.Subject)}</td><td>{Escape(i.Owner)}</td><td>{i.ExpiresAt:yyyy-MM-dd}</td></tr>");
+            sb.Append("</table>");
         }
         if (notes.Count > 0)
         {

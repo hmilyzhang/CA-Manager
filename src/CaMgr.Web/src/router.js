@@ -24,6 +24,7 @@ const routes = [
       { path: 'audit', component: () => import('./views/Audit.vue') },
       { path: 'system', component: () => import('./views/System.vue') },
       { path: 'apidocs', component: () => import('./views/ApiDocs.vue') },
+      { path: 'inventory', component: () => import('./views/Inventory.vue') },
     ],
   },
 ]

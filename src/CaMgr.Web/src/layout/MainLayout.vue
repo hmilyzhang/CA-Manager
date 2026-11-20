@@ -16,6 +16,7 @@
         style="border-right: none">
         <el-menu-item index="/dashboard"><el-icon><Odometer /></el-icon>{{ $t('nav.dashboard') }}</el-menu-item>
         <el-menu-item index="/certificates"><el-icon><Postcard /></el-icon>{{ $t('nav.certificates') }}</el-menu-item>
+        <el-menu-item index="/inventory"><el-icon><Notebook /></el-icon>{{ $t('nav.inventory') }}</el-menu-item>
         <el-menu-item index="/expiring"><el-icon><Timer /></el-icon>{{ $t('nav.expiring') }}</el-menu-item>
         <el-menu-item index="/requests" v-if="roleAtLeast(role, 'Operator') || role === 'Auditor'"><el-icon><List /></el-icon>{{ $t('nav.requests') }}</el-menu-item>
         <el-menu-item index="/approvals"><el-icon><Stamp /></el-icon>{{ $t('nav.approvals') }}</el-menu-item>

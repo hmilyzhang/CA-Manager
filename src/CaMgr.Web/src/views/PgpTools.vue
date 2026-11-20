@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page">
     <div class="page-title">{{ $t('pgp.title') }}</div>
 
@@ -127,7 +127,7 @@ async function generate() {
       return
     }
     result.value = resp
-    ElMessage.success(t('pgp.done'))
+    ElMessage.success(t('pgp.done') + ' - ' + t('pgp.registered'))
   } catch (e) {
     ElMessage.error(e.message)
   } finally {

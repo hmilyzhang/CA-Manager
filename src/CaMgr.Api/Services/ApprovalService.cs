@@ -1,4 +1,4 @@
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using CaMgr.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,6 +36,7 @@ public sealed class ApprovalService(
     PgpService pgp,
     CaRequestService submitter,
     CaDbService db,
+    InventoryService inventory,
     MailService mail,
     SettingsService settings,
     ILogger<ApprovalService> log)
@@ -177,6 +178,19 @@ public sealed class ApprovalService(
         row.DecidedAt = DateTime.UtcNow;
         // escrowed key no longer needed when the CA denied the request outright
         if (result.Disposition is 2 or 1) row.KeyBlob = null;
+        await db.SaveChangesAsync();
+
+        if (result.Disposition is 3 or 4)
+        {
+            var subj = row.Type == "self" ? row.CommonName : "";
+            try
+            {
+                await inventory.UpsertX509Async(result.RequestId,
+                    (await dbf.CreateDbContextAsync()).Users.Where(u => u.Username == row.Username).Select(u => u.Username).FirstOrDefault() ?? row.Username,
+                    subj, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), row.Username);
+            }
+            catch { /* inventory must never block approval */ }
+        }
         await db.SaveChangesAsync();
         return (result.RequestId, result.Disposition);
     }

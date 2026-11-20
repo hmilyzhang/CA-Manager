@@ -4,7 +4,7 @@ export const messages = {
   zh: {
     nav: {
       dashboard: '仪表盘', certificates: '证书管理', expiring: '到期提醒', requests: '请求处理',
-      newRequest: '提交申请', approvals: '证书审批', pgp: 'PGP 密钥', templates: '证书模板', ca: 'CA 与 CRL', notify: '通知设置', system: '系统设置', apidocs: 'API 文档', users: '用户管理', audit: '审计日志',
+      newRequest: '提交申请', approvals: '证书审批', pgp: 'PGP 密钥', inventory: '资产清单', templates: '证书模板', ca: 'CA 与 CRL', notify: '通知设置', system: '系统设置', apidocs: 'API 文档', users: '用户管理', audit: '审计日志',
     },
     common: {
       search: '查询', export: '导出 CSV', detail: '详情', download: '下载', back: '返回',
@@ -181,6 +181,15 @@ export const messages = {
       revokeConfirm: '吊销 Token "{name}"？使用它的机器将无法再调用 API。',
       revoked: 'Token 已吊销', onceWarning: 'Token 明文只显示这一次，请立即复制保存！',
     },
+    inventory: {
+      title: '资产清单', hint: '证书 / 密钥 / 导入资产的统一跟踪清单。证书数据实时来自 CA，元数据（责任人/部署位置/状态）保存在本系统。',
+      tAll: '全部', tX509: '证书', tPgp: 'PGP 密钥', tImported: '导入资产',
+      stActive: '有效', stRetired: '已退役',
+      x509: '证书', pgp: 'PGP 密钥', imported: '导入', all: '全部',
+      type: '类型', owner: '责任人', assignedTo: '部署位置', daysLeft: '剩余天数',
+      edit: '编辑', empty: '清单为空，可点"同步"从 CA 导入', sync: '同步 CA 证书',
+      st_active: '有效', st_expired: '已过期', st_revoked: '已吊销', st_retired: '已退役',
+    },
     apidocs: {
       title: 'API 文档（机器自动化）',
       intro: '供服务器等机器通过 REST API 自动申请/更换证书。先在 用户管理 → API Tokens 创建 Token（操作员权限、1 年有效），然后带 Bearer 头调用以下端点。以下示例可直接复制到 PHP / Java / curl / PowerShell 使用。',
@@ -227,7 +236,7 @@ export const messages = {
   en: {
     nav: {
       dashboard: 'Dashboard', certificates: 'Certificates', expiring: 'Expiring', requests: 'Requests',
-      newRequest: 'New Request', approvals: 'Approvals', pgp: 'PGP Keys', templates: 'Templates', ca: 'CA & CRL', notify: 'Notifications', system: 'System', apidocs: 'API Docs', users: 'Users', audit: 'Audit Log',
+      newRequest: 'New Request', approvals: 'Approvals', pgp: 'PGP Keys', inventory: 'Inventory', templates: 'Templates', ca: 'CA & CRL', notify: 'Notifications', system: 'System', apidocs: 'API Docs', users: 'Users', audit: 'Audit Log',
     },
     common: {
       search: 'Search', export: 'Export CSV', detail: 'Detail', download: 'Download', back: 'Back',
@@ -406,6 +415,15 @@ export const messages = {
       nameRequired: 'Enter a token name', revoke: 'Revoke',
       revokeConfirm: 'Revoke token "{name}"? Machines using it will lose API access.',
       revoked: 'Token revoked', onceWarning: 'The token is shown only once - copy and store it now!',
+    },
+    inventory: {
+      title: 'Asset Inventory', hint: 'Unified tracking list for certificates / keys / imported assets. X.509 data comes live from the CA; tracking metadata (owner / deployment / status) is stored here.',
+      tAll: 'All', tX509: 'Certificates', tPgp: 'PGP Keys', tImported: 'Imported',
+      stActive: 'Active', stRetired: 'Retired',
+      x509: 'Certificate', pgp: 'PGP Key', imported: 'Imported', all: 'All',
+      type: 'Type', owner: 'Owner', assignedTo: 'Assigned To', daysLeft: 'Days left',
+      edit: 'Edit', empty: 'Inventory empty - use Sync to import from the CA', sync: 'Sync CA certificates',
+      st_active: 'Active', st_expired: 'Expired', st_revoked: 'Revoked', st_retired: 'Retired',
     },
     apidocs: {
       title: 'API Documentation (machine automation)',

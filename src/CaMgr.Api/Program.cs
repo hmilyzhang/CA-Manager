@@ -122,6 +122,7 @@ builder.Services.AddSingleton<SelfServiceCertService>();
 builder.Services.AddSingleton<ApprovalService>();
 builder.Services.AddSingleton<PgpService>();
 builder.Services.AddSingleton<ApiTokenService>();
+builder.Services.AddSingleton<InventoryService>();
 builder.Services.AddHostedService<NotifyBackgroundService>();
 
 builder.Services.AddControllers()
@@ -194,6 +195,37 @@ using (var scope = app.Services.CreateScope())
             "Enabled" INTEGER NOT NULL DEFAULT 1
         );
         CREATE UNIQUE INDEX IF NOT EXISTS "IX_ApiTokens_TokenHash" ON "ApiTokens" ("TokenHash");
+        CREATE TABLE IF NOT EXISTS "PgpKeyRecords" (
+            "Id" INTEGER NOT NULL CONSTRAINT "pk_PgpKeyRecords" PRIMARY KEY AUTOINCREMENT,
+            "Username" TEXT NOT NULL,
+            "UserId" TEXT NOT NULL,
+            "KeyId" TEXT NOT NULL,
+            "Fingerprint" TEXT NOT NULL,
+            "Algorithm" TEXT NOT NULL,
+            "ValidityYears" INTEGER NOT NULL,
+            "CreatedAt" TEXT NOT NULL,
+            "ExpiresAt" TEXT NOT NULL,
+            "Status" TEXT NOT NULL,
+            "Notes" TEXT NOT NULL DEFAULT ''
+        );
+        CREATE UNIQUE INDEX IF NOT EXISTS "IX_PgpKeyRecords_Fingerprint" ON "PgpKeyRecords" ("Fingerprint");
+        CREATE TABLE IF NOT EXISTS "InventoryItems" (
+            "Id" INTEGER NOT NULL CONSTRAINT "pk_InventoryItems" PRIMARY KEY AUTOINCREMENT,
+            "ItemType" TEXT NOT NULL,
+            "RefId" INTEGER NOT NULL,
+            "Identifier" TEXT NOT NULL,
+            "Subject" TEXT NOT NULL DEFAULT '',
+            "Owner" TEXT NOT NULL DEFAULT '',
+            "AssignedTo" TEXT NOT NULL DEFAULT '',
+            "Status" TEXT NOT NULL,
+            "IssuedAt" TEXT NOT NULL,
+            "ExpiresAt" TEXT NOT NULL,
+            "Source" TEXT NOT NULL,
+            "Notes" TEXT NOT NULL DEFAULT '',
+            "CreatedAt" TEXT NOT NULL,
+            "UpdatedAt" TEXT NOT NULL
+        );
+        CREATE UNIQUE INDEX IF NOT EXISTS "IX_InventoryItems_ItemType_Identifier" ON "InventoryItems" ("ItemType", "Identifier");
         """);
     var auth = scope.ServiceProvider.GetRequiredService<AuthService>();
     await auth.SeedAdminAsync();

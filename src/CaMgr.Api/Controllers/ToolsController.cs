@@ -1,4 +1,4 @@
-using CaMgr.Api.Data;
+﻿using CaMgr.Api.Data;
 using CaMgr.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +8,7 @@ namespace CaMgr.Api.Controllers;
 [ApiController]
 [Route("api/tools")]
 [Authorize]
-public sealed class ToolsController(PgpService pgp, ApprovalService approvals, AuditService audit) : Controller
+public sealed class ToolsController(PgpService pgp, ApprovalService approvals, InventoryService inventory, AuditService audit) : Controller
 {
     private string Ip => HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
     private string User_ => User.Identity?.Name ?? "";
