@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page">
     <div class="page-title">{{ $t('system.title') }}</div>
 
@@ -50,6 +50,27 @@
           </span>
         </el-form-item>
       </el-form>
+    </el-card>
+
+    <el-card shadow="never" style="margin-top: 14px">
+      <template #header>{{ $t('ocsp.title') }}</template>
+      <template v-if="ocspLoaded">
+        <el-descriptions :column="1" border size="small">
+          <el-descriptions-item :label="$t('ocsp.service')">
+            <el-tag :type="ocsp.serviceStatus === 'Running' ? 'success' : 'danger'" size="small">{{ ocsp.serviceStatus }}</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item :label="$t('ocsp.configs')">{{ ocsp.configurations.length }}</el-descriptions-item>
+          <el-descriptions-item v-for="(cfg, i) in ocsp.configurations" :key="i" :label="cfg.caName">
+            {{ cfg.hashAlgorithm }} · {{ new Date(cfg.lastModified).toLocaleString() }}
+            <div v-if="cfg.alerts.length" style="color:#e6a23c;font-size:12px">{{ cfg.alerts.join('; ') }}</div>
+          </el-descriptions-item>
+        </el-descriptions>
+        <el-alert v-if="ocsp.alerts.length" type="warning" :closable="false" style="margin-top: 10px"
+          :title="$t('ocsp.alertsTitle')">
+          <div v-for="(a, i) in ocsp.alerts" :key="i" style="font-size:12px">{{ a }}</div>
+        </el-alert>
+      </template>
+      <span v-else style="color:#909399;font-size:13px">{{ $t('common.loading') }}</span>
     </el-card>
 
     <el-card shadow="never" style="margin-top: 14px">
@@ -105,6 +126,8 @@ import { api } from '../api.js'
 const { t } = useI18n()
 const certs = ref([])
 const excluded = ref([])
+const ocsp = reactive({ serviceStatus: '', configurations: [], alerts: [] })
+const ocspLoaded = ref(false)
 const currentUrls = ref([])
 const loading = ref(false)
 const applying = ref(false)
@@ -128,6 +151,13 @@ async function load() {
     const c = await api.get('/api/system/certs')
     certs.value = c.certs || []
     excluded.value = c.excluded || []
+    try {
+      const o = await api.get('/api/system/ocsp')
+      ocsp.serviceStatus = o.serviceStatus
+      ocsp.configurations = o.configurations || []
+      ocsp.alerts = o.alerts || []
+      ocspLoaded.value = true
+    } catch {}
   } catch (e) {
     ElMessage.error(e.message)
   } finally {

@@ -14,7 +14,7 @@ public record SystemModeRequest(string Mode, int? HttpPort, int? HttpsPort, stri
 [Route("api/system")]
 [Authorize]
 [RequireRole(AppRole.Admin)]
-public sealed class SystemController(ILogger<SystemController> log, IConfiguration configuration) : Controller
+public sealed class SystemController(OcspService ocsp, ILogger<SystemController> log, IConfiguration configuration) : Controller
 {
     private static string SettingsPath => Path.Combine(AppContext.BaseDirectory, "appsettings.Production.json");
     private const int DefaultHttpPort = 8442;
@@ -55,6 +55,10 @@ public sealed class SystemController(ILogger<SystemController> log, IConfigurati
 
     /// <summary>Machine certificates usable for HTTPS (Server Authentication EKU, private key, not expired)
     /// plus the non-selectable ones with the exclusion reason.</summary>
+    /// <summary>Online Responder (OCSP) status and health.</summary>
+    [HttpGet("ocsp")]
+    public IActionResult Ocsp() => Ok(ocsp.GetStatus());
+
     [HttpGet("certs")]
     public IActionResult Certs()
     {

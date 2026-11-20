@@ -34,6 +34,7 @@ public sealed class NotifyService(
     CaAdminService admin,
     CaDbService db,
     Microsoft.EntityFrameworkCore.IDbContextFactory<Data.AppDbContext> dbf,
+    OcspService ocsp,
     InventoryService inventory,
     ILogger<NotifyService> log)
 {
@@ -132,7 +133,23 @@ public sealed class NotifyService(
         }
         catch (Exception ex) { notes.Add("清单读取失败: " + ex.Message); }
 
-        bool anyEvent = expiring.Count > 0 || caCertExpiring || crlStale || pendingCount > 0 || invExpiring.Count > 0;
+        // ---- OCSP responder health ----
+        var ocspAlerts = new List<string>();
+        try
+        {
+            var ocspStatus = ocsp.GetStatus();
+            if (ocspStatus.ServiceStatus == "not-installed")
+                ocspAlerts.Add("Online Responder 未安装（如需 OCSP 请安装 ADCS-Online-Cert 角色）");
+            else
+            {
+                if (ocspStatus.ServiceStatus != "Running")
+                    ocspAlerts.Add($"OCSPResponder 服务状态异常: {ocspStatus.ServiceStatus}");
+                ocspAlerts.AddRange(ocspStatus.Alerts);
+            }
+        }
+        catch (Exception ex) { ocspAlerts.Add("OCSP 状态读取失败: " + ex.Message); }
+
+        bool anyEvent = expiring.Count > 0 || caCertExpiring || crlStale || pendingCount > 0 || invExpiring.Count > 0 || ocspAlerts.Count > 0;
 
         var r = result with
         {
@@ -146,7 +163,7 @@ public sealed class NotifyService(
         int digestTo = 0;
         if (anyEvent && opt.Recipients.Count > 0)
         {
-            var html = BuildDigestHtml(expiring, caCertText, crlText, pendingCount, opt.ExpiringDays, notes, invExpiring);
+            var html = BuildDigestHtml(expiring, caCertText, crlText, pendingCount, opt.ExpiringDays, notes, invExpiring, ocspAlerts);
             var err = await mail.SendAsync(smtp, opt.Recipients, "[CA-Manager] Daily PKI Notification", html);
             if (err is null) digestTo = opt.Recipients.Count;
             else notes.Add("汇总邮件发送失败: " + err);
@@ -242,7 +259,7 @@ public sealed class NotifyService(
         return sb.ToString();
     }
 
-    private static string BuildDigestHtml(List<ExpiringRow> expiring, string? caCert, string? crl, int pending, int days, List<string> notes, List<(string Subject, string Owner, DateTime ExpiresAt)> invExpiring)
+    private static string BuildDigestHtml(List<ExpiringRow> expiring, string? caCert, string? crl, int pending, int days, List<string> notes, List<(string Subject, string Owner, DateTime ExpiresAt)> invExpiring, List<string> ocspAlerts)
     {
         var sb = new StringBuilder();
         sb.Append("<div style=\"font-family:Segoe UI,Microsoft YaHei,Arial,sans-serif;max-width:800px\">");
@@ -276,6 +293,12 @@ public sealed class NotifyService(
             foreach (var i in invExpiring)
                 sb.Append($"<tr><td>{Escape(i.Subject)}</td><td>{Escape(i.Owner)}</td><td>{i.ExpiresAt:yyyy-MM-dd}</td></tr>");
             sb.Append("</table>");
+        }
+        if (ocspAlerts.Count > 0)
+        {
+            sb.Append("<h4 style=\"color:#e6a23c\">6. OCSP 健康告警</h4><ul>");
+            foreach (var a in ocspAlerts) sb.Append($"<li style=\"color:#e6a23c\">{Escape(a)}</li>");
+            sb.Append("</ul>");
         }
         if (notes.Count > 0)
         {

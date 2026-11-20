@@ -123,6 +123,7 @@ builder.Services.AddSingleton<ApprovalService>();
 builder.Services.AddSingleton<PgpService>();
 builder.Services.AddSingleton<ApiTokenService>();
 builder.Services.AddSingleton<InventoryService>();
+builder.Services.AddSingleton<OcspService>();
 builder.Services.AddHostedService<NotifyBackgroundService>();
 
 builder.Services.AddControllers()
