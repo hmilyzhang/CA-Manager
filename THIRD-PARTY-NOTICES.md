@@ -1,6 +1,6 @@
 # Third-Party Software / 第三方开源组件
 
-CA-Manager v1.7.1 uses the following open-source components.
+CA-Manager v1.7.3 uses the following open-source components.
 本系统使用了以下开源组件，感谢这些项目的作者。
 
 ## Backend (.NET 10) — 后端
@@ -14,7 +14,7 @@ CA-Manager v1.7.1 uses the following open-source components.
 | Microsoft.Extensions.Hosting.WindowsServices | 10.0.12 | MIT | Windows service hosting |
 | Microsoft.Extensions.Identity.Core | 10.0.12 | MIT | Password hashing (PBKDF2) |
 | System.DirectoryServices.Protocols | 10.0.12 | MIT | LDAP authentication |
-| System.Security.Cryptography.Pkcs | 10.0.0 | MIT | PKCS support (transitive) |
+| System.Security.Cryptography.Pkcs | 10.0.1 | MIT | PKCS support (transitive) |
 
 Runtime: .NET 10 runtime (self-contained deployment). Frontend assets are served by
 ASP.NET Core Kestrel (Apache-2.0).
@@ -26,7 +26,7 @@ ASP.NET Core Kestrel (Apache-2.0).
 | vue | 3.5.43 | MIT | UI framework |
 | element-plus | 2.14.7 | MIT | UI component library |
 | @element-plus/icons-vue | 2.3.2 | MIT | Icons |
-| echarts | 5.6.0 | Apache-2.0 | Dashboard charts |
+| echarts | 6.1.0 | Apache-2.0 | Dashboard charts |
 | vue-i18n | 11.4.13 | MIT | Internationalization |
 | vue-router | 4.6.4 | MIT | Routing |
 | vite (build tool) | 6.4.3 | MIT | Frontend build |

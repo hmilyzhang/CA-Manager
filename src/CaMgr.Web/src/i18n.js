@@ -7,6 +7,7 @@ export const messages = {
       newRequest: '提交申请', approvals: '证书审批', pgp: 'PGP 密钥', inventory: '资产清单', templates: '证书模板', ca: 'CA 与 CRL', notify: '通知设置', system: '系统设置', apidocs: 'API 文档', users: '用户管理', audit: '审计日志',
     },
     common: {
+      loading: '加载中...',
       search: '查询', export: '导出 CSV', detail: '详情', download: '下载', back: '返回',
       cancel: '取消', confirm: '确认', status: '状态', action: '操作', enable: '启用', disable: '停用',
       delete: '删除', days: '天', none: '(无)', never: '从未', submit: '提交',
@@ -208,6 +209,10 @@ export const messages = {
       psTitle: 'PowerShell 完整示例脚本',
       psText: '仓库 scripts\api-example.ps1：申请证书 → 下载 PFX → 导入 LocalMachine → 输出指纹，可直接用于服务器部署脚本。',
     },
+    ocsp: {
+      title: 'OCSP 在线响应器', service: '服务状态', configs: '吊销配置数',
+      alertsTitle: 'OCSP 告警',
+    },
     pgp: {
       title: 'PGP 密钥生成', hint: '生成用于文件加密的 OpenPGP 密钥对（GnuPG 兼容）。私钥仅在本次响应中返回，服务器不留存任何密钥材料，仅记录审计日志。',
       form: '生成参数', algo: '算法', algoEcc: 'ECC（Ed25519 + X25519，推荐）',
@@ -239,6 +244,7 @@ export const messages = {
       newRequest: 'New Request', approvals: 'Approvals', pgp: 'PGP Keys', inventory: 'Inventory', templates: 'Templates', ca: 'CA & CRL', notify: 'Notifications', system: 'System', apidocs: 'API Docs', users: 'Users', audit: 'Audit Log',
     },
     common: {
+      loading: '加载中...',
       search: 'Search', export: 'Export CSV', detail: 'Detail', download: 'Download', back: 'Back',
       cancel: 'Cancel', confirm: 'Confirm', status: 'Status', action: 'Actions', enable: 'Enable', disable: 'Disable',
       delete: 'Delete', days: 'days', none: '(none)', never: 'Never', submit: 'Submit',
@@ -442,6 +448,10 @@ export const messages = {
       e404: 'Request id or old certificate serial number not found',
       psTitle: 'Full PowerShell example',
       psText: 'Repository scripts\api-example.ps1: request -> download PFX -> import to LocalMachine -> print the thumbprint, ready for server deployment scripts.',
+    },
+    ocsp: {
+      title: 'OCSP Online Responder', service: 'Service status', configs: 'Revocation configurations',
+      alertsTitle: 'OCSP alerts',
     },
     pgp: {
       title: 'PGP Key Generation', hint: 'Generate OpenPGP key pairs for file encryption (GnuPG-compatible). Private keys are returned once and never stored; only an audit record is kept.',
