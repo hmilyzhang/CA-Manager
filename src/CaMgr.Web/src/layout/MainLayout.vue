@@ -1,7 +1,7 @@
 ﻿<template>
   <el-container style="height: 100%">
     <el-aside :width="collapsed ? '64px' : '216px'" class="sidebar">
-      <div class="logo">
+      <div class="logo" :class="{ 'logo-collapsed': collapsed }">
         <el-icon :size="22"><Lock /></el-icon>
         <span v-if="!collapsed">CA-Manager</span>
       </div>
@@ -14,23 +14,23 @@
         text-color="#aeb6c6"
         active-text-color="#ffffff"
         style="border-right: none">
-        <el-menu-item index="/dashboard"><el-icon><Odometer /></el-icon>{{ $t('nav.dashboard') }}</el-menu-item>
-        <el-menu-item index="/certificates"><el-icon><Postcard /></el-icon>{{ $t('nav.certificates') }}</el-menu-item>
-        <el-menu-item index="/inventory"><el-icon><Notebook /></el-icon>{{ $t('nav.inventory') }}</el-menu-item>
-        <el-menu-item index="/expiring"><el-icon><Timer /></el-icon>{{ $t('nav.expiring') }}</el-menu-item>
-        <el-menu-item index="/requests" v-if="roleAtLeast(role, 'Operator') || role === 'Auditor'"><el-icon><List /></el-icon>{{ $t('nav.requests') }}</el-menu-item>
-        <el-menu-item index="/approvals"><el-icon><Stamp /></el-icon>{{ $t('nav.approvals') }}</el-menu-item>
-        <el-menu-item index="/new-request" v-if="role !== 'Auditor'"><el-icon><Upload /></el-icon>{{ $t('nav.newRequest') }}</el-menu-item>
-        <el-menu-item index="/pgp" v-if="role !== 'Auditor'"><el-icon><Key /></el-icon>{{ $t('nav.pgp') }}</el-menu-item>
-        <el-menu-item index="/templates"><el-icon><Files /></el-icon>{{ $t('nav.templates') }}</el-menu-item>
-        <el-menu-item index="/ca"><el-icon><Setting /></el-icon>{{ $t('nav.ca') }}</el-menu-item>
-        <el-menu-item index="/notify" v-if="roleAtLeast(role, 'Admin')"><el-icon><Bell /></el-icon>{{ $t('nav.notify') }}</el-menu-item>
-        <el-menu-item index="/users" v-if="roleAtLeast(role, 'Admin')"><el-icon><User /></el-icon>{{ $t('nav.users') }}</el-menu-item>
-        <el-menu-item index="/audit" v-if="roleAtLeast(role, 'Admin') || role === 'Auditor'"><el-icon><Document /></el-icon>{{ $t('nav.audit') }}</el-menu-item>
-        <el-menu-item index="/system" v-if="roleAtLeast(role, 'Admin')"><el-icon><Monitor /></el-icon>{{ $t('nav.system') }}</el-menu-item>
-        <el-menu-item index="/apidocs"><el-icon><Document /></el-icon>{{ $t('nav.apidocs') }}</el-menu-item>
+        <el-menu-item index="/dashboard"><el-icon><Odometer /></el-icon><template #title>{{ $t('nav.dashboard') }}</template></el-menu-item>
+        <el-menu-item index="/certificates"><el-icon><Postcard /></el-icon><template #title>{{ $t('nav.certificates') }}</template></el-menu-item>
+        <el-menu-item index="/inventory"><el-icon><Notebook /></el-icon><template #title>{{ $t('nav.inventory') }}</template></el-menu-item>
+        <el-menu-item index="/expiring"><el-icon><Timer /></el-icon><template #title>{{ $t('nav.expiring') }}</template></el-menu-item>
+        <el-menu-item index="/requests" v-if="roleAtLeast(role, 'Operator') || role === 'Auditor'"><el-icon><List /></el-icon><template #title>{{ $t('nav.requests') }}</template></el-menu-item>
+        <el-menu-item index="/approvals"><el-icon><Stamp /></el-icon><template #title>{{ $t('nav.approvals') }}</template></el-menu-item>
+        <el-menu-item index="/new-request" v-if="role !== 'Auditor'"><el-icon><Upload /></el-icon><template #title>{{ $t('nav.newRequest') }}</template></el-menu-item>
+        <el-menu-item index="/pgp" v-if="role !== 'Auditor'"><el-icon><Key /></el-icon><template #title>{{ $t('nav.pgp') }}</template></el-menu-item>
+        <el-menu-item index="/templates"><el-icon><Files /></el-icon><template #title>{{ $t('nav.templates') }}</template></el-menu-item>
+        <el-menu-item index="/ca"><el-icon><Setting /></el-icon><template #title>{{ $t('nav.ca') }}</template></el-menu-item>
+        <el-menu-item index="/notify" v-if="roleAtLeast(role, 'Admin')"><el-icon><Bell /></el-icon><template #title>{{ $t('nav.notify') }}</template></el-menu-item>
+        <el-menu-item index="/users" v-if="roleAtLeast(role, 'Admin')"><el-icon><User /></el-icon><template #title>{{ $t('nav.users') }}</template></el-menu-item>
+        <el-menu-item index="/audit" v-if="roleAtLeast(role, 'Admin') || role === 'Auditor'"><el-icon><Document /></el-icon><template #title>{{ $t('nav.audit') }}</template></el-menu-item>
+        <el-menu-item index="/system" v-if="roleAtLeast(role, 'Admin')"><el-icon><Monitor /></el-icon><template #title>{{ $t('nav.system') }}</template></el-menu-item>
+        <el-menu-item index="/apidocs"><el-icon><Document /></el-icon><template #title>{{ $t('nav.apidocs') }}</template></el-menu-item>
       </el-menu>
-      <div class="sidebar-foot">CA-Manager v{{ appVersion }}</div>
+      <div class="sidebar-foot" v-if="!collapsed">CA-Manager v{{ appVersion }}</div>
     </el-aside>
 
     <el-container>
@@ -112,7 +112,6 @@ async function onCommand(cmd) {
   background: #1d2535;
   display: flex;
   flex-direction: column;
-  transition: width 0.2s;
   overflow-x: hidden;
 }
 .sidebar :deep(.el-menu--collapse) { width: 64px; }
@@ -125,6 +124,11 @@ async function onCommand(cmd) {
   gap: 10px;
   padding: 14px 22px 10px;
   letter-spacing: 0.5px;
+}
+.logo-collapsed {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
 }
 .sidebar :deep(.el-menu-item) {
   height: 40px;
