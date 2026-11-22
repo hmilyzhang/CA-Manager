@@ -24,32 +24,49 @@ powershell -File scripts\install-service.ps1
 ```
 
 The install script automatically:
-1. Requests an HTTPS certificate from the local CA (WebServer template, CN = host FQDN) and binds it to the port; falls back to HTTP with a warning on failure
-2. Writes the listening address into `publish\appsettings.Production.json`
-3. Creates the service `CA-Manager` (LocalSystem, auto-start, auto-restart on crash)
-4. Starts the service and prints the access URL
+1. Writes the `Listeners` configuration (default `http` on port 8442) into `publish\appsettings.Production.json`
+2. Creates the service `CA-Manager` (LocalSystem, auto-start, auto-restart on crash)
+3. Starts the service and prints the access URL
 
 ## First Login
 
-1. Open `https://<hostname>:8443` (or `http://` when it fell back to HTTP)
+1. Open `http://<hostname>:8442` (or the port you chose)
 2. Initial account `admin`, initial password in `publish\initial-admin-password.txt`
 3. A password change is forced on first login; delete the password file afterwards
+4. Switch to HTTPS any time on the **System** page (see "Listening Configuration" above)
+
+## Listening Configuration (HTTP / HTTPS)
+
+The service reads a `Listeners` section (Kestrel); the installer writes the initial value into `publish\appsettings.Production.json`:
+
+```json
+"Listeners": { "Mode": "https", "HttpPort": 8442, "HttpsPort": 8443, "Thumbprint": "<SHA1 of a cert in LocalMachine\\My>" }
+```
+
+- `Mode`: `http` (default after install) / `https` / `both`
+- The HTTPS certificate is loaded **by thumbprint from the machine's `LocalMachine\My` store** at startup; if it is missing/unreadable the service falls back to HTTP instead of crash-looping
+- Recommended: change it on the **System** page in the web UI (mode radio + port + certificate picker) — saving applies the config and restarts the service automatically, no RDP needed
+- Or edit the JSON directly and `Restart-Service CA-Manager`
+
+> **Do not use `netsh http add sslcert`** — Kestrel does not use the http.sys SSL binding, so `netsh sslcert` has no effect here (and an appid with non-hex characters fails with "The parameter is incorrect").
 
 ## Firewall
 
 ```powershell
-New-NetFirewallRule -DisplayName "CA-Manager" -Direction Inbound -Protocol TCP -LocalPort 8443 -RemoteAddress Intranet -Action Allow
+New-NetFirewallRule -DisplayName "CA-Manager" -Direction Inbound -Protocol TCP -LocalPort 8442,8443 -RemoteAddress Intranet -Action Allow
 ```
+
+(Only the port(s) actually configured in `Listeners` are needed.)
 
 ## Production HTTPS (if automatic enrollment failed)
 
-Issue a server certificate from the local CA manually, then:
+Issue a server certificate from the local CA manually (import it into `LocalMachine\My`), then set the thumbprint via the **System** page or `appsettings.Production.json` as shown above and restart the service:
 
 ```powershell
-$thumb = "<certificate SHA1 thumbprint>"
-netsh http add sslcert ipport=0.0.0.0:8443 certhash=$thumb appid="{4d8a5f2e-6b3c-4a9e-9f2e-ca7mgr000001}" certstorename=MY
-# then set the Kestrel endpoint in publish\appsettings.Production.json to https://+:8443
-Restart-Service CA-Manager
+# example: request a WebServer-template certificate and import it
+certreq -submit -attrib "CertificateTemplate:WebServer" request.req cert.cer
+certreq -accept cert.cer        # lands in LocalMachine\My
+Restart-Service CA-Manager      # after selecting it on the System page / editing Listeners
 ```
 
 ## Upgrade / Rollback / Uninstall

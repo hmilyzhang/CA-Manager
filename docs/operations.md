@@ -43,6 +43,8 @@ Certificate requests submitted by Viewers (both paste-CSR and self-service gener
 - Revocation is irreversible except for `certificateHold`; it takes effect network-wide once the new CRL is published (next update time is on the "CA & CRL" page)
 - `certificateHold` can be undone (the certificate becomes valid immediately); re-revoke with a permanent reason once you are sure, avoid long-term holds
 - Dangerous-action confirmation: the full serial number must be typed into the dialog
+- **Expired certificates**: the certificate list has an *Expired* status filter (issued but past NotAfter, not yet revoked); select multiple rows and use **batch revoke** to clean up large backlogs (e.g. thousands of stale certificates) in one audited operation — no per-certificate confirmation dialog is needed, but each serial is validated against the CA and the summary reports successes/failures
+- **Pagination is real server-side paging** — the list stays responsive with 3000+ certificates; use filters instead of scrolling through everything
 
 ## CRL Period
 
@@ -50,7 +52,7 @@ Changes take effect at the next publication. Delta CRL period 0 disables Delta C
 
 ## Audit
 
-Recorded: logins (including failures) / logout / password changes / revocations / unrevokes / issuance / denials / resubmits / CSR submissions / CRL publications / config changes / template changes / user management.
+Recorded: logins (including failures) / logout / password changes / revocations (single + batch) / unrevokes / issuance / denials / resubmits / CSR submissions / self-service requests / approvals & rejections / PFX downloads / CRL publications / config changes / template changes / user management / PGP generation & status / inventory import-sync-status / API token creation & revocation / listener changes / notification runs.
 Fields: time, user, source IP, action, object type, object, parameter summary, result. Filterable queries and CSV export.
 
 ## Machine Automation (API Tokens)
@@ -71,9 +73,34 @@ Web servers can request and renew certificates through the REST API without a br
 | `GET /api/automation/status/{requestId}` | Check request status |
 
 See `scripts/api-example.ps1` in the repository for a complete Windows example
-(request + PFX import into `LocalMachine\My`). Every API call is audited with
+(request + PFX import into `LocalMachine\My`). The built-in **API Docs** page
+(`/apidocs`) documents the **complete REST surface** — every endpoint grouped by
+feature with the minimum role — and carries copy-paste examples for
+curl / PHP / Java / PowerShell. Every API call is audited with
 the token name; tokens never appear in logs; revoke from the same tab if a
 machine is decommissioned.
+
+## Asset Inventory
+
+The **Inventory** page (`/inventory`) is a unified tracking list for everything the CA world touches:
+
+| Item type | Origin |
+|-----------|--------|
+| Certificate (x509) | Synced from CA-issued certificates (`Sync` button, idempotent — matches approval owners where possible) |
+| PGP | Tracking record created with every PGP key generation (only metadata — never key material) |
+| Imported | Third-party certificates pasted as PEM/Base64 (public part only) |
+
+Per item: owner, assigned-to, notes, lifecycle status (`active / expired / revoked / retired`) — `expired` is computed automatically from the expiry date. Viewers see only their own rows; operators/admins see everything; CSV export follows the current filters. Use it to answer "which machine still runs which certificate — and who owns the PGP key for this file share?".
+
+## OCSP Online Responder Monitoring
+
+The **System** page (`/system`) shows an OCSP health card (admin only), read live from the Windows Online Responder via the OCSPAdmin COM interface:
+
+- Responder service status (`OCSPSvc`): Running / stopped / not installed
+- Each revocation configuration: CA name, hash algorithm, signing certificate issuer & expiry
+- Alerts: responder not running, **no revocation configurations defined**, signing certificate expiring ≤ 30 days, revocation data older than 2 days, non-empty `ErrorInformation`
+
+The daily digest email includes the same OCSP health section. Deploying the responder role itself (install ADCS-Online-Cert, create the revocation configuration in `ocsp.msc`) is a server-side task outside this app — once a configuration exists, monitoring picks it up automatically.
 
 ## Emergency Admin Password Reset
 
@@ -109,7 +136,7 @@ Logs also go to the Windows event log; debug-level entries include COM failure d
 
 Admin → "Notifications" page. Supports intranet anonymous relay and encrypted connections (plain / STARTTLS 587 / implicit SSL 465).
 
-- **Fixed recipients**: receive the daily digest (four event types: expiring certs / CA cert expiry / CRL status / pending backlog)
+- **Fixed recipients**: receive the daily digest (six event types: expiring certs / CA cert expiry / CRL status / pending backlog / **inventory expiry (PGP & imported)** / **OCSP health**)
 - **Requester notices**: when enabled, the requester e-mail address (submitted with the certificate request) of expiring certificates receives a personal list; machine accounts / certs without e-mail are skipped automatically
 - **Schedule**: daily at 08:00 by default, at most one digest per day; "Run scan now" triggers immediately
 - **Test**: save the config, use "Send test mail" to verify the path, then rely on the scheduler

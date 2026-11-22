@@ -1,6 +1,6 @@
 # Third-Party Software / 第三方开源组件
 
-CA-Manager v1.7.3 uses the following open-source components.
+CA-Manager v1.7.4 uses the following open-source components.
 本系统使用了以下开源组件，感谢这些项目的作者。
 
 ## Backend (.NET 10) — 后端
@@ -29,7 +29,7 @@ ASP.NET Core Kestrel (Apache-2.0).
 | echarts | 6.1.0 | Apache-2.0 | Dashboard charts |
 | vue-i18n | 11.4.13 | MIT | Internationalization |
 | vue-router | 4.6.4 | MIT | Routing |
-| vite (build tool) | 6.4.3 | MIT | Frontend build |
+| vite (build tool) | 6.4.6 | MIT | Frontend build |
 | @vitejs/plugin-vue | 5.2.4 | MIT | Vite plugin |
 
 Build-time only (not shipped): Node.js, npm.

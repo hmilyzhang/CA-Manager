@@ -30,6 +30,30 @@
       </el-table>
     </el-card>
 
+    <el-card shadow="never" style="margin-bottom: 14px">
+      <template #header>{{ $t('apidocs.fullRef') }}</template>
+      <p style="margin: 4px 0 10px; font-size: 13px; color: #606266">{{ $t('apidocs.fullRefText') }}</p>
+      <el-table :data="allEndpoints" size="small">
+        <el-table-column label=" " width="85">
+          <template #default="{ row }"><el-tag size="small" :type="row.method === 'GET' ? 'success' : 'primary'">{{ row.method }}</el-tag></template>
+        </el-table-column>
+        <el-table-column label="Endpoint" min-width="300">
+          <template #default="{ row }"><span class="mono" style="font-size:12px">{{ row.path }}</span></template>
+        </el-table-column>
+        <el-table-column :label="$t('apidocs.colGroup')" width="120">
+          <template #default="{ row }">{{ $t(row.group) }}</template>
+        </el-table-column>
+        <el-table-column :label="$t('apidocs.colAuth')" width="110">
+          <template #default="{ row }">
+            <el-tag size="small" effect="plain" :type="row.auth === 'Admin' ? 'danger' : row.auth === 'Operator+' ? 'warning' : 'info'">{{ row.auth }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('apidocs.desc')" min-width="250">
+          <template #default="{ row }">{{ row.desc }}</template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+
     <el-card v-for="ep in examples" :key="ep.key" shadow="never" style="margin-bottom: 14px">
       <template #header>{{ ep.title }}</template>
 
@@ -73,6 +97,86 @@ const endpoints = [
   { method: 'POST', path: '/api/automation/certificate', desc: 'apidocs.epRequest' },
   { method: 'POST', path: '/api/automation/renew', desc: 'apidocs.epRenew' },
   { method: 'GET', path: '/api/automation/status/{requestId}', desc: 'apidocs.epStatus' },
+]
+
+// full REST reference — auth column: minimum role for a session call.
+// Bearer tokens are Operator-level, so 'Admin' rows return 403 for tokens.
+const allEndpoints = [
+  { method: 'POST', path: '/api/auth/login', group: 'apidocs.gSession', auth: 'Viewer+', desc: 'Sign in (username + password), sets the session cookie' },
+  { method: 'POST', path: '/api/auth/logout', group: 'apidocs.gSession', auth: 'Viewer+', desc: 'Destroy the current session' },
+  { method: 'GET', path: '/api/auth/me', group: 'apidocs.gSession', auth: 'Viewer+', desc: 'Current user: username / role / source' },
+  { method: 'POST', path: '/api/auth/change-password', group: 'apidocs.gSession', auth: 'Viewer+', desc: 'Change own password' },
+
+  { method: 'GET', path: '/api/dashboard', group: 'apidocs.gDashboard', auth: 'Viewer+', desc: 'Statistics + 30-day trend (scoped: viewers see their own footprint)' },
+
+  { method: 'GET', path: '/api/certificates', group: 'apidocs.gCerts', auth: 'Viewer+', desc: 'List certificates — status (issued/revoked/pending/denied/failed/expired), q, from, to, template, page (real server-side paging)' },
+  { method: 'GET', path: '/api/certificates/{requestId}', group: 'apidocs.gCerts', auth: 'Viewer+', desc: 'Full detail: SAN / EKU / keys / fingerprints / chain' },
+  { method: 'GET', path: '/api/certificates/{requestId}/download', group: 'apidocs.gCerts', auth: 'Viewer+', desc: 'Download certificate (?format=cer|pem)' },
+  { method: 'GET', path: '/api/certificates/export', group: 'apidocs.gCerts', auth: 'Viewer+', desc: 'CSV export (same filters)' },
+  { method: 'POST', path: '/api/certificates/{requestId}/revoke', group: 'apidocs.gCerts', auth: 'Operator+', desc: 'Revoke (7 reasons + effective date)' },
+  { method: 'POST', path: '/api/certificates/{requestId}/unrevoke', group: 'apidocs.gCerts', auth: 'Operator+', desc: 'Un-revoke (certificateHold only)' },
+  { method: 'POST', path: '/api/certificates/batch-revoke', group: 'apidocs.gCerts', auth: 'Operator+', desc: 'Batch revoke by serial number array — pair with status=expired for mass cleanup' },
+
+  { method: 'GET', path: '/api/requests/queue', group: 'apidocs.gRequests', auth: 'Operator+', desc: 'Pending / denied / failed queues (Auditor: read-only)' },
+  { method: 'POST', path: '/api/requests/{requestId}/issue', group: 'apidocs.gRequests', auth: 'Operator+', desc: 'Issue a pending request (certutil -resubmit)' },
+  { method: 'POST', path: '/api/requests/{requestId}/deny', group: 'apidocs.gRequests', auth: 'Operator+', desc: 'Deny a pending request' },
+  { method: 'POST', path: '/api/requests/{requestId}/resubmit', group: 'apidocs.gRequests', auth: 'Operator+', desc: 'Resubmit a failed request' },
+  { method: 'POST', path: '/api/requests/submit', group: 'apidocs.gRequests', auth: 'Viewer+', desc: 'Submit a pasted CSR (viewer submissions go to the approval queue)' },
+  { method: 'POST', path: '/api/requests/self-service', group: 'apidocs.gRequests', auth: 'Viewer+', desc: 'Server generates the key pair + submits (PFX escrowed encrypted)' },
+
+  { method: 'GET', path: '/api/approvals', group: 'apidocs.gApprovals', auth: 'Viewer+', desc: 'Approval queue (viewers see only their own)' },
+  { method: 'POST', path: '/api/approvals/{id}/approve', group: 'apidocs.gApprovals', auth: 'Operator+', desc: 'Approve → request is submitted to the CA' },
+  { method: 'POST', path: '/api/approvals/{id}/reject', group: 'apidocs.gApprovals', auth: 'Operator+', desc: 'Reject → escrowed key material is wiped' },
+  { method: 'POST', path: '/api/approvals/{id}/pfx', group: 'apidocs.gApprovals', auth: 'Submitter', desc: 'One-time PFX download (submitter only, wipes the escrow)' },
+  { method: 'POST', path: '/api/approvals/{id}/pgp', group: 'apidocs.gApprovals', auth: 'Submitter', desc: 'One-time PGP key pair download (submitter only)' },
+
+  { method: 'GET', path: '/api/ca/certificate', group: 'apidocs.gCa', auth: 'Viewer+', desc: 'CA certificate + chain (cer / p7b / zip pack)' },
+  { method: 'GET', path: '/api/ca/info', group: 'apidocs.gCa', auth: 'Viewer+', desc: 'CA name / type / CDP / AIA / CRL periods' },
+  { method: 'GET', path: '/api/ca/crl', group: 'apidocs.gCa', auth: 'Viewer+', desc: 'Download the current CRL' },
+  { method: 'GET', path: '/api/ca/crl/detail', group: 'apidocs.gCa', auth: 'Viewer+', desc: 'Parsed CRL entries (serial / reason / dates)' },
+  { method: 'POST', path: '/api/ca/crl/publish', group: 'apidocs.gCa', auth: 'Operator+', desc: 'Publish full CRL / Delta CRL' },
+  { method: 'POST', path: '/api/ca/crl/period', group: 'apidocs.gCa', auth: 'Admin', desc: 'Change CRL / Delta CRL publishing periods' },
+
+  { method: 'GET', path: '/api/templates', group: 'apidocs.gTemplates', auth: 'Viewer+', desc: 'Templates enabled on the CA (with AD details)' },
+  { method: 'POST', path: '/api/templates/toggle', group: 'apidocs.gTemplates', auth: 'Admin', desc: 'Enable / disable a template on the CA' },
+
+  { method: 'POST', path: '/api/tools/pgp/generate', group: 'apidocs.gPgp', auth: 'Viewer+', desc: 'Generate an OpenPGP key pair (ECC default, validity 1/2 years; private key returned once; Auditors excluded)' },
+  { method: 'GET', path: '/api/pgprecords', group: 'apidocs.gPgp', auth: 'Viewer+', desc: 'PGP key tracking records (viewers: own)' },
+  { method: 'POST', path: '/api/pgprecords/{id}/status', group: 'apidocs.gPgp', auth: 'Operator+', desc: 'Update PGP key status (active / revoked / lost / compromised)' },
+
+  { method: 'GET', path: '/api/inventory', group: 'apidocs.gInventory', auth: 'Viewer+', desc: 'Asset inventory: CA-issued x509 / PGP records / third-party imports (+ status filter)' },
+  { method: 'POST', path: '/api/inventory/import', group: 'apidocs.gInventory', auth: 'Viewer+', desc: 'Import a third-party certificate (public part only)' },
+  { method: 'POST', path: '/api/inventory/{id}/status', group: 'apidocs.gInventory', auth: 'Operator+', desc: 'Set inventory status (active / expired / revoked / retired)' },
+  { method: 'POST', path: '/api/inventory/{id}/meta', group: 'apidocs.gInventory', auth: 'Operator+', desc: 'Update owner / assignedTo / notes' },
+  { method: 'POST', path: '/api/inventory/sync', group: 'apidocs.gInventory', auth: 'Operator+', desc: 'Sync inventory rows for all CA-issued certificates (idempotent)' },
+  { method: 'GET', path: '/api/inventory/export', group: 'apidocs.gInventory', auth: 'Viewer+', desc: 'CSV export (same filters)' },
+
+  { method: 'GET', path: '/api/apitokens', group: 'apidocs.gTokens', auth: 'Admin', desc: 'List API tokens (never returns the plaintext)' },
+  { method: 'POST', path: '/api/apitokens', group: 'apidocs.gTokens', auth: 'Admin', desc: 'Create a token — plaintext cam_... shown once, stored SHA256-hashed, 1-year validity' },
+  { method: 'POST', path: '/api/apitokens/revoke', group: 'apidocs.gTokens', auth: 'Admin', desc: 'Revoke a token (e.g. decommissioned machine)' },
+
+  { method: 'GET', path: '/api/users', group: 'apidocs.gUsers', auth: 'Admin', desc: 'List users (local + AD, lock state)' },
+  { method: 'POST', path: '/api/users', group: 'apidocs.gUsers', auth: 'Admin', desc: 'Create a local user' },
+  { method: 'PUT', path: '/api/users/{id}', group: 'apidocs.gUsers', auth: 'Admin', desc: 'Update role / display name / enabled (AD password reset is rejected server-side)' },
+  { method: 'DELETE', path: '/api/users/{id}', group: 'apidocs.gUsers', auth: 'Admin', desc: 'Delete a local account' },
+
+  { method: 'GET', path: '/api/notify/config', group: 'apidocs.gNotify', auth: 'Admin', desc: 'SMTP + digest settings (password never returned)' },
+  { method: 'PUT', path: '/api/notify/config', group: 'apidocs.gNotify', auth: 'Admin', desc: 'Save SMTP / rules (daily digest: expiring certs, CA cert, CRL, backlog, inventory, OCSP)' },
+  { method: 'POST', path: '/api/notify/test', group: 'apidocs.gNotify', auth: 'Admin', desc: 'Send a test mail' },
+  { method: 'POST', path: '/api/notify/run-now', group: 'apidocs.gNotify', auth: 'Operator+', desc: 'Trigger the daily scan immediately' },
+
+  { method: 'GET', path: '/api/audit', group: 'apidocs.gAudit', auth: 'Admin/Auditor', desc: 'Query audit log (time / user / action filters)' },
+  { method: 'GET', path: '/api/audit/export', group: 'apidocs.gAudit', auth: 'Admin/Auditor', desc: 'CSV export' },
+  { method: 'GET', path: '/api/audit/actions', group: 'apidocs.gAudit', auth: 'Admin/Auditor', desc: 'Distinct action types (for filter dropdowns)' },
+
+  { method: 'GET', path: '/api/system/endpoints', group: 'apidocs.gSystem', auth: 'Admin', desc: 'Listener configuration + bound HTTPS certificates' },
+  { method: 'GET', path: '/api/system/ocsp', group: 'apidocs.gSystem', auth: 'Admin', desc: 'OCSP responder health: service status, revocation configs, signing cert expiry, stale data alerts' },
+  { method: 'GET', path: '/api/system/certs', group: 'apidocs.gSystem', auth: 'Admin', desc: 'LocalMachine\\My certificate candidates for HTTPS binding' },
+  { method: 'POST', path: '/api/system/apply', group: 'apidocs.gSystem', auth: 'Admin', desc: 'Apply listener config (mode / ports / thumbprint) — service restarts automatically' },
+
+  { method: 'POST', path: '/api/automation/certificate', group: 'apidocs.gAutomation', auth: 'Token', desc: 'Machine certificate request (Bearer token) — returns PFX on issuance' },
+  { method: 'POST', path: '/api/automation/renew', group: 'apidocs.gAutomation', auth: 'Token', desc: 'Machine renewal by old serial — same subject/SAN/template, old certificate kept' },
+  { method: 'GET', path: '/api/automation/status/{requestId}', group: 'apidocs.gAutomation', auth: 'Token', desc: 'Machine request status' },
 ]
 
 const langs = [

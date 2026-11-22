@@ -9,9 +9,9 @@
 
 | Item | Content |
 |------|---------|
-| Document version | v1.0 |
-| Effective date | 2026-10-19 |
-| Applies to | CA-Manager v1.6.x (web management system for AD CS certificate services) |
+| Document version | v1.1 |
+| Effective date | 2026-11-23 |
+| Applies to | CA-Manager v1.7.4 (web management system for AD CS certificate services) |
 | Review cycle | Every 6 months; within 2 weeks after any major system upgrade |
 | Author / Reviewer / Approver | [Name / Date] |
 
@@ -19,7 +19,7 @@
 
 **Purpose**: standardize day-to-day certificate operations carried out through CA-Manager, define standard steps, completion criteria and escalation paths for each role, and ensure continuity of certificate services and full auditability of operations.
 
-**In scope (performed via CA-Manager)**: certificate requests and approvals, issuing/denying, revocation and un-revocation, CRL publishing and validity-period management, expiring-certificate follow-up, certificate template enable/disable, user and permission management, audit log archiving.
+**In scope (performed via CA-Manager)**: certificate requests and approvals, issuing/denying, revocation and un-revocation (single and batch), CRL publishing and validity-period management, expiring-certificate follow-up, certificate template enable/disable, asset inventory upkeep (certificates / PGP keys / imported), machine API token lifecycle, user and permission management, audit log archiving.
 
 **Out of scope (still handled locally on the CA server / in AD — escalate per Section 7)**:
 
@@ -46,7 +46,7 @@
 
 | # | Task | Where | Completion criteria |
 |---|------|-------|---------------------|
-| D1 | After 08:00, read the daily digest email (4 event types: expiring certs / CA certificate expiry / CRL overdue / approval backlog) | Mailbox | Every reported event is routed into the matching procedure; email missing → handle per EXP-05 |
+| D1 | After 08:00, read the daily digest email (6 event types: expiring certs / CA certificate expiry / CRL overdue / approval backlog / inventory expiry (PGP & imported) / OCSP health) | Mailbox | Every reported event is routed into the matching procedure; email missing → handle per EXP-05 |
 | D2 | Clear the **Approvals** (`/approvals`) queue: approve or deny | Approvals | Queue cleared same day, or backlog ≤ [N] items with reasons logged |
 | D3 | Handle pending / failed requests in **Requests** (`/requests`) | Requests | Pending requests resubmitted or denied; failed request causes categorized (summarized in W2) |
 | D4 | Check the **Dashboard** (`/dashboard`): CA status, pending count, expiring-in-30-days count | Dashboard | No red alerts; any alert routed into the matching procedure |
@@ -64,9 +64,10 @@
 | # | Task | Owner | Completion criteria |
 |---|------|-------|---------------------|
 | M1 | Export last month's **Audit Log** CSV and archive it | Operator | CSV stored in [archive path]; Auditor spot-checks |
-| M2 | Account review: disable departed/transferred users, clean up dormant accounts | Admin | No redundant accounts in Users (`/users`) |
+| M2 | Account review: disable departed/transferred users, clean up dormant accounts; review **API Tokens** — revoke tokens of decommissioned machines | Admin | No redundant accounts in Users (`/users`); no stale tokens in the API Tokens tab |
 | M3 | Download the current CRL from **CA & CRL** and inspect its parsed content; confirm revocation entries and publishing period are normal | Auditor | Findings recorded |
 | M4 | Check `publish\data\camgr.db` size and free disk space on the CA server | Admin | Disk has headroom; if the audit tables are bloated, archive then clean old records |
+| M5 | Review the **Inventory** (`/inventory`): confirm owners/assigned-to of expiring rows, mark truly retired items, sync from the CA | Operator | Every expiring inventory row has a disposition; list reflects reality |
 
 ### 4.4 Quarterly (Admin + Auditor)
 
@@ -216,8 +217,32 @@ General conventions:
   1. On **Users** (`/users`), create a local account, or enable AD domain login and let domain accounts sign in directly (roles mapped via `memberOf` against the configured groups).
   2. Assign the least-privileged role: view-only → User; approvals/revocation → Operator; compliance oversight → Auditor.
   3. Departure/transfer: disable the local account immediately; for domain accounts, revoke by removing them from the role-mapping group (or disabling the domain account).
-  4. New admin accounts are forced to change password at first login; delete `initial-admin-password.txt` right after first login.
+  4. Machine decommissioned → revoke its API token on the **Users → API Tokens** tab.
+  5. New admin accounts are forced to change password at first login; delete `initial-admin-password.txt` right after first login.
 - **Completion criteria**: accounts match staffing; monthly M2 review passes.
+
+### SOP-13 Batch revocation of expired certificates
+
+- **Trigger**: a large backlog of expired-but-not-revoked certificates (e.g. after legacy issuing practice or migrations — thousands of rows).
+- **Permissions**: Operator / Admin.
+- **Steps**:
+  1. On **Certificates** (`/certificates`), select the **Expired** status filter — the list shows issued certificates past their NotAfter (server-side computed; paging works across the whole backlog).
+  2. Tick the target rows (or filter further by template/date first), then click **Batch revoke** in the selection bar.
+  3. Confirm; each serial is validated against the CA and the result summary reports per-serial successes/failures (e.g. already-revoked serials are reported as failures and can be ignored).
+  4. Publish the CRL once (SOP-05) so the mass revocation takes effect network-wide.
+- **Completion criteria**: expired filter returns (near) zero rows; revocations visible in the audit log; new CRL contains the entries.
+- **Cautions**: verify the filtered set really is disposable before selecting all — expired does not mean "not in use" for devices that do not check revocation; coordinate with owners for edge cases. Batch revocation skips the per-certificate serial confirmation dialog by design — the filter selection is the review step.
+
+### SOP-14 Asset inventory upkeep
+
+- **Trigger**: monthly routine (M5); after every issuance/retirement of a tracked asset; third-party certificates (e.g. public CA, another organization) that should be tracked centrally.
+- **Permissions**: Operator / Admin (viewers see their own rows).
+- **Steps**:
+  1. Click **Sync** to create/update rows for all CA-issued certificates (idempotent).
+  2. Import third-party certificates via **Import** (PEM/Base64, public part only).
+  3. Maintain owner / assigned-to / notes per row (row click → edit); set lifecycle status (`active / revoked / retired`) as things change.
+  4. Follow up the **expiring** rows flagged by the daily digest (PGP keys and imported certificates have no requester email pipeline — owners must be reached manually).
+- **Completion criteria**: inventory reflects reality; M5 review passes; exported CSV (Export button) usable as the asset register.
 
 ## 6. Service & Configuration Changes (low-frequency BAU)
 
@@ -267,6 +292,7 @@ General conventions:
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
 | v1.0 | 2026-10-19 | First release | [ ] |
+| v1.1 | 2026-11-23 | Applies to v1.7.4; digest has 6 event types; added SOP-13 batch revocation of expired certificates and SOP-14 asset inventory upkeep; monthly tasks M2/M5 extended (API token review, inventory review) | [ ] |
 
 ## Appendix A: Glossary
 
@@ -289,6 +315,7 @@ General conventions:
 |------------|--------------------|
 | Certificate list/filter | `certutil -view -restrict "..."` |
 | Revoke | `certutil -revoke <serial> <reason>` |
+| Batch revoke expired | loop of `certutil -revoke <serial> 4` per serial (the UI does it in one audited call) |
 | Issue pending | `certutil -resubmit <RequestId>` |
 | Deny | `certutil -deny <RequestId>` |
 | Publish CRL | `certutil -CRL` / `certutil -CRL delta` |

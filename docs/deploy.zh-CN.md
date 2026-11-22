@@ -11,7 +11,7 @@
 | CA 角色 | 企业版或独立版 AD CS |
 | 构建环境 | Node.js 20+ 与 .NET 10 SDK（仅在构建机需要；服务器无需） |
 | 服务账户 | 默认 LocalSystem（本机即具备 CA 管理权限）。如需专用账户，将其加入本地 `CA Administrators` / `Cert Publishers` 并以该账户安装服务 |
-| 端口 | 默认 8443（可自定义），防火墙需放行 |
+| 端口 | 默认 HTTP 8442（可自定义），防火墙需放行 |
 
 ## 构建与安装
 
@@ -24,32 +24,49 @@ powershell -File scripts\install-service.ps1
 ```
 
 安装脚本自动完成：
-1. 尝试向本机 CA 申请 WebServer 模板 HTTPS 证书（CN=主机 FQDN）并绑定端口；失败则回退 HTTP 并提示
-2. 写入 `publish\appsettings.Production.json` 监听地址
-3. `sc create CA-Manager`（LocalSystem、开机自启、崩溃自动重启）
-4. 启动服务并打印访问地址
+1. 写入 `Listeners` 监听配置（默认 HTTP 8442）到 `publish\appsettings.Production.json`
+2. `sc create CA-Manager`（LocalSystem、开机自启、崩溃自动重启）
+3. 启动服务并打印访问地址
 
 ## 首次登录
 
-1. 打开 `https://<主机名>:8443`（回退 HTTP 时为 `http://`）
+1. 打开 `http://<主机名>:8442`（或所选端口）
 2. 初始账号 `admin`，初始密码在 `publish\initial-admin-password.txt`
 3. 首次登录强制修改密码，改密后此文件即可删除
+4. 随时可到 **系统设置** 页切换 HTTPS（见下方"监听配置"）
+
+## 监听配置（HTTP / HTTPS）
+
+服务读取 Kestrel 的 `Listeners` 配置节，安装脚本将初始值写入 `publish\appsettings.Production.json`：
+
+```json
+"Listeners": { "Mode": "https", "HttpPort": 8442, "HttpsPort": 8443, "Thumbprint": "<LocalMachine\\My 中证书的 SHA1 指纹>" }
+```
+
+- `Mode`：`http`（安装后默认）/ `https` / `both`
+- HTTPS 证书启动时**按指纹从本机 `LocalMachine\My` 证书库加载**；证书缺失/不可读时自动回退 HTTP，不会崩溃循环
+- 推荐：在 Web 界面 **系统设置** 页直接修改（模式单选 + 端口 + 证书选择）—— 保存后自动应用配置并重启服务，无需远程桌面
+- 也可以直接改 JSON 后执行 `Restart-Service CA-Manager`
+
+> **不要使用 `netsh http add sslcert`** —— Kestrel 不走 http.sys 的 SSL 绑定，`netsh sslcert` 在这里无效（且 appid 含非十六进制字符时会报 "The parameter is incorrect"）。
 
 ## 防火墙
 
 ```powershell
-New-NetFirewallRule -DisplayName "CA-Manager" -Direction Inbound -Protocol TCP -LocalPort 8443 -RemoteAddress Intranet -Action Allow
+New-NetFirewallRule -DisplayName "CA-Manager" -Direction Inbound -Protocol TCP -LocalPort 8442,8443 -RemoteAddress Intranet -Action Allow
 ```
 
-## 生产环境 HTTPS（若自动申请失败）
+（只需放行 `Listeners` 中实际配置的端口。）
 
-手动用本 CA 签发一张服务器证书后执行：
+## 生产环境 HTTPS（若安装时未配置）
+
+手动用本 CA 签发一张服务器证书（导入 `LocalMachine\My`），然后通过 **系统设置** 页或 `appsettings.Production.json` 填入指纹并重启服务：
 
 ```powershell
-$thumb = "<证书SHA1指纹>"
-netsh http add sslcert ipport=0.0.0.0:8443 certhash=$thumb appid="{4d8a5f2e-6b3c-4a9e-9f2e-ca7mgr000001}" certstorename=MY
-# 然后编辑 publish\appsettings.Production.json 的 Kestrel Endpoints 为 https://+:8443
-Restart-Service CA-Manager
+# 示例：申请 WebServer 模板证书并导入
+certreq -submit -attrib "CertificateTemplate:WebServer" request.req cert.cer
+certreq -accept cert.cer        # 证书进入 LocalMachine\My
+Restart-Service CA-Manager      # 在系统设置页选中证书 / 编辑 Listeners 之后
 ```
 
 ## 升级 / 回滚 / 卸载
