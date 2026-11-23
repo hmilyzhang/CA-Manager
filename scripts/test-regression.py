@@ -179,7 +179,8 @@ expect('auditor: forbidden self-service submit', forbidden(auditor, 'POST', BASE
 expect('auditor: forbidden csr submit', forbidden(auditor, 'POST', BASE+'/api/requests/submit', {'csr':'M' * 64, 'template':'User'}))
 expect('auditor: forbidden users page', forbidden(auditor, 'GET', BASE+'/api/users'))
 expect('auditor: forbidden automation request', forbidden(auditor, 'POST', BASE+'/api/automation/certificate', {}))
-expect('auditor: forbidden inventory import', forbidden(auditor, 'POST', BASE+'/api/inventory/import', {}))
+# the body passes model validation so the call reaches the action and its role check
+expect('auditor: forbidden inventory import', forbidden(auditor, 'POST', BASE+'/api/inventory/import', {'certificate': ''}))
 
 # ---------- Admin: full ----------
 expect('admin: user management', 'items' in call(admin, 'GET', BASE+'/api/users') or isinstance(call(admin, 'GET', BASE+'/api/users'), list))
