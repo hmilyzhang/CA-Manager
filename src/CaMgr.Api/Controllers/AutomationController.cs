@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using CaMgr.Api.CaInterop;
+using CaMgr.Api.Data;
 using CaMgr.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,9 @@ public record AutomationRenewRequest(string SerialNumber, string PfxPassword);
 [ApiController]
 [Route("api/automation")]
 [Authorize]
+// issues immediately with no approval step, so this must stay closed to plain Viewer/Auditor
+// sessions (they would bypass the approval queue); API tokens are mapped to the Operator role
+[RequireRole(AppRole.Operator, AppRole.Admin)]
 public sealed class AutomationController(
     SelfServiceCertService selfService,
     CertificateService certs,

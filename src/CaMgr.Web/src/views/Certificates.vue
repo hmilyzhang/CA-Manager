@@ -29,7 +29,7 @@
 
     <el-table ref="tableRef" :data="result.items" v-loading="loading" stripe row-key="requestId"
       @selection-change="onSelectionChange" @row-click="goDetail" row-class-name="clickable">
-      <el-table-column v-if="canOperate" type="selection" width="42" reserve-selection />
+      <el-table-column v-if="canOperate" type="selection" width="42" reserve-selection :selectable="canSelect" />
       <el-table-column prop="requestId" :label="$t('common.requestId')" width="90" />
       <el-table-column :label="$t('common.commonName')" min-width="200" show-overflow-tooltip>
         <template #default="{ row }">{{ row.commonName || $t('common.none') }}</template>
@@ -137,17 +137,19 @@ const page = ref(1)
 const limit = 50
 
 const selectionRows = ref([])
+// serial numbers of the ticked certificates - the batch endpoint revokes by serial, not by request id
 const selectedSerials = ref([])
 const batchDlg = ref(false)
 const batchForm = ref({ reason: 4, effectiveFrom: null })
 const batchRunning = ref(false)
 const batchResult = ref(null)
 
-const selectedCertRows = computed(() => result.value.items.filter(r => selectedSerials.value.includes(r.requestId)))
+// pending / denied / failed requests carry no certificate, so there is nothing to revoke
+const canSelect = (row) => !!row.serialNumber
 
 function onSelectionChange(rows) {
   selectionRows.value = rows
-  selectedSerials.value = rows.map(r => r.requestId)
+  selectedSerials.value = rows.map(r => r.serialNumber).filter(Boolean)
 }
 function clearSelection() {
   if (tableRef.value) tableRef.value.clearSelection()

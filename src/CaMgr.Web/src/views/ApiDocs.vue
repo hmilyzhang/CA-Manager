@@ -31,25 +31,47 @@
     </el-card>
 
     <el-card shadow="never" style="margin-bottom: 14px">
-      <template #header>{{ $t('apidocs.fullRef') }}</template>
+      <template #header>
+        {{ $t('apidocs.fullRef') }}
+        <span class="ref-count">{{ allEndpoints.length }} {{ $t('apidocs.endpointsCount') }}</span>
+      </template>
       <p style="margin: 4px 0 10px; font-size: 13px; color: #606266">{{ $t('apidocs.fullRefText') }}</p>
-      <el-table :data="allEndpoints" size="small">
-        <el-table-column label=" " width="85">
-          <template #default="{ row }"><el-tag size="small" :type="row.method === 'GET' ? 'success' : 'primary'">{{ row.method }}</el-tag></template>
-        </el-table-column>
-        <el-table-column label="Endpoint" min-width="300">
-          <template #default="{ row }"><span class="mono" style="font-size:12px">{{ row.path }}</span></template>
-        </el-table-column>
-        <el-table-column :label="$t('apidocs.colGroup')" width="120">
-          <template #default="{ row }">{{ $t(row.group) }}</template>
-        </el-table-column>
-        <el-table-column :label="$t('apidocs.colAuth')" width="110">
+      <el-table :data="allEndpoints" size="small" row-key="id" :row-class-name="rowClass" class="ref-table">
+        <el-table-column type="expand" width="36">
           <template #default="{ row }">
-            <el-tag size="small" effect="plain" :type="row.auth === 'Admin' ? 'danger' : row.auth === 'Operator+' ? 'warning' : 'info'">{{ row.auth }}</el-tag>
+            <div v-if="hasDetail(row)" class="detail">
+              <div v-if="row.query" class="query">
+                <span class="k">{{ $t('apidocs.query') }}</span>
+                <span class="mono">{{ row.query }}</span>
+              </div>
+              <template v-if="row.body">
+                <div class="k">{{ $t('apidocs.request') }}</div>
+                <pre class="mono code small">{{ row.body }}</pre>
+              </template>
+              <template v-if="row.resp">
+                <div class="k">{{ $t('apidocs.response') }}</div>
+                <pre class="mono code small">{{ row.resp }}</pre>
+              </template>
+              <p v-if="row.note" class="note">{{ pick(row.note) }}</p>
+            </div>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('apidocs.desc')" min-width="250">
-          <template #default="{ row }">{{ row.desc }}</template>
+        <el-table-column label=" " width="86">
+          <template #default="{ row }"><el-tag size="small" :type="row.method === 'GET' ? 'success' : 'primary'">{{ row.method }}</el-tag></template>
+        </el-table-column>
+        <el-table-column label="Endpoint" min-width="250">
+          <template #default="{ row }"><span class="mono" style="font-size:12px">{{ row.path }}</span></template>
+        </el-table-column>
+        <el-table-column :label="$t('apidocs.colGroup')" width="110">
+          <template #default="{ row }">{{ $t('apidocs.' + row.group) }}</template>
+        </el-table-column>
+        <el-table-column :label="$t('apidocs.colAuth')" width="190">
+          <template #default="{ row }">
+            <el-tag v-for="role in row.roles" :key="role" size="small" effect="plain" :type="roleType(role)" class="role-tag">{{ $t(ROLE_LABEL_KEYS[role]) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('apidocs.desc')" min-width="240">
+          <template #default="{ row }">{{ pick(row.desc) }}</template>
         </el-table-column>
       </el-table>
     </el-card>
@@ -60,7 +82,7 @@
       <h4 class="h4">{{ $t('apidocs.request') }}</h4>
       <el-tabs type="border-card" class="code-tabs">
         <el-tab-pane v-for="lang in langs" :key="lang.key" :label="lang.label">
-          <pre class="mono code">{{ lang.snippets[ep.key].request }}</pre>
+          <pre class="mono code">{{ snippets[ep.key][lang.key] }}</pre>
         </el-tab-pane>
       </el-tabs>
 
@@ -70,7 +92,9 @@
       <h4 class="h4">{{ $t('apidocs.fields') }}</h4>
       <el-table :data="ep.fields" size="small">
         <el-table-column prop="name" label="Field" width="160" />
-        <el-table-column prop="desc" :label="$t('apidocs.desc')" />
+        <el-table-column :label="$t('apidocs.desc')">
+          <template #default="{ row }">{{ pick(row) }}</template>
+        </el-table-column>
       </el-table>
     </el-card>
 
@@ -91,7 +115,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { curLang } from '../i18n.js'
+import { AUTOMATION_FIELDS, FULL_REFERENCE, ROLE_LABEL_KEYS } from './apidocs-data.js'
 
 const endpoints = [
   { method: 'POST', path: '/api/automation/certificate', desc: 'apidocs.epRequest' },
@@ -99,85 +124,13 @@ const endpoints = [
   { method: 'GET', path: '/api/automation/status/{requestId}', desc: 'apidocs.epStatus' },
 ]
 
-// full REST reference — auth column: minimum role for a session call.
-// Bearer tokens are Operator-level, so 'Admin' rows return 403 for tokens.
-const allEndpoints = [
-  { method: 'POST', path: '/api/auth/login', group: 'apidocs.gSession', auth: 'Viewer+', desc: 'Sign in (username + password), sets the session cookie' },
-  { method: 'POST', path: '/api/auth/logout', group: 'apidocs.gSession', auth: 'Viewer+', desc: 'Destroy the current session' },
-  { method: 'GET', path: '/api/auth/me', group: 'apidocs.gSession', auth: 'Viewer+', desc: 'Current user: username / role / source' },
-  { method: 'POST', path: '/api/auth/change-password', group: 'apidocs.gSession', auth: 'Viewer+', desc: 'Change own password' },
-
-  { method: 'GET', path: '/api/dashboard', group: 'apidocs.gDashboard', auth: 'Viewer+', desc: 'Statistics + 30-day trend (scoped: viewers see their own footprint)' },
-
-  { method: 'GET', path: '/api/certificates', group: 'apidocs.gCerts', auth: 'Viewer+', desc: 'List certificates — status (issued/revoked/pending/denied/failed/expired), q, from, to, template, page (real server-side paging)' },
-  { method: 'GET', path: '/api/certificates/{requestId}', group: 'apidocs.gCerts', auth: 'Viewer+', desc: 'Full detail: SAN / EKU / keys / fingerprints / chain' },
-  { method: 'GET', path: '/api/certificates/{requestId}/download', group: 'apidocs.gCerts', auth: 'Viewer+', desc: 'Download certificate (?format=cer|pem)' },
-  { method: 'GET', path: '/api/certificates/export', group: 'apidocs.gCerts', auth: 'Viewer+', desc: 'CSV export (same filters)' },
-  { method: 'POST', path: '/api/certificates/{requestId}/revoke', group: 'apidocs.gCerts', auth: 'Operator+', desc: 'Revoke (7 reasons + effective date)' },
-  { method: 'POST', path: '/api/certificates/{requestId}/unrevoke', group: 'apidocs.gCerts', auth: 'Operator+', desc: 'Un-revoke (certificateHold only)' },
-  { method: 'POST', path: '/api/certificates/batch-revoke', group: 'apidocs.gCerts', auth: 'Operator+', desc: 'Batch revoke by serial number array — pair with status=expired for mass cleanup' },
-
-  { method: 'GET', path: '/api/requests/queue', group: 'apidocs.gRequests', auth: 'Operator+', desc: 'Pending / denied / failed queues (Auditor: read-only)' },
-  { method: 'POST', path: '/api/requests/{requestId}/issue', group: 'apidocs.gRequests', auth: 'Operator+', desc: 'Issue a pending request (certutil -resubmit)' },
-  { method: 'POST', path: '/api/requests/{requestId}/deny', group: 'apidocs.gRequests', auth: 'Operator+', desc: 'Deny a pending request' },
-  { method: 'POST', path: '/api/requests/{requestId}/resubmit', group: 'apidocs.gRequests', auth: 'Operator+', desc: 'Resubmit a failed request' },
-  { method: 'POST', path: '/api/requests/submit', group: 'apidocs.gRequests', auth: 'Viewer+', desc: 'Submit a pasted CSR (viewer submissions go to the approval queue)' },
-  { method: 'POST', path: '/api/requests/self-service', group: 'apidocs.gRequests', auth: 'Viewer+', desc: 'Server generates the key pair + submits (PFX escrowed encrypted)' },
-
-  { method: 'GET', path: '/api/approvals', group: 'apidocs.gApprovals', auth: 'Viewer+', desc: 'Approval queue (viewers see only their own)' },
-  { method: 'POST', path: '/api/approvals/{id}/approve', group: 'apidocs.gApprovals', auth: 'Operator+', desc: 'Approve → request is submitted to the CA' },
-  { method: 'POST', path: '/api/approvals/{id}/reject', group: 'apidocs.gApprovals', auth: 'Operator+', desc: 'Reject → escrowed key material is wiped' },
-  { method: 'POST', path: '/api/approvals/{id}/pfx', group: 'apidocs.gApprovals', auth: 'Submitter', desc: 'One-time PFX download (submitter only, wipes the escrow)' },
-  { method: 'POST', path: '/api/approvals/{id}/pgp', group: 'apidocs.gApprovals', auth: 'Submitter', desc: 'One-time PGP key pair download (submitter only)' },
-
-  { method: 'GET', path: '/api/ca/certificate', group: 'apidocs.gCa', auth: 'Viewer+', desc: 'CA certificate + chain (cer / p7b / zip pack)' },
-  { method: 'GET', path: '/api/ca/info', group: 'apidocs.gCa', auth: 'Viewer+', desc: 'CA name / type / CDP / AIA / CRL periods' },
-  { method: 'GET', path: '/api/ca/crl', group: 'apidocs.gCa', auth: 'Viewer+', desc: 'Download the current CRL' },
-  { method: 'GET', path: '/api/ca/crl/detail', group: 'apidocs.gCa', auth: 'Viewer+', desc: 'Parsed CRL entries (serial / reason / dates)' },
-  { method: 'POST', path: '/api/ca/crl/publish', group: 'apidocs.gCa', auth: 'Operator+', desc: 'Publish full CRL / Delta CRL' },
-  { method: 'POST', path: '/api/ca/crl/period', group: 'apidocs.gCa', auth: 'Admin', desc: 'Change CRL / Delta CRL publishing periods' },
-
-  { method: 'GET', path: '/api/templates', group: 'apidocs.gTemplates', auth: 'Viewer+', desc: 'Templates enabled on the CA (with AD details)' },
-  { method: 'POST', path: '/api/templates/toggle', group: 'apidocs.gTemplates', auth: 'Admin', desc: 'Enable / disable a template on the CA' },
-
-  { method: 'POST', path: '/api/tools/pgp/generate', group: 'apidocs.gPgp', auth: 'Viewer+', desc: 'Generate an OpenPGP key pair (ECC default, validity 1/2 years; private key returned once; Auditors excluded)' },
-  { method: 'GET', path: '/api/pgprecords', group: 'apidocs.gPgp', auth: 'Viewer+', desc: 'PGP key tracking records (viewers: own)' },
-  { method: 'POST', path: '/api/pgprecords/{id}/status', group: 'apidocs.gPgp', auth: 'Operator+', desc: 'Update PGP key status (active / revoked / lost / compromised)' },
-
-  { method: 'GET', path: '/api/inventory', group: 'apidocs.gInventory', auth: 'Viewer+', desc: 'Asset inventory: CA-issued x509 / PGP records / third-party imports (+ status filter)' },
-  { method: 'POST', path: '/api/inventory/import', group: 'apidocs.gInventory', auth: 'Viewer+', desc: 'Import a third-party certificate (public part only)' },
-  { method: 'POST', path: '/api/inventory/{id}/status', group: 'apidocs.gInventory', auth: 'Operator+', desc: 'Set inventory status (active / expired / revoked / retired)' },
-  { method: 'POST', path: '/api/inventory/{id}/meta', group: 'apidocs.gInventory', auth: 'Operator+', desc: 'Update owner / assignedTo / notes' },
-  { method: 'POST', path: '/api/inventory/sync', group: 'apidocs.gInventory', auth: 'Operator+', desc: 'Sync inventory rows for all CA-issued certificates (idempotent)' },
-  { method: 'GET', path: '/api/inventory/export', group: 'apidocs.gInventory', auth: 'Viewer+', desc: 'CSV export (same filters)' },
-
-  { method: 'GET', path: '/api/apitokens', group: 'apidocs.gTokens', auth: 'Admin', desc: 'List API tokens (never returns the plaintext)' },
-  { method: 'POST', path: '/api/apitokens', group: 'apidocs.gTokens', auth: 'Admin', desc: 'Create a token — plaintext cam_... shown once, stored SHA256-hashed, 1-year validity' },
-  { method: 'POST', path: '/api/apitokens/revoke', group: 'apidocs.gTokens', auth: 'Admin', desc: 'Revoke a token (e.g. decommissioned machine)' },
-
-  { method: 'GET', path: '/api/users', group: 'apidocs.gUsers', auth: 'Admin', desc: 'List users (local + AD, lock state)' },
-  { method: 'POST', path: '/api/users', group: 'apidocs.gUsers', auth: 'Admin', desc: 'Create a local user' },
-  { method: 'PUT', path: '/api/users/{id}', group: 'apidocs.gUsers', auth: 'Admin', desc: 'Update role / display name / enabled (AD password reset is rejected server-side)' },
-  { method: 'DELETE', path: '/api/users/{id}', group: 'apidocs.gUsers', auth: 'Admin', desc: 'Delete a local account' },
-
-  { method: 'GET', path: '/api/notify/config', group: 'apidocs.gNotify', auth: 'Admin', desc: 'SMTP + digest settings (password never returned)' },
-  { method: 'PUT', path: '/api/notify/config', group: 'apidocs.gNotify', auth: 'Admin', desc: 'Save SMTP / rules (daily digest: expiring certs, CA cert, CRL, backlog, inventory, OCSP)' },
-  { method: 'POST', path: '/api/notify/test', group: 'apidocs.gNotify', auth: 'Admin', desc: 'Send a test mail' },
-  { method: 'POST', path: '/api/notify/run-now', group: 'apidocs.gNotify', auth: 'Operator+', desc: 'Trigger the daily scan immediately' },
-
-  { method: 'GET', path: '/api/audit', group: 'apidocs.gAudit', auth: 'Admin/Auditor', desc: 'Query audit log (time / user / action filters)' },
-  { method: 'GET', path: '/api/audit/export', group: 'apidocs.gAudit', auth: 'Admin/Auditor', desc: 'CSV export' },
-  { method: 'GET', path: '/api/audit/actions', group: 'apidocs.gAudit', auth: 'Admin/Auditor', desc: 'Distinct action types (for filter dropdowns)' },
-
-  { method: 'GET', path: '/api/system/endpoints', group: 'apidocs.gSystem', auth: 'Admin', desc: 'Listener configuration + bound HTTPS certificates' },
-  { method: 'GET', path: '/api/system/ocsp', group: 'apidocs.gSystem', auth: 'Admin', desc: 'OCSP responder health: service status, revocation configs, signing cert expiry, stale data alerts' },
-  { method: 'GET', path: '/api/system/certs', group: 'apidocs.gSystem', auth: 'Admin', desc: 'LocalMachine\\My certificate candidates for HTTPS binding' },
-  { method: 'POST', path: '/api/system/apply', group: 'apidocs.gSystem', auth: 'Admin', desc: 'Apply listener config (mode / ports / thumbprint) — service restarts automatically' },
-
-  { method: 'POST', path: '/api/automation/certificate', group: 'apidocs.gAutomation', auth: 'Token', desc: 'Machine certificate request (Bearer token) — returns PFX on issuance' },
-  { method: 'POST', path: '/api/automation/renew', group: 'apidocs.gAutomation', auth: 'Token', desc: 'Machine renewal by old serial — same subject/SAN/template, old certificate kept' },
-  { method: 'GET', path: '/api/automation/status/{requestId}', group: 'apidocs.gAutomation', auth: 'Token', desc: 'Machine request status' },
-]
+// full REST reference - one row per endpoint, kept in apidocs-data.js next to this view
+const allEndpoints = FULL_REFERENCE
+// bilingual text is { en, zh }; pick() also passes plain strings through
+const pick = (text) => (text && typeof text === 'object' ? text[curLang()] : text) || ''
+const hasDetail = (row) => !!(row.query || row.body || row.resp || row.note)
+const rowClass = ({ row }) => (hasDetail(row) ? '' : 'no-detail')
+const roleType = (role) => ({ admin: 'danger', operator: 'warning', token: 'success' }[role] || 'info')
 
 const langs = [
   { key: 'curl', label: 'curl' },
@@ -327,6 +280,9 @@ $r = json_decode(curl_exec($ch), true);`,
     -SkipCertificateCheck`,
 }
 
+// request snippets per example and language: snippets[example key][language key]
+const snippets = { request: requestCert, renew, status }
+
 const examples = [
   {
     key: 'request',
@@ -339,15 +295,7 @@ const examples = [
   "fileName": "www.example.com.pfx",
   "message": "已颁发 / Issued"
 }`,
-    fields: [
-      { name: 'commonName', desc: 'CN of the certificate (required)' },
-      { name: 'san', desc: 'additional DNS / IP entries (optional, CN is always included)' },
-      { name: 'keyAlgorithm', desc: 'RSA2048 | RSA4096 (default) | ECDSA_P256' },
-      { name: 'template', desc: 'CA template name, e.g. WebServer' },
-      { name: 'pfxPassword', desc: 'protects the returned PFX (min 8 chars, required)' },
-      { name: 'issued', desc: 'true = PFX is present in pfxBase64' },
-      { name: 'disposition', desc: '3=issued, 5=pending (manager approval), 2=denied by policy' },
-    ],
+    fields: AUTOMATION_FIELDS.request,
   },
   {
     key: 'renew',
@@ -360,12 +308,7 @@ const examples = [
   "pfxBase64": "...",
   "fileName": "www.example.com.pfx"
 }`,
-    fields: [
-      { name: 'serialNumber', desc: 'serial number of the certificate to renew (required)' },
-      { name: 'pfxPassword', desc: 'password for the new PFX (min 8 chars, required)' },
-      { name: 'renewedFrom', desc: 'serial of the old certificate' },
-      { name: 'note', desc: 'the old certificate is kept - revoke it manually if needed' },
-    ],
+    fields: AUTOMATION_FIELDS.renew,
   },
   {
     key: 'status',
@@ -378,11 +321,7 @@ const examples = [
   "commonName": "api.test.lab",
   "template": "User"
 }`,
-    fields: [
-      { name: 'requestId', desc: 'id in the path' },
-      { name: 'status', desc: 'issued | revoked | pending | denied | failed | expired' },
-      { name: 'disposition', desc: 'raw AD CS disposition code' },
-    ],
+    fields: AUTOMATION_FIELDS.status,
   },
 ]
 
@@ -407,4 +346,12 @@ const errors = [
   word-break: break-all;
 }
 .h4 { margin: 14px 0 8px; font-size: 14px; color: #303133; }
+.ref-count { margin-left: 8px; font-size: 12px; color: #909399; font-weight: 400; }
+.ref-table :deep(.no-detail .el-table__expand-icon) { display: none; }
+.ref-table :deep(.el-table__expanded-cell) { padding: 12px 20px 16px 56px; background: #fafbfc; }
+.role-tag { margin: 2px 4px 2px 0; }
+.detail .k { margin: 8px 0 4px; font-size: 12px; font-weight: 600; color: #606266; }
+.detail .query { display: flex; gap: 8px; align-items: baseline; font-size: 12px; }
+.detail .note { margin: 10px 0 0; font-size: 13px; line-height: 1.6; color: #e6a23c; }
+.code.small { padding: 10px 12px; max-height: 320px; }
 </style>

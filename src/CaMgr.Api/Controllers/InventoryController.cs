@@ -20,6 +20,8 @@ public sealed class InventoryController(InventoryService inventory, AuditService
         Enum.TryParse<AppRole>(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value, out var r)
         && r is AppRole.Operator or AppRole.Admin or AppRole.Auditor;
     private bool IsOperator => CanSeeAll && Enum.TryParse<AppRole>(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value, out var r) && r is AppRole.Operator or AppRole.Admin;
+    private bool IsAuditor =>
+        Enum.TryParse<AppRole>(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value, out var r) && r == AppRole.Auditor;
 
     [HttpGet]
     public async Task<IActionResult> List([FromQuery] string? itemType = null, [FromQuery] string? status = null)
@@ -29,6 +31,8 @@ public sealed class InventoryController(InventoryService inventory, AuditService
     [HttpPost("import")]
     public async Task<IActionResult> Import([FromBody] ImportCertRequest req)
     {
+        // Auditor is read-only like on the other submit endpoints
+        if (IsAuditor) return new JsonResult(new { error = "权限不足" }) { StatusCode = 403 };
         var (der, err) = DecodeCert(req.Certificate);
         if (err is not null) return BadRequest(new { error = err });
         try

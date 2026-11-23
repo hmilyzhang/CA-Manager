@@ -38,6 +38,24 @@ def forbidden(op, method, url, obj=None):
     except urllib.error.HTTPError as e:
         return e.code == 403
 
+def bad_request(op, method, url, obj=None):
+    """returns True when the API answers 400: the call passed authorization and stopped at validation"""
+    try:
+        call(op, method, url, obj)
+        return False
+    except urllib.error.HTTPError as e:
+        return e.code == 400
+
+def bearer_code(token, method, url, obj=None):
+    """status code of a call authenticated with an API token instead of a session"""
+    data = json.dumps(obj).encode('utf-8') if obj is not None else b''
+    req = urllib.request.Request(url, data=data if method != 'GET' else None,
+                                 headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=90) as r: return r.status
+    except urllib.error.HTTPError as e:
+        return e.code
+
 # ---------- setup: one session per role ----------
 admin = session()
 expect('admin login', call(admin, 'POST', BASE+'/api/auth/login', {'username':'reg_admin','password':ADMIN_PW})['role'] == 'Admin')
@@ -94,6 +112,12 @@ expect('viewer: forbidden approve', forbidden(viewer2, 'POST', BASE+f'/api/appro
 expect('viewer: forbidden users page', forbidden(viewer2, 'GET', BASE+'/api/users'))
 expect('viewer: forbidden audit log', forbidden(viewer2, 'GET', BASE+'/api/audit'))
 expect('viewer: forbidden CRL publish', forbidden(viewer2, 'POST', BASE+'/api/ca/crl/publish', {'base':True,'delta':False}))
+# the automation endpoints issue immediately with no approval step, and batch revoke acts on many
+# certificates at once - a viewer session must be stopped by the authorization layer (403, not 400)
+expect('viewer: forbidden automation request', forbidden(viewer2, 'POST', BASE+'/api/automation/certificate', {}))
+expect('viewer: forbidden automation renew', forbidden(viewer2, 'POST', BASE+'/api/automation/renew', {}))
+expect('viewer: forbidden automation status', forbidden(viewer2, 'GET', BASE+'/api/automation/status/1'))
+expect('viewer: forbidden batch revoke', forbidden(viewer2, 'POST', BASE+'/api/certificates/batch-revoke', {'target':'selected','serials':[],'reason':4}))
 d = call(viewer2, 'GET', BASE+'/api/dashboard')
 # dynamic expectation: issued/pending/revoked must equal the viewer's own footprint
 own_appr = call(viewer2, 'GET', BASE+'/api/approvals?status=all')
@@ -138,6 +162,8 @@ else:
 
 expect('operator: forbidden user management', forbidden(operator, 'POST', BASE+'/api/users', {'username':'x1','password':'x'*10,'role':'Viewer'}))
 expect('operator: forbidden CRL period change', forbidden(operator, 'POST', BASE+'/api/ca/crl/period', {'baseUnits':2,'basePeriod':'Weeks','deltaUnits':1,'deltaPeriod':'Days'}))
+# an empty selection stops at validation and never reaches the CA
+expect('operator: batch revoke authorized', bad_request(operator, 'POST', BASE+'/api/certificates/batch-revoke', {'target':'selected','serials':[],'reason':4}))
 
 # ---------- Auditor: global read-only ----------
 allc = call(auditor, 'GET', BASE+'/api/certificates?limit=200')
@@ -152,6 +178,8 @@ expect('auditor: forbidden pgp generate', forbidden(auditor, 'POST', BASE+'/api/
 expect('auditor: forbidden self-service submit', forbidden(auditor, 'POST', BASE+'/api/requests/self-service', {'commonName':'aud.test.lab','san':[],'keyAlgorithm':'RSA2048','template':'User','pfxPassword':'x'*10}))
 expect('auditor: forbidden csr submit', forbidden(auditor, 'POST', BASE+'/api/requests/submit', {'csr':'M' * 64, 'template':'User'}))
 expect('auditor: forbidden users page', forbidden(auditor, 'GET', BASE+'/api/users'))
+expect('auditor: forbidden automation request', forbidden(auditor, 'POST', BASE+'/api/automation/certificate', {}))
+expect('auditor: forbidden inventory import', forbidden(auditor, 'POST', BASE+'/api/inventory/import', {}))
 
 # ---------- Admin: full ----------
 expect('admin: user management', 'items' in call(admin, 'GET', BASE+'/api/users') or isinstance(call(admin, 'GET', BASE+'/api/users'), list))
@@ -160,6 +188,17 @@ r = call(admin, 'POST', BASE+'/api/requests/self-service', {
     'keyAlgorithm':'ECDSA_P256', 'template':'User'})
 expect('admin: self-service immediate (no approval)', r.get('pendingApproval') is None and r.get('pfxBase64'))
 expect('admin: audit log', call(admin, 'GET', BASE+'/api/audit?pageSize=1')['total'] > 0)
+expect('admin: batch revoke authorized', bad_request(admin, 'POST', BASE+'/api/certificates/batch-revoke', {'target':'selected','serials':[],'reason':4}))
+expect('admin: automation request authorized', bad_request(admin, 'POST', BASE+'/api/automation/certificate', {}))
+
+# ---------- API token: Operator-level on the automation endpoints ----------
+tok = call(admin, 'POST', BASE+'/api/apitokens', {'name':'regression-probe'})
+try:
+    expect('api token: automation request accepted', bearer_code(tok['plaintext'], 'POST', BASE+'/api/automation/certificate', {}) == 400)
+finally:
+    # never leave an Operator-level token behind, even when the probe fails
+    call(admin, 'POST', BASE+'/api/apitokens/revoke', {'id': tok['info']['id']})
+expect('api token: revoked token rejected', bearer_code(tok['plaintext'], 'POST', BASE+'/api/automation/certificate', {}) == 401)
 
 # ---------- summary ----------
 fails = [n for n, ok, _ in results if not ok]

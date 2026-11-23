@@ -11,7 +11,7 @@
 | CA 角色 | 企业版或独立版 AD CS |
 | 构建环境 | Node.js 20+ 与 .NET 10 SDK（仅在构建机需要；服务器无需） |
 | 服务账户 | 默认 LocalSystem（本机即具备 CA 管理权限）。如需专用账户，将其加入本地 `CA Administrators` / `Cert Publishers` 并以该账户安装服务 |
-| 端口 | 默认 HTTP 8442（可自定义），防火墙需放行 |
+| 端口 | 默认 HTTP 8442（`-Port` 可改）；在 Web 界面切换 HTTPS 后默认 8444。防火墙需放行 |
 
 ## 构建与安装
 
@@ -40,11 +40,11 @@ powershell -File scripts\install-service.ps1
 服务读取 Kestrel 的 `Listeners` 配置节，安装脚本将初始值写入 `publish\appsettings.Production.json`：
 
 ```json
-"Listeners": { "Mode": "https", "HttpPort": 8442, "HttpsPort": 8443, "Thumbprint": "<LocalMachine\\My 中证书的 SHA1 指纹>" }
+"Listeners": { "Mode": "https", "HttpPort": 8442, "HttpsPort": 8444, "Thumbprint": "<LocalMachine\\My 中证书的 SHA1 指纹>" }
 ```
 
-- `Mode`：`http`（安装后默认）/ `https` / `both`
-- HTTPS 证书启动时**按指纹从本机 `LocalMachine\My` 证书库加载**；证书缺失/不可读时自动回退 HTTP，不会崩溃循环
+- `Mode`：`http`（安装后默认）/ `https` / `both`；默认 `HttpPort` 8442、`HttpsPort` 8444
+- HTTPS 证书启动时**按指纹从本机 `LocalMachine\My` 证书库加载**；证书缺失、无私钥或无法加载时，服务记录错误并回退到 `HttpPort` 的 HTTP，不会崩溃循环
 - 推荐：在 Web 界面 **系统设置** 页直接修改（模式单选 + 端口 + 证书选择）—— 保存后自动应用配置并重启服务，无需远程桌面
 - 也可以直接改 JSON 后执行 `Restart-Service CA-Manager`
 
@@ -53,20 +53,20 @@ powershell -File scripts\install-service.ps1
 ## 防火墙
 
 ```powershell
-New-NetFirewallRule -DisplayName "CA-Manager" -Direction Inbound -Protocol TCP -LocalPort 8442,8443 -RemoteAddress Intranet -Action Allow
+New-NetFirewallRule -DisplayName "CA-Manager" -Direction Inbound -Protocol TCP -LocalPort 8442,8444 -RemoteAddress Intranet -Action Allow
 ```
 
 （只需放行 `Listeners` 中实际配置的端口。）
 
-## 生产环境 HTTPS（若安装时未配置）
+## 启用 HTTPS
 
-手动用本 CA 签发一张服务器证书（导入 `LocalMachine\My`），然后通过 **系统设置** 页或 `appsettings.Production.json` 填入指纹并重启服务：
+用本 CA 签发一张服务器证书（CN = 用户访问用的 FQDN，连同私钥导入 `LocalMachine\My`），然后通过 **系统设置** 页或 `appsettings.Production.json` 填入指纹：
 
 ```powershell
 # 示例：申请 WebServer 模板证书并导入
 certreq -submit -attrib "CertificateTemplate:WebServer" request.req cert.cer
 certreq -accept cert.cer        # 证书进入 LocalMachine\My
-Restart-Service CA-Manager      # 在系统设置页选中证书 / 编辑 Listeners 之后
+Restart-Service CA-Manager      # 仅当手工改过 JSON 时需要——系统设置页会自行重启服务
 ```
 
 ## 升级 / 回滚 / 卸载
@@ -85,7 +85,7 @@ powershell -File scripts\uninstall-service.ps1   # 卸载服务（数据保留�
 
 独立 CA 没有模板概念，且默认策略是"申请一律挂起等待管理员颁发"：
 
-- **安装时的 HTTPS 证书**：`certreq -submit` 会返回"待处理"，安装脚本回退 HTTP。处理办法：在 CA-Manager **请求处理**页对该请求点**颁发**，然后回到服务器执行 `certreq -retrieve <请求ID> cert.cer` 与 `certreq -accept cert.cer` 完成安装，再按上文切换 HTTPS 绑定。
+- **CA-Manager 自用的 HTTPS 证书**：默认 pending-first 策略下申请会停留在 CA 队列。提交申请（certreq 或 CA-Manager 的**提交申请**页），在**请求处理**页对 pending 请求点**颁发**，然后 `certreq -retrieve <请求ID> cert.cer` + `certreq -accept cert.cer` 完成安装——或把从 CA-Manager 下载的 PFX 导入 `LocalMachine\My`——再到**系统设置**页选中该证书。
 - **SAN**：独立 CA 默认忽略申请属性里的 SAN。需在 CA 服务器（管理员）启用标志：`certutil -setreg policy\EditFlags +EDITF_ATTRIBUTESUBJECTALTNAME2` 并重启 CertSvc，否则签出的证书不含 SAN。
 - **模板**：模板下拉显示"无需选择模板"——独立 CA 会忽略 CertificateTemplate 属性。
 - **审批**：默认 pending-first 策略下，所有提交都在 CA 队列等待；在**请求处理**页点"颁发"即可（普通用户提交在此之外仍有应用内审批）。
@@ -97,4 +97,6 @@ powershell -File scripts\uninstall-service.ps1   # 卸载服务（数据保留�
 | 颁发/吊销报 `Access is denied 0x80070005` | 服务未以 LocalSystem 运行，或当前 Web 用户角色不足；检查服务账户是否在 CA Administrators |
 | 列表为空且日志出现 `too many active sessions 0x8009400F` | CA 数据库会话耗尽（旧版本泄漏已修复）；重启 CA-Manager 服务并升级到最新版本 |
 | CA 显示不可达 | 检查 CertSvc 服务是否运行；本机 COM 依赖 RPC |
-| HTTPS 证书申请失败 | 多因 WebServer 模板权限；按上文手动配置 |
+| 配了 HTTPS 但服务只响应 HTTP | 配置的证书在 `LocalMachine\My` 中找不到（指纹不对，或没有私钥）；事件日志中有 `HTTPS certificate ... not found - falling back to HTTP`。在系统设置页选一张有效证书后重新应用 |
+| **提交申请** / 自动化 API 的申请结果为**已拒绝** | 服务账户（LocalSystem，即 CA 服务器的计算机账户）对该模板没有 **Enroll** 权限。在模板"安全"选项卡（certtmpl.msc）中给 `域\CA服务器名$` 授予 Enroll，或在模板副本上授予 |
+| 平时能用的端点返回 403 `权限不足` | 当前会话角色不足以调用该端点——对照 API 文档页（`/apidocs`）的"权限"列 |

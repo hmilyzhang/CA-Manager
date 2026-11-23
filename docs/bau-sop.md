@@ -223,15 +223,20 @@ General conventions:
 
 ### SOP-13 Batch revocation of expired certificates
 
-- **Trigger**: a large backlog of expired-but-not-revoked certificates (e.g. after legacy issuing practice or migrations — thousands of rows).
+- **Trigger**: a backlog of expired-but-not-revoked certificates (e.g. after legacy issuing practice or migrations — potentially thousands of rows).
 - **Permissions**: Operator / Admin.
 - **Steps**:
-  1. On **Certificates** (`/certificates`), select the **Expired** status filter — the list shows issued certificates past their NotAfter (server-side computed; paging works across the whole backlog).
-  2. Tick the target rows (or filter further by template/date first), then click **Batch revoke** in the selection bar.
-  3. Confirm; each serial is validated against the CA and the result summary reports per-serial successes/failures (e.g. already-revoked serials are reported as failures and can be ignored).
-  4. Publish the CRL once (SOP-05) so the mass revocation takes effect network-wide.
-- **Completion criteria**: expired filter returns (near) zero rows; revocations visible in the audit log; new CRL contains the entries.
-- **Cautions**: verify the filtered set really is disposable before selecting all — expired does not mean "not in use" for devices that do not check revocation; coordinate with owners for edge cases. Batch revocation skips the per-certificate serial confirmation dialog by design — the filter selection is the review step.
+  1. On **Certificates** (`/certificates`), select the **Expired** status filter — the list shows issued certificates past their NotAfter (server-side computed; paging works across the whole backlog). Narrow it with keyword / template / date when needed.
+  2. Review the list before ticking anything. Leave system certificates (DomainController, CAExchange, KRA, SubCA…) unticked unless the policy explicitly says otherwise.
+  3. Tick the target rows (the selection is kept across pages; one batch takes at most 2000 certificates) and click **Batch revoke** in the selection bar. Choose one reason (default *Superseded*; *CertificateHold* is not offered for batches) and optionally an effective time.
+  4. Read the result: the number revoked and the per-certificate failures (a certificate that was already revoked shows up as a failure and can be ignored).
+  5. Backlogs too large to tick by hand: call `POST /api/certificates/batch-revoke` from a script (API Docs page has the body). `target: "selected"` with explicit serial lists — e.g. taken from the CSV export minus the exclusions — is the controlled option; `target: "expired"` covers everything on the list with **no exclusions**.
+  6. Publish the CRL once (SOP-05) so the revocations take effect network-wide.
+- **Completion criteria**: every disposable certificate on the expired list is revoked (system certificates may stay, with a note in the tracker); revocations visible in the audit log; new CRL contains the entries.
+- **Cautions**:
+  - Expired does not mean "not in use" for devices that do not check revocation — confirm with owners before revoking anything that might still be installed.
+  - The batch dialog only shows the count, not the names: the ticked list on screen is the review step. Revocation is irreversible for every reason except `CertificateHold`.
+  - `target: "expired"` must never be run "to see what happens" — it starts revoking immediately and has no dry run.
 
 ### SOP-14 Asset inventory upkeep
 

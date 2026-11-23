@@ -43,7 +43,8 @@ Certificate requests submitted by Viewers (both paste-CSR and self-service gener
 - Revocation is irreversible except for `certificateHold`; it takes effect network-wide once the new CRL is published (next update time is on the "CA & CRL" page)
 - `certificateHold` can be undone (the certificate becomes valid immediately); re-revoke with a permanent reason once you are sure, avoid long-term holds
 - Dangerous-action confirmation: the full serial number must be typed into the dialog
-- **Expired certificates**: the certificate list has an *Expired* status filter (issued but past NotAfter, not yet revoked); select multiple rows and use **batch revoke** to clean up large backlogs (e.g. thousands of stale certificates) in one audited operation — no per-certificate confirmation dialog is needed, but each serial is validated against the CA and the summary reports successes/failures
+- **Expired certificates**: the certificate list has an *Expired* status filter (issued, past NotAfter, not yet revoked). Tick rows and use **Batch revoke**: the selection is kept across pages, one reason applies to all (certificateHold is not offered), and one batch takes at most 2000 certificates. There is no per-certificate serial prompt — the selection itself is the review step; each serial is then processed against the CA and the summary reports the number revoked and every per-serial failure (e.g. an already-revoked certificate)
+- **Whole backlogs**: the same endpoint (`POST /api/certificates/batch-revoke`) also accepts `target: "expired"`, which revokes *every* issued-but-expired certificate that was never revoked without a selection — API only, no exclusions. Review the *Expired* list first: expired system certificates (DomainController, CAExchange, KRA…) are normally left alone rather than revoked
 - **Pagination is real server-side paging** — the list stays responsive with 3000+ certificates; use filters instead of scrolling through everything
 
 ## CRL Period
@@ -52,7 +53,8 @@ Changes take effect at the next publication. Delta CRL period 0 disables Delta C
 
 ## Audit
 
-Recorded: logins (including failures) / logout / password changes / revocations (single + batch) / unrevokes / issuance / denials / resubmits / CSR submissions / self-service requests / approvals & rejections / PFX downloads / CRL publications / config changes / template changes / user management / PGP generation & status / inventory import-sync-status / API token creation & revocation / listener changes / notification runs.
+Recorded: logins (including failures) / logout / password changes / revocations (one entry per certificate, also inside a batch) / unrevokes / issue and resubmit (resubmit is logged as issue) / denials / CSR and self-service submissions / approval submissions, approvals, rejections, PFX and PGP one-time downloads / CRL publications / CRL period changes / template enable-disable / user create, update, delete / PGP generation and PGP record status / inventory import, sync, status and metadata / API token creation and revocation / automation API requests and renewals / test mails and daily notification scans.
+Not recorded: changes to the listener configuration (HTTP/HTTPS mode, ports, certificate) — check the Windows event log for the restart that follows such a change.
 Fields: time, user, source IP, action, object type, object, parameter summary, result. Filterable queries and CSV export.
 
 ## Machine Automation (API Tokens)
@@ -75,10 +77,15 @@ Web servers can request and renew certificates through the REST API without a br
 See `scripts/api-example.ps1` in the repository for a complete Windows example
 (request + PFX import into `LocalMachine\My`). The built-in **API Docs** page
 (`/apidocs`) documents the **complete REST surface** — every endpoint grouped by
-feature with the minimum role — and carries copy-paste examples for
-curl / PHP / Java / PowerShell. Every API call is audited with
-the token name; tokens never appear in logs; revoke from the same tab if a
-machine is decommissioned.
+feature with the roles allowed to call it, query parameters, request bodies and
+response examples — and carries copy-paste examples for curl / PHP / Java / PowerShell.
+
+Access rules:
+
+- The three automation endpoints issue immediately, so they answer **403 to Viewer and Auditor sessions**; they accept an API token or an Operator/Admin session
+- A token acts as **Operator on every endpoint that allows Operator** — certificate and batch revocation, approvals, CRL publication, inventory sync, … Hand out tokens only to machines that may do all of that, one per machine
+- Endpoints restricted to Admin (users, tokens, notification and listener settings) or to Admin/Auditor (audit log) answer 403 for tokens
+- Audited actions performed with a token are recorded under `token:<name>`; the token itself never appears in logs. Revoke the token from the same tab when a machine is decommissioned
 
 ## Asset Inventory
 

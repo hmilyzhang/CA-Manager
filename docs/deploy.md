@@ -11,7 +11,7 @@
 | CA role | Enterprise or Stand-alone AD CS |
 | Build environment | Node.js 20+ and .NET 10 SDK (build machine only; not needed on the server) |
 | Service account | LocalSystem by default (has CA administration rights locally). For a dedicated account, add it to local `CA Administrators` / `Cert Publishers` and install the service under it |
-| Port | 8443 by default (customizable), must be allowed through the firewall |
+| Port | HTTP 8442 by default (`-Port` to change); HTTPS 8444 by default once switched on in the web UI. Must be allowed through the firewall |
 
 ## Build & Install
 
@@ -40,11 +40,11 @@ The install script automatically:
 The service reads a `Listeners` section (Kestrel); the installer writes the initial value into `publish\appsettings.Production.json`:
 
 ```json
-"Listeners": { "Mode": "https", "HttpPort": 8442, "HttpsPort": 8443, "Thumbprint": "<SHA1 of a cert in LocalMachine\\My>" }
+"Listeners": { "Mode": "https", "HttpPort": 8442, "HttpsPort": 8444, "Thumbprint": "<SHA1 of a cert in LocalMachine\\My>" }
 ```
 
-- `Mode`: `http` (default after install) / `https` / `both`
-- The HTTPS certificate is loaded **by thumbprint from the machine's `LocalMachine\My` store** at startup; if it is missing/unreadable the service falls back to HTTP instead of crash-looping
+- `Mode`: `http` (default after install) / `https` / `both`; defaults are `HttpPort` 8442 and `HttpsPort` 8444
+- The HTTPS certificate is loaded **by thumbprint from the machine's `LocalMachine\My` store** at startup; if it is missing, has no private key or cannot be loaded, the service logs an error and falls back to HTTP on `HttpPort` instead of crash-looping
 - Recommended: change it on the **System** page in the web UI (mode radio + port + certificate picker) — saving applies the config and restarts the service automatically, no RDP needed
 - Or edit the JSON directly and `Restart-Service CA-Manager`
 
@@ -53,20 +53,20 @@ The service reads a `Listeners` section (Kestrel); the installer writes the init
 ## Firewall
 
 ```powershell
-New-NetFirewallRule -DisplayName "CA-Manager" -Direction Inbound -Protocol TCP -LocalPort 8442,8443 -RemoteAddress Intranet -Action Allow
+New-NetFirewallRule -DisplayName "CA-Manager" -Direction Inbound -Protocol TCP -LocalPort 8442,8444 -RemoteAddress Intranet -Action Allow
 ```
 
 (Only the port(s) actually configured in `Listeners` are needed.)
 
-## Production HTTPS (if automatic enrollment failed)
+## Enabling HTTPS
 
-Issue a server certificate from the local CA manually (import it into `LocalMachine\My`), then set the thumbprint via the **System** page or `appsettings.Production.json` as shown above and restart the service:
+Issue a server certificate from the local CA (CN = the FQDN users will browse to, imported into `LocalMachine\My` with its private key), then set the thumbprint via the **System** page or `appsettings.Production.json` as shown above:
 
 ```powershell
 # example: request a WebServer-template certificate and import it
 certreq -submit -attrib "CertificateTemplate:WebServer" request.req cert.cer
 certreq -accept cert.cer        # lands in LocalMachine\My
-Restart-Service CA-Manager      # after selecting it on the System page / editing Listeners
+Restart-Service CA-Manager      # only when the JSON was edited by hand - the System page restarts the service itself
 ```
 
 ## Upgrade / Rollback / Uninstall
@@ -85,7 +85,7 @@ powershell -File scripts\uninstall-service.ps1   # remove the service (data kept
 
 On a stand-alone CA (no templates, requests pending by default):
 
-- **HTTPS enrollment at install time**: `certreq -submit` returns "pending" and the installer falls back to HTTP. Issue the pending request from CA-Manager (**Requests** page → **Issue**), then complete it on the server with `certreq -retrieve <RequestId> cert.cer` and `certreq -accept cert.cer`, and switch the binding to HTTPS as shown above.
+- **HTTPS certificate for CA-Manager itself**: with the default pending-first policy a request stays in the CA queue. Submit it (certreq, or **New Request** in CA-Manager), issue the pending request on the **Requests** page, then retrieve and accept it (`certreq -retrieve <RequestId> cert.cer`, `certreq -accept cert.cer`) - or import the PFX downloaded from CA-Manager into `LocalMachine\My` - and select the certificate on the **System** page.
 - **SAN**: stand-alone CAs ignore the SAN request attribute unless the flag `EDITF_ATTRIBUTESUBJECTALTNAME2` is enabled (CA server, admin): `certutil -setreg policy\EditFlags +EDITF_ATTRIBUTESUBJECTALTNAME2` then restart CertSvc. Without it, issued certificates will not contain SAN entries.
 - **Templates**: the template dropdown shows "no template needed" — the CertificateTemplate attribute is ignored by stand-alone CAs.
 - **Approvals**: with the default pending-first policy every submitted request waits in the CA queue; approve it on the **Requests** page (the in-app approval flow still applies to viewer submissions before that).
@@ -97,4 +97,6 @@ On a stand-alone CA (no templates, requests pending by default):
 | Issue/revoke fails with `Access is denied 0x80070005` | Service not running as LocalSystem, or the web user's role is insufficient; check the service account is in CA Administrators |
 | Empty lists and `too many active sessions 0x8009400F` in the log | CA database sessions exhausted (leak fixed in current version); restart the CA-Manager service and upgrade |
 | CA shows unreachable | Check the CertSvc service is running; local COM depends on RPC |
-| HTTPS certificate enrollment failed | Usually WebServer template permissions; configure manually as shown above |
+| Service answers on HTTP although HTTPS is configured | The configured certificate was not found in `LocalMachine\My` (wrong thumbprint, or no private key); the event log shows `HTTPS certificate ... not found - falling back to HTTP`. Pick a valid certificate on the System page and apply |
+| Requests from **New Request** / the automation API end as **denied** | The service account (LocalSystem = the CA server's computer account) has no **Enroll** permission on that template. Grant Enroll to `DOMAIN\CA-SERVER$` on the template's Security tab (certtmpl.msc), or on a copy of the template |
+| 403 `权限不足` on an endpoint that normally works | The session role is too low for that endpoint - see the role column of the API Docs page (`/apidocs`) |

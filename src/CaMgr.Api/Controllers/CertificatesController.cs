@@ -160,7 +160,7 @@ public sealed class CertificatesController(
     /// every issued-but-past-expiry certificate that was never revoked.
     /// </summary>
     [HttpPost("batch-revoke")]
-    [RequireRole(AppRole.Operator)]
+    [RequireRole(AppRole.Operator, AppRole.Admin)]
     public async Task<IActionResult> BatchRevoke([FromBody] BatchRevokeRequest req)
     {
         List<string> serials;
