@@ -1,6 +1,6 @@
 # Third-Party Software / 第三方开源组件
 
-CA-Manager v1.7.4 uses the following open-source components.
+CA-Manager v1.8.1 uses the following open-source components.
 本系统使用了以下开源组件，感谢这些项目的作者。
 
 ## Backend (.NET 10) — 后端

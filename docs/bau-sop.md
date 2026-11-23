@@ -11,7 +11,7 @@
 |------|---------|
 | Document version | v1.1 |
 | Effective date | 2026-11-23 |
-| Applies to | CA-Manager v1.7.4 (web management system for AD CS certificate services) |
+| Applies to | CA-Manager v1.8.1 (web management system for AD CS certificate services) |
 | Review cycle | Every 6 months; within 2 weeks after any major system upgrade |
 | Author / Reviewer / Approver | [Name / Date] |
 
@@ -297,7 +297,7 @@ General conventions:
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
 | v1.0 | 2026-10-19 | First release | [ ] |
-| v1.1 | 2026-11-23 | Applies to v1.7.4; digest has 6 event types; added SOP-13 batch revocation of expired certificates and SOP-14 asset inventory upkeep; monthly tasks M2/M5 extended (API token review, inventory review) | [ ] |
+| v1.1 | 2026-11-23 | Applies to v1.8.1; digest has 6 event types; added SOP-13 batch revocation of expired certificates and SOP-14 asset inventory upkeep; monthly tasks M2/M5 extended (API token review, inventory review) | [ ] |
 
 ## Appendix A: Glossary
 
